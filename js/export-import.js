@@ -283,7 +283,9 @@ window.PicEditor.storage = {
     reader.onload = (e) => {
       const success = this.importHtmlCode(e.target.result, false);
       if (success) {
-        alert('파일에서 HTML 코드를 성공적으로 불러왔습니다!');
+        const baseName = file.name.replace(/\.[^/.]+$/, '');
+        window.PicEditor.state.currentDiagramName = baseName;
+        alert(`파일("${file.name}")에서 도면을 성공적으로 불러왔습니다!`);
       }
     };
     reader.readAsText(file);

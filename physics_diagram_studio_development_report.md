@@ -65,6 +65,20 @@
   - 웹 에디터 저장소: `E:\Git\PicEditor\saved\` (57개 HTML 및 400px 썸네일)
   - GitHub 원격 저장소(`main` 브랜치) 및 GitHub Pages 배포 완료.
 
+### Phase 6: 깃허브 실시간 동기화 및 캐시 무효화 아키텍처 완성
+- **Fastly CDN 및 브라우저 디스크 캐시 완전 우회 (0초 지연 로드 달성):**
+  - 기존 `raw.githubusercontent.com`이 가진 300초(5분) CDN 캐시로 인해 저장 직후 다시 불러올 때 이전 원본 파일이 반환되던 문제를 해결.
+  - 도면 로드 시 GitHub Contents REST API를 최우선 호출하여 Git 데이터베이스에 저장된 최신 Base64 코드를 0초 지연으로 실시간 수신하도록 파이프라인 개편.
+  - 폴백 요청 시에도 `_t=${Date.now()}` 타임스탬프 쿼리 및 `Cache-Control: no-cache, no-store, must-revalidate` 헤더를 강제 적용.
+- **썸네일 실시간 갱신 및 고해상도 벡터 렌더링 동기화:**
+  - 갤러리 이미지 로드 시 Git Commit SHA 기반 캐시 버스터(`?v=${sha}`)를 부여하여 브라우저의 이미지 메모리/디스크 캐시를 즉시 갱신.
+  - 57개 물리 도면 전체에 대해 Chrome Headless 기반의 순수 SVG 벡터 스크린샷 썸네일 57종 전수 재생성 및 `saved/manifest.json` 해상도 규격 완벽 동기화.
+- **한글 및 특수문자 파일 경로 URL 인코딩 (422/404 방지):**
+  - 세그먼트별 URL 인코딩 함수(`encodeApiPath`)를 구현하여 한글 파일명(`성대0001_역학...`) 저장 및 SHA 조회 시 발생하던 422 Unprocessable Entity 오류 원천 차단.
+- **현재 편집 중인 도면 상태(State) 추적 및 기존 파일 덮어쓰기 지원:**
+  - 갤러리에서 도면을 로드하면 `window.PicEditor.state.currentDiagramName` 및 Git SHA를 자동 보존.
+  - [☁️ 깃허브에 저장] 모달 실행 시 현재 도면명이 기본값으로 자동 입력되며, 저장 시 원본 파일과 썸네일 및 `manifest.json`이 원클릭으로 일괄 업데이트되는 워크플로우 완성.
+
 ---
 
 ## 3. 구축된 57종 물리 도면 분류 목록
