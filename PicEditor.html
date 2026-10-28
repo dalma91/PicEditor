@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>물리 마스터 에디터 스튜디오 v14</title>
-  <link rel="stylesheet" href="css/style.css?v=20261028_2">
+  <link rel="stylesheet" href="css/style.css?v=20261028_3">
   <style>
     /* 브라우저 CSS 캐시 방지 및 강제 2열 그리드 레이아웃 (좌: 캔버스, 우: 메뉴) */
     .app-layout {
@@ -24,92 +24,54 @@
 <body>
 
   <div class="app-layout">
-    <!-- 좌측: 메인 편집 영역 (대형화된 캔버스) -->
+    <!-- 좌측: 메인 편집 작업 영역 (대형화된 단일 캔버스) -->
     <main class="editor-main">
       <div class="canvas-header">
-        <nav class="tab-bar">
-          <button type="button" class="tab-btn active" onclick="switchTab(1)">그림 1: 천장 실과 질점계</button>
-          <button type="button" class="tab-btn" onclick="switchTab(2)">그림 2: 단진자 운동 장치</button>
-        </nav>
+        <div class="canvas-title-wrap">
+          <h2>🎨 물리 그래픽 편집 스튜디오</h2>
+          <span class="canvas-subtitle">HTML 코드를 올려 마우스로 자유롭게 선택, 이동, 크기/회전 조절을 할 수 있습니다.</span>
+        </div>
         <div class="canvas-info-bar">
-          캔버스 크기: <span id="canvasSizeDisplay">650 × 420 px</span>
+          해상도: <span id="canvasSizeDisplay">800 × 600 px</span>
         </div>
       </div>
 
-      <!-- 그림 1 카드 -->
-      <section id="card-1" class="card active">
-        <h2>그림 1: 천장 고정 실과 질점계 (성대0002)</h2>
-        <svg id="svg-editor-1" viewBox="0 0 650 420" class="select-mode">
+      <!-- 단일 메인 캔버스 카드 -->
+      <section class="card active">
+        <svg id="svg-editor" viewBox="0 0 800 600" class="select-mode">
           <rect width="100%" height="100%" fill="#FFFFFF" />
-          <g class="main-diagram">
-            <g class="movable" transform="translate(0,0) scale(1,1) rotate(0)">
-              <rect x="80" y="40" width="490" height="30" fill="#E0E0E0" stroke="#000000" stroke-width="2.0" />
-              <path d="M 80,40 L 110,70 M 110,40 L 140,70 M 140,40 L 170,70 M 170,40 L 200,70 M 200,40 L 230,70 M 230,40 L 260,70 M 260,40 L 290,70 M 290,40 L 320,70 M 320,40 L 350,70 M 350,40 L 380,70 M 380,40 L 410,70 M 410,40 L 440,70 M 440,40 L 470,70 M 470,40 L 500,70 M 500,40 L 530,70 M 530,40 L 560,70" stroke="#B0B0B0" stroke-width="1.5" />
-            </g>
-            <line class="movable" x1="40" y1="360" x2="610" y2="360" stroke="#000000" stroke-width="2.2" transform="translate(0,0) scale(1,1) rotate(0)" />
-            <line class="movable" x1="325" y1="70" x2="325" y2="245" stroke="#000000" stroke-width="2.0" transform="translate(0,0) scale(1,1) rotate(0)" />
-            <circle class="movable" cx="325" cy="70" r="4.5" fill="#000000" transform="translate(0,0) scale(1,1) rotate(0)" />
-            <circle class="movable" cx="325" cy="245" r="5" fill="#000000" transform="translate(0,0) scale(1,1) rotate(0)" />
-            <path class="movable" d="M 325,245 Q 430,245 490,205" fill="none" stroke="#000000" stroke-width="1.8" stroke-dasharray="6,4" transform="translate(0,0) scale(1,1) rotate(0)" />
-            <line class="movable" x1="325" y1="70" x2="490" y2="205" stroke="#000000" stroke-width="2.0" transform="translate(0,0) scale(1,1) rotate(0)" />
-            <circle class="movable" cx="490" cy="205" r="4.5" fill="#000000" transform="translate(0,0) scale(1,1) rotate(0)" />
-            <line class="movable" x1="490" y1="205" x2="600" y2="205" stroke="#000000" stroke-width="2.0" transform="translate(0,0) scale(1,1) rotate(0)" />
-            <path class="movable" d="M 325,125 A 55,55 0 0,1 356,120" fill="none" stroke="#000000" stroke-width="1.6" transform="translate(0,0) scale(1,1) rotate(0)" />
-          </g>
           <defs>
             <marker id="arrow-1" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="#000000" />
+            </marker>
+            <marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
               <path d="M 0 0 L 10 5 L 0 10 z" fill="#000000" />
             </marker>
             <marker id="arrow-start-1" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto">
               <path d="M 10 0 L 0 5 L 10 10 z" fill="#000000" />
             </marker>
-          </defs>
-          <g class="text-layer">
-            <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)"><rect class="text-bg-rect" rx="2"></rect><text class="text-el" x="315" y="60" font-family="'Times New Roman', serif" font-size="34">P</text></g>
-            <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)"><rect class="text-bg-rect" rx="2"></rect><text class="text-el" x="480" y="58" font-family="'Batang', serif" font-size="30" font-weight="bold">천장</text></g>
-            <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)"><rect class="text-bg-rect" rx="2"></rect><text class="text-el" x="558" y="395" font-family="'Batang', serif" font-size="30" font-weight="bold">지면</text></g>
-            <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)"><rect class="text-bg-rect" rx="2"></rect><text class="text-el" x="320" y="380" font-family="'Times New Roman', serif" font-size="34" font-style="italic" text-anchor="middle">O</text></g>
-            <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)"><rect class="text-bg-rect" rx="2"></rect><text class="text-el" x="295" y="160" font-family="'Times New Roman', serif" font-size="32" font-style="italic">S<tspan dy="6" font-size="22">1</tspan></text></g>
-            <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)"><rect class="text-bg-rect" rx="2"></rect><text class="text-el" x="290" y="185" font-family="'Times New Roman', serif" font-size="36" font-style="italic">l</text></g>
-            <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)"><rect class="text-bg-rect" rx="2"></rect><text class="text-el" x="338" y="245" font-family="'Times New Roman', serif" font-size="34" font-style="italic">m</text></g>
-            <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)"><rect class="text-bg-rect" rx="2"></rect><text class="text-el" x="300" y="255" font-family="'Times New Roman', serif" font-size="34" font-style="italic">Q</text></g>
-            <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)"><rect class="text-bg-rect" rx="2"></rect><text class="text-el" x="430" y="130" font-family="'Times New Roman', serif" font-size="34" font-style="italic">T<tspan dy="6" font-size="22">1</tspan></text></g>
-            <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)"><rect class="text-bg-rect" rx="2"></rect><text class="text-el" x="360" y="132" font-family="'Times New Roman', serif" font-size="34" font-style="italic">θ<tspan dy="6" font-size="22">0</tspan></text></g>
-            <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)"><rect class="text-bg-rect" rx="2"></rect><text class="text-el" x="502" y="210" font-family="'Times New Roman', serif" font-size="34">R</text></g>
-            <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)"><rect class="text-bg-rect" rx="2"></rect><text class="text-el" x="540" y="193" font-family="'Times New Roman', serif" font-size="34" font-style="italic">T<tspan dy="6" font-size="22">2</tspan></text></g>
-            <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)"><rect class="text-bg-rect" rx="2"></rect><text class="text-el" x="612" y="193" font-family="'Times New Roman', serif" font-size="34" font-style="italic">S<tspan dy="6" font-size="22">2</tspan></text></g>
-            <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)"><rect class="text-bg-rect" rx="2"></rect><text class="text-el" x="38" y="220" font-family="'Times New Roman', serif" font-size="38" font-style="italic">h</text></g>
-          </g>
-        </svg>
-      </section>
-
-      <!-- 그림 2 카드 -->
-      <section id="card-2" class="card">
-        <h2>그림 2: 단진자 운동 장치 (그림 Ⅲ-2)</h2>
-        <svg id="svg-editor-2" viewBox="0 0 330 398" class="select-mode">
-          <rect width="100%" height="100%" fill="#FFFFFF" />
-          <g class="main-diagram">
-            <path class="movable" d="M 0,319.5 A 230,230 0 0,0 174,291.2" fill="none" stroke="#000000" stroke-width="2.2" stroke-dasharray="10, 4.5" transform="translate(0,0) scale(1,1) rotate(0)" />
-            <line class="movable" x1="54" y1="96" x2="53" y2="246" stroke="#000000" stroke-width="2.0" transform="translate(0,0) scale(1,1) rotate(0)" />
-            <line class="movable" x1="54" y1="96" x2="179" y2="274" stroke="#000000" stroke-width="2.0" transform="translate(0,0) scale(1,1) rotate(0)" />
-            <circle class="movable" cx="54" cy="96" r="4.0" fill="#000000" transform="translate(0,0) scale(1,1) rotate(0)" />
-            <circle class="movable" cx="186" cy="284" r="13.5" fill="#FFFFFF" stroke="#000000" stroke-width="2.2" transform="translate(0,0) scale(1,1) rotate(0)" />
-            <line class="movable" x1="204" y1="274" x2="242" y2="241" fill="none" stroke="#000000" stroke-width="2.0" transform="translate(0,0) scale(1,1) rotate(0)" />
-          </g>
-          <defs>
-            <marker id="arrow-2" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-              <path d="M 0 0 L 10 5 L 0 10 z" fill="#000000" />
-            </marker>
-            <marker id="arrow-start-2" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+            <marker id="arrow-start" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto">
               <path d="M 10 0 L 0 5 L 10 10 z" fill="#000000" />
             </marker>
           </defs>
+          <g class="main-diagram">
+            <!-- 기본 안내 및 샘플 요소 (클릭하여 자유롭게 편집/삭제 가능) -->
+            <g class="movable" transform="translate(75,50) scale(1,1) rotate(0)">
+              <rect x="80" y="40" width="490" height="30" fill="#E0E0E0" stroke="#000000" stroke-width="2.0" />
+              <path d="M 80,40 L 110,70 M 110,40 L 140,70 M 140,40 L 170,70 M 170,40 L 200,70 M 200,40 L 230,70 M 230,40 L 260,70 M 260,40 L 290,70 M 290,40 L 320,70 M 320,40 L 350,70 M 350,40 L 380,70 M 380,40 L 410,70 M 410,40 L 440,70 M 440,40 L 470,70 M 470,40 L 500,70 M 500,40 L 530,70 M 530,40 L 560,70" stroke="#B0B0B0" stroke-width="1.5" />
+            </g>
+            <line class="movable" x1="115" y1="410" x2="685" y2="410" stroke="#000000" stroke-width="2.2" transform="translate(0,0) scale(1,1) rotate(0)" />
+            <line class="movable" x1="400" y1="120" x2="400" y2="295" stroke="#000000" stroke-width="2.0" transform="translate(0,0) scale(1,1) rotate(0)" />
+            <circle class="movable" cx="400" cy="120" r="4.5" fill="#000000" transform="translate(0,0) scale(1,1) rotate(0)" />
+            <circle class="movable" cx="400" cy="295" r="5" fill="#000000" transform="translate(0,0) scale(1,1) rotate(0)" />
+            <path class="movable" d="M 400,295 Q 505,295 565,255" fill="none" stroke="#000000" stroke-width="1.8" stroke-dasharray="6,4" transform="translate(0,0) scale(1,1) rotate(0)" />
+            <line class="movable" x1="400" y1="120" x2="565" y2="255" stroke="#000000" stroke-width="2.0" transform="translate(0,0) scale(1,1) rotate(0)" />
+            <circle class="movable" cx="565" cy="255" r="4.5" fill="#000000" transform="translate(0,0) scale(1,1) rotate(0)" />
+          </g>
           <g class="text-layer">
-            <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)"><rect class="text-bg-rect" rx="2"></rect><text class="text-el" x="60" y="185" font-family="'Times New Roman', serif" font-size="44" font-style="italic">θ</text></g>
-            <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)"><rect class="text-bg-rect" rx="2"></rect><text class="text-el" x="245" y="232" font-family="'Times New Roman', serif" font-size="46" font-style="italic">v</text></g>
-            <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)"><rect class="text-bg-rect" rx="2"></rect><text class="text-el" x="67" y="110" font-family="'Times New Roman', serif" font-size="46">O</text></g>
-            <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)"><rect class="text-bg-rect" rx="2"></rect><text class="text-el" x="54" y="62" font-family="'Batang', serif" font-size="42" font-weight="bold" text-anchor="middle">지점</text></g>
-            <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)"><rect class="text-bg-rect" rx="2"></rect><text class="text-el" x="115" y="376" font-family="'Batang', serif" font-size="42" text-anchor="middle">그림 Ⅲ － 2</text></g>
+            <g class="movable text-wrap" transform="translate(75,50) scale(1,1) rotate(0)"><rect class="text-bg-rect" rx="2"></rect><text class="text-el" x="480" y="58" font-family="'Batang', serif" font-size="30" font-weight="bold">천장</text></g>
+            <g class="movable text-wrap" transform="translate(75,50) scale(1,1) rotate(0)"><rect class="text-bg-rect" rx="2"></rect><text class="text-el" x="558" y="395" font-family="'Batang', serif" font-size="30" font-weight="bold">지면</text></g>
+            <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)"><rect class="text-bg-rect" rx="2"></rect><text class="text-el" x="395" y="430" font-family="'Times New Roman', serif" font-size="34" font-style="italic" text-anchor="middle">O</text></g>
           </g>
         </svg>
       </section>
@@ -117,18 +79,28 @@
 
     <!-- 우측: 사이드바 메뉴 툴바 -->
     <aside class="editor-sidebar">
-      <div class="hint-box">
-        💡 <b>사용 팁</b>: 요소를 클릭하여 선택한 후 크기/회전 조절이나 드래그 이동을 할 수 있습니다.
-      </div>
+      <!-- 1. HTML 코드 올리기 및 파일 관리 -->
+      <section class="sidebar-section">
+        <h3>📥 HTML 코드 올리기</h3>
+        <button type="button" class="info-btn full-btn" onclick="openHtmlModal()">📝 HTML 코드 직접 붙여넣기</button>
+        <div class="sidebar-btn-row">
+          <button type="button" class="secondary" onclick="document.getElementById('htmlFileInput').click()">📂 파일 열기</button>
+          <button type="button" class="danger" onclick="clearCanvas()">🧹 캔버스 비우기</button>
+        </div>
+        <input type="file" id="htmlFileInput" style="display:none" accept=".html,.htm" onchange="loadExternalHTML(event)">
+        <div class="hint-box">
+          💡 HTML 파일을 캔버스 위로 <b>드래그 앤 드롭</b>해도 바로 올릴 수 있습니다!
+        </div>
+      </section>
 
-      <!-- 1. 모드 및 선택 -->
+      <!-- 2. 작업 모드 및 선택 제어 -->
       <section class="sidebar-section">
         <h3>🕹️ 작업 모드</h3>
         <button type="button" id="modeBtn" class="success full-btn" onclick="toggleMode()">🖱️ 모드: 선택/편집</button>
-        <button type="button" class="done-btn full-btn" onclick="deselectAll()">✅ 선택 완료</button>
+        <button type="button" class="done-btn full-btn" onclick="deselectAll()">✅ 선택 완료 (해제)</button>
       </section>
 
-      <!-- 2. 작도 도구 -->
+      <!-- 3. 작도 도구 -->
       <section class="sidebar-section">
         <h3>✏️ 그리기 도구</h3>
         <div class="control-group">
@@ -170,7 +142,7 @@
         <button type="button" class="success full-btn" onclick="convertToArrow()">직선→화살표 변경</button>
       </section>
 
-      <!-- 3. 요소 변환 (크기/회전/반전) -->
+      <!-- 4. 요소 변환 (크기/회전/반전) -->
       <section class="sidebar-section">
         <h3>📐 크기 및 변환</h3>
         <div class="control-group">
@@ -202,7 +174,7 @@
         </div>
       </section>
 
-      <!-- 4. 글자 전용 인스펙터 (선택 시 노출) -->
+      <!-- 5. 글자 전용 인스펙터 (선택 시 노출) -->
       <section id="textInspector" class="text-inspector">
         <span class="text-inspector-title">🔤 글자 옵션</span>
         <div class="control-group">
@@ -222,31 +194,47 @@
         </div>
       </section>
 
-      <!-- 5. 캔버스 해상도 조절 -->
+      <!-- 6. 캔버스 해상도 조절 -->
       <section class="sidebar-section">
         <h3>🖼️ 캔버스 해상도</h3>
         <div class="control-group">
           <label>viewBox:</label>
           <div class="inputs-wrap">
             <span>W</span>
-            <input type="number" id="canvasWidthInput" value="650" min="200" max="2000" onchange="resizeCanvas()">
+            <input type="number" id="canvasWidthInput" value="800" min="200" max="2500" onchange="resizeCanvas()">
             <span>H</span>
-            <input type="number" id="canvasHeightInput" value="420" min="200" max="2000" onchange="resizeCanvas()">
+            <input type="number" id="canvasHeightInput" value="600" min="200" max="2500" onchange="resizeCanvas()">
           </div>
         </div>
       </section>
 
-      <!-- 6. 파일 및 작업 관리 -->
+      <!-- 7. 내보내기 및 코드 저장 -->
       <section class="sidebar-section">
-        <h3>💾 파일 및 관리</h3>
-        <input type="file" id="htmlFileInput" style="display:none" accept=".html,.htm" onchange="loadExternalHTML(event)">
-        <div class="sidebar-btn-row">
-          <button type="button" class="success" onclick="document.getElementById('htmlFileInput').click()">📂 불러오기</button>
-          <button type="button" class="danger" onclick="deleteSelected()">🗑️ 삭제</button>
-        </div>
-        <button type="button" class="full-btn" onclick="downloadPNG()">📥 PNG 다운로드</button>
+        <h3>💾 내보내기 & 저장</h3>
+        <button type="button" class="danger full-btn" onclick="deleteSelected()">🗑️ 선택 요소 삭제</button>
+        <button type="button" class="success full-btn" onclick="downloadPNG()">📥 고해상도 PNG 다운로드</button>
+        <button type="button" class="full-btn" onclick="copyHtmlCode()">📄 편집된 HTML 코드 복사</button>
       </section>
     </aside>
+  </div>
+
+  <!-- HTML 코드 직접 붙여넣기 팝업 모달 -->
+  <div id="htmlModal" class="modal-overlay" style="display:none;">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>📝 HTML / SVG 코드 직접 올리기</h3>
+        <button type="button" class="modal-close-btn" onclick="closeHtmlModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-hint">편집하고 싶은 HTML 전체 코드 또는 &lt;svg&gt;...&lt;/svg&gt; 코드를 아래에 붙여넣으세요:</p>
+        <textarea id="htmlCodeInput" placeholder="<!DOCTYPE html>... 또는 <svg viewBox='0 0 600 400'>...</svg> 코드를 붙여넣으세요"></textarea>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="secondary" onclick="closeHtmlModal()">취소</button>
+        <button type="button" class="success" onclick="applyPastedHtml(false)">캔버스에 새로 올리기 (대체)</button>
+        <button type="button" onclick="applyPastedHtml(true)">현재 캔버스에 추가</button>
+      </div>
+    </div>
   </div>
 
   <!-- 자바스크립트 모듈 로드 -->

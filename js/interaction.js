@@ -1,5 +1,5 @@
 /**
- * interaction.js - 마우스 드래그, 이동, 작도/선택 모드 전환 및 이벤트 처리
+ * interaction.js - 마우스 드래그, 이동, 작도/선택 모드 전환, 드래그앤드롭 파일 업로드 이벤트 처리
  */
 window.PicEditor = window.PicEditor || {};
 
@@ -99,18 +99,16 @@ window.PicEditor.interaction = {
   },
 
   /**
-   * 전역 마우스 이벤트 및 SVG 캔버스 작도 이벤트 초기화
+   * 전역 마우스 이벤트 및 SVG 캔버스 작도/드래그앤드롭 이벤트 초기화
    */
   initGlobalEvents() {
     const state = window.PicEditor.state;
 
-    // 1 & 2번 SVG 캔버스 작도 시작 (mousedown)
-    [1, 2].forEach(num => {
-      const svg = document.getElementById(`svg-editor-${num}`);
-      if (!svg) return;
-
+    // SVG 캔버스 작도 시작 (mousedown)
+    const svgs = document.querySelectorAll('svg');
+    svgs.forEach(svg => {
       svg.addEventListener('mousedown', (e) => {
-        if (!state.isDrawMode || num !== state.activeTab) return;
+        if (!state.isDrawMode) return;
         state.isDrawing = true;
         
         const pt = window.PicEditor.utils.getSvgPoint(e, svg);
@@ -119,7 +117,13 @@ window.PicEditor.interaction = {
         const tool = document.getElementById('toolSelect').value;
         const strokeStyle = document.getElementById('strokeStyleSelect').value;
         const arrowDir = document.getElementById('arrowDirSelect').value;
-        const mainGrp = svg.querySelector('.main-diagram');
+        let mainGrp = svg.querySelector('.main-diagram');
+
+        if (!mainGrp) {
+          mainGrp = document.createElementNS("http://www.w3.org/2000/svg", "g");
+          mainGrp.setAttribute('class', 'main-diagram');
+          svg.appendChild(mainGrp);
+        }
 
         if (tool === 'line' || tool === 'arrow') {
           state.tempShape = document.createElementNS("http://www.w3.org/2000/svg", "line");
@@ -135,7 +139,7 @@ window.PicEditor.interaction = {
           }
 
           if (tool === 'arrow') {
-            window.PicEditor.tools.applyArrowMarkers(state.tempShape, arrowDir, num);
+            window.PicEditor.tools.applyArrowMarkers(state.tempShape, arrowDir, 1);
           }
         } else if (tool === 'arc') {
           state.tempShape = document.createElementNS("http://www.w3.org/2000/svg", "path");
@@ -148,12 +152,38 @@ window.PicEditor.interaction = {
           window.PicEditor.tools.updateArcPath(state.tempShape, state.drawStart, pt);
         }
 
-        if (state.tempShape && mainGrp) {
+        if (state.tempShape) {
           state.tempShape.classList.add('movable');
           mainGrp.appendChild(state.tempShape);
         }
       });
     });
+
+    // 드래그앤드롭 파일 업로드 (HTML 파일을 캔버스에 직접 끌어다 놓기)
+    const cardEl = document.querySelector('.card');
+    if (cardEl) {
+      cardEl.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        cardEl.classList.add('drag-over');
+      });
+      cardEl.addEventListener('dragleave', (e) => {
+        e.preventDefault();
+        cardEl.classList.remove('drag-over');
+      });
+      cardEl.addEventListener('drop', (e) => {
+        e.preventDefault();
+        cardEl.classList.remove('drag-over');
+        if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0]) {
+          const file = e.dataTransfer.files[0];
+          const reader = new FileReader();
+          reader.onload = (re) => {
+            window.PicEditor.storage.importHtmlCode(re.target.result, false);
+            alert(`"${file.name}" 파일을 캔버스에 성공적으로 올렸습니다!`);
+          };
+          reader.readAsText(file);
+        }
+      });
+    }
 
     // 마우스 이동 (mousemove)
     window.addEventListener('mousemove', (e) => {
@@ -169,7 +199,7 @@ window.PicEditor.interaction = {
           state.tempShape.setAttribute("y2", pt.y);
           const arrowDir = document.getElementById('arrowDirSelect').value;
           if (tool === 'arrow' && (arrowDir === 'mid-right' || arrowDir === 'mid-left')) {
-            window.PicEditor.tools.applyArrowMarkers(state.tempShape, arrowDir, state.activeTab);
+            window.PicEditor.tools.applyArrowMarkers(state.tempShape, arrowDir, 1);
           }
         } else if (tool === 'arc') {
           window.PicEditor.tools.updateArcPath(state.tempShape, state.drawStart, pt);
@@ -202,6 +232,21 @@ window.PicEditor.interaction = {
         }
       }
       state.isDragging = false;
+    });
+
+    // ESC 키로 모달 닫기 및 선택 해제
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        window.PicEditor.storage.closeHtmlModal();
+        window.PicEditor.utils.deselectAll();
+      } else if (e.key === 'Delete' || e.key === 'Backspace') {
+        const activeTag = document.activeElement ? document.activeElement.tagName.toLowerCase() : '';
+        if (activeTag !== 'input' && activeTag !== 'textarea') {
+          if (state.selectedElement) {
+            window.PicEditor.inspector.deleteSelected();
+          }
+        }
+      }
     });
   }
 };

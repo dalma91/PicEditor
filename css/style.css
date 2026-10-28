@@ -26,9 +26,9 @@ body {
   align-items: start;
 }
 
-/* 2. 좌측: 메인 편집 작업 영역 (캔버스 대형화) */
+/* 2. 좌측: 메인 편집 작업 영역 */
 .editor-main {
-  min-width: 0; /* 내부 SVG 크기가 커져도 그리드 폭을 넘지 않도록 제한 */
+  min-width: 0;
   display: flex;
   flex-direction: column;
 }
@@ -36,69 +36,53 @@ body {
 .canvas-header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-end;
-  margin-bottom: 8px;
+  align-items: center;
+  margin-bottom: 10px;
   width: 100%;
-}
-
-.tab-bar {
-  display: flex;
-  gap: 4px;
-}
-
-.tab-btn {
-  padding: 10px 20px;
-  font-size: 14px;
-  font-weight: bold;
-  background: #e2e5e9;
-  color: #4a4a4a;
-  border: none;
-  border-radius: 8px 8px 0 0;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.tab-btn:hover {
-  background: #d4d8de;
-}
-
-.tab-btn.active {
   background: #ffffff;
+  padding: 12px 18px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.canvas-title-wrap h2 {
+  font-size: 17px;
+  margin: 0 0 4px 0;
   color: #1a73e8;
-  border-top: 3px solid #1a73e8;
-  box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.05);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.canvas-subtitle {
+  font-size: 12px;
+  color: #5f6368;
 }
 
 .canvas-info-bar {
   font-size: 13px;
-  color: #5f6368;
+  color: #3c4043;
   font-weight: bold;
-  padding-bottom: 4px;
+  background: #f1f3f4;
+  padding: 4px 10px;
+  border-radius: 6px;
 }
 
 /* 캔버스 카드 */
 .card {
   background: #ffffff;
-  border-radius: 0 10px 10px 10px;
+  border-radius: 10px;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
   padding: 20px;
   width: 100%;
   text-align: center;
-  display: none;
+  position: relative;
+  transition: border-color 0.2s ease;
 }
 
-.card.active {
-  display: block;
-}
-
-.card h2 {
-  font-size: 16px;
-  margin-top: 0;
-  margin-bottom: 14px;
-  color: #202124;
-  text-align: left;
-  border-bottom: 2px solid #1a73e8;
-  padding-bottom: 8px;
+.card.drag-over {
+  border: 2px dashed #1a73e8;
+  background: #f0f7ff;
 }
 
 /* 대형화된 SVG 캔버스 */
@@ -251,12 +235,14 @@ button.success:hover { background: #0d5424; }
 button.success.active-mode { background: #b80600; }
 button.done-btn { background: #e37400; }
 button.done-btn:hover { background: #b05700; }
+button.info-btn { background: #0077b6; }
+button.info-btn:hover { background: #005f94; }
 
 .full-btn {
   width: 100%;
 }
 
-/* 5. 글자 전용 인스펙터 패널 (사이드바 내부) */
+/* 5. 글자 전용 인스펙터 패널 */
 .text-inspector {
   background: #e8f0fe;
   border: 1.5px solid #1a73e8;
@@ -298,7 +284,95 @@ button.done-btn:hover { background: #b05700; }
   border-radius: 6px;
 }
 
-/* 7. 초소형 화면(모바일 700px 이하)에서만 1열 전환 */
+/* 7. HTML 코드 입력 팝업 모달 */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  backdrop-filter: blur(2px);
+}
+
+.modal-box {
+  background: #ffffff;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 680px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.modal-header {
+  padding: 14px 20px;
+  border-bottom: 1px solid #e0e0e0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #fafafa;
+}
+
+.modal-header h3 {
+  margin: 0;
+  font-size: 16px;
+  color: #1a73e8;
+}
+
+.modal-close-btn {
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  color: #666;
+  cursor: pointer;
+  padding: 2px 6px;
+}
+.modal-close-btn:hover {
+  background: #eee;
+  color: #000;
+}
+
+.modal-body {
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.modal-hint {
+  font-size: 12px;
+  color: #5f6368;
+  margin: 0;
+}
+
+.modal-body textarea {
+  width: 100%;
+  height: 270px;
+  font-family: Consolas, monospace;
+  font-size: 12px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  resize: vertical;
+  box-sizing: border-box;
+}
+
+.modal-footer {
+  padding: 12px 20px;
+  border-top: 1px solid #e0e0e0;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  background: #f8f9fa;
+}
+
+/* 8. 반응형 처리 (모바일 700px 이하) */
 @media (max-width: 700px) {
   .app-layout {
     grid-template-columns: 1fr;

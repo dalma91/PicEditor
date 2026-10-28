@@ -41,10 +41,12 @@ window.PicEditor.utils = {
   },
 
   /**
-   * 현재 활성화된 탭의 SVG 엘리먼트 반환
+   * 현재 활성화된 편집 SVG 엘리먼트 반환 (단일 캔버스 및 다중 캔버스 호환)
    */
   getActiveSvg() {
-    return document.getElementById(`svg-editor-${window.PicEditor.state.activeTab}`);
+    return document.getElementById('svg-editor') ||
+           document.getElementById(`svg-editor-${window.PicEditor.state.activeTab}`) ||
+           document.querySelector('svg');
   },
 
   /**

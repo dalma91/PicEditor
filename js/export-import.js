@@ -1,50 +1,257 @@
 /**
- * export-import.js - 고해상도 PNG 다운로드 및 외부 HTML 도면 불러오기
+ * export-import.js - HTML 코드 직접 올리기, 외부 파일 불러오기, 코드 복사 및 PNG 다운로드
  */
 window.PicEditor = window.PicEditor || {};
 
 window.PicEditor.storage = {
   /**
-   * 외부 HTML 파일에서 SVG 도면 요소 불러오기
+   * HTML 또는 SVG 문자열을 파싱하여 캔버스에 직접 올리기
+   * @param {string} htmlStr - HTML 또는 SVG 코드
+   * @param {boolean} isAppend - true면 기존 내용에 추가, false면 새로 교체
+   */
+  importHtmlCode(htmlStr, isAppend = false) {
+    if (!htmlStr || !htmlStr.trim()) {
+      alert('붙여넣을 HTML 코드가 비어 있습니다.');
+      return false;
+    }
+
+    try {
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(htmlStr, 'text/html');
+      const importedSvg = doc.querySelector('svg');
+      const activeSvg = window.PicEditor.utils.getActiveSvg();
+      if (!activeSvg) return false;
+
+      let mainGrp = activeSvg.querySelector('.main-diagram');
+      let textLayer = activeSvg.querySelector('.text-layer');
+      let defs = activeSvg.querySelector('defs');
+
+      if (!mainGrp) {
+        mainGrp = document.createElementNS("http://www.w3.org/2000/svg", "g");
+        mainGrp.setAttribute('class', 'main-diagram');
+        activeSvg.appendChild(mainGrp);
+      }
+      if (!textLayer) {
+        textLayer = document.createElementNS("http://www.w3.org/2000/svg", "g");
+        textLayer.setAttribute('class', 'text-layer');
+        activeSvg.appendChild(textLayer);
+      }
+      if (!defs) {
+        defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
+        activeSvg.insertBefore(defs, activeSvg.firstChild);
+      }
+
+      // 새로 교체하는 경우 기존 요소 비우기
+      if (!isAppend) {
+        mainGrp.innerHTML = '';
+        textLayer.innerHTML = '';
+      }
+
+      if (importedSvg) {
+        // 1. viewBox 및 캔버스 크기 동기화
+        if (!isAppend) {
+          const vb = importedSvg.getAttribute('viewBox');
+          if (vb) {
+            activeSvg.setAttribute('viewBox', vb);
+          } else {
+            const w = importedSvg.getAttribute('width') || 800;
+            const h = importedSvg.getAttribute('height') || 600;
+            activeSvg.setAttribute('viewBox', `0 0 ${parseFloat(w)} ${parseFloat(h)}`);
+          }
+          window.PicEditor.canvas.updateCanvasInfo();
+        }
+
+        // 2. defs 복사 (마커, 그라디언트 등)
+        const importedDefs = importedSvg.querySelectorAll('defs > *');
+        importedDefs.forEach(item => {
+          defs.appendChild(item.cloneNode(true));
+        });
+
+        // 3. 텍스트 레이어 및 일반 그래픽 요소 분리 가져오기
+        const existingTextLayer = importedSvg.querySelector('.text-layer');
+        if (existingTextLayer) {
+          existingTextLayer.querySelectorAll('.text-wrap').forEach(node => {
+            const clone = node.cloneNode(true);
+            clone.classList.add('movable');
+            textLayer.appendChild(clone);
+          });
+        }
+
+        // 일반 노드 탐색
+        const targetContainer = importedSvg.querySelector('.main-diagram') || importedSvg;
+        const nodes = targetContainer.children;
+
+        Array.from(nodes).forEach(node => {
+          const tag = node.tagName.toLowerCase();
+          if (tag === 'defs' || tag === 'style' || node.classList.contains('text-layer')) return;
+
+          // 배경 흰색 rect는 메인 다이어그램에 중복 추가하지 않음
+          if (tag === 'rect' && node.getAttribute('width') === '100%' && node.getAttribute('height') === '100%') {
+            return;
+          }
+
+          if (tag === 'text') {
+            // text 요소를 text-wrap 구조로 감싸기
+            const wrap = document.createElementNS("http://www.w3.org/2000/svg", "g");
+            wrap.setAttribute('class', 'movable text-wrap');
+            wrap.setAttribute('transform', 'translate(0,0) scale(1,1) rotate(0)');
+
+            const bgRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+            bgRect.setAttribute('class', 'text-bg-rect');
+            bgRect.setAttribute('rx', '2');
+
+            const textClone = node.cloneNode(true);
+            textClone.classList.add('text-el');
+
+            wrap.appendChild(bgRect);
+            wrap.appendChild(textClone);
+            textLayer.appendChild(wrap);
+          } else {
+            const clone = node.cloneNode(true);
+            clone.classList.add('movable');
+            if (!clone.getAttribute('transform')) {
+              clone.setAttribute('transform', 'translate(0,0) scale(1,1) rotate(0)');
+            }
+            mainGrp.appendChild(clone);
+          }
+        });
+
+      } else {
+        // SVG 태그가 감싸져 있지 않고 본문 안에 도형 태그가 있는 경우
+        const allGraphics = doc.querySelectorAll('g, line, path, rect, circle, polygon, text');
+        if (allGraphics.length === 0) {
+          alert('붙여넣은 HTML에서 편집 가능한 SVG 그래픽 요소를 찾을 수 없습니다.');
+          return false;
+        }
+
+        allGraphics.forEach(node => {
+          const tag = node.tagName.toLowerCase();
+          if (tag === 'text') {
+            const wrap = document.createElementNS("http://www.w3.org/2000/svg", "g");
+            wrap.setAttribute('class', 'movable text-wrap');
+            wrap.setAttribute('transform', 'translate(0,0) scale(1,1) rotate(0)');
+            const bgRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+            bgRect.setAttribute('class', 'text-bg-rect');
+            bgRect.setAttribute('rx', '2');
+            const textClone = node.cloneNode(true);
+            textClone.classList.add('text-el');
+            wrap.appendChild(bgRect);
+            wrap.appendChild(textClone);
+            textLayer.appendChild(wrap);
+          } else {
+            const clone = node.cloneNode(true);
+            clone.classList.add('movable');
+            if (!clone.getAttribute('transform')) {
+              clone.setAttribute('transform', 'translate(0,0) scale(1,1) rotate(0)');
+            }
+            mainGrp.appendChild(clone);
+          }
+        });
+      }
+
+      // 이벤트 및 바운딩 박스 재계산
+      window.PicEditor.interaction.initMovableEvents();
+      setTimeout(window.PicEditor.canvas.updateAllTextBgBoxes, 80);
+      window.PicEditor.utils.deselectAll();
+
+      return true;
+    } catch (err) {
+      console.error('HTML 파싱 오류:', err);
+      alert('HTML 코드를 파싱하는 도중 오류가 발생했습니다: ' + err.message);
+      return false;
+    }
+  },
+
+  /**
+   * 외부 파일에서 HTML/SVG 불러오기
    */
   loadExternalHTML(event) {
     const file = event.target.files[0];
     if (!file) return;
 
     const reader = new FileReader();
-    reader.onload = function(e) {
-      try {
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(e.target.result, 'text/html');
-        const importedSvg = doc.querySelector('svg');
-        
-        if (importedSvg) {
-          const svg = window.PicEditor.utils.getActiveSvg();
-          const mainGrp = svg.querySelector('.main-diagram');
-          
-          importedSvg.querySelectorAll('g, line, path, circle, rect').forEach(node => {
-            node.classList.add('movable');
-            mainGrp.appendChild(node.cloneNode(true));
-          });
-          
-          window.PicEditor.interaction.initMovableEvents();
-          alert('외부 HTML 도면 요소가 성공적으로 불러와졌습니다!');
-        } else {
-          alert('선택한 파일에서 유효한 SVG 요소를 찾을 수 없습니다.');
-        }
-      } catch (err) {
-        console.error('HTML 불러오기 오류:', err);
-        alert('파일을 불러오는 중 오류가 발생했습니다.');
+    reader.onload = (e) => {
+      const success = this.importHtmlCode(e.target.result, false);
+      if (success) {
+        alert('파일에서 HTML 코드를 성공적으로 불러왔습니다!');
       }
     };
     reader.readAsText(file);
+    event.target.value = ''; // 재선택 가능하도록 초기화
+  },
+
+  /**
+   * 모달 열기 / 닫기
+   */
+  openHtmlModal() {
+    const modal = document.getElementById('htmlModal');
+    if (modal) {
+      modal.style.display = 'flex';
+      const ta = document.getElementById('htmlCodeInput');
+      if (ta) ta.focus();
+    }
+  },
+
+  closeHtmlModal() {
+    const modal = document.getElementById('htmlModal');
+    if (modal) {
+      modal.style.display = 'none';
+    }
+  },
+
+  applyPastedHtml(isAppend) {
+    const ta = document.getElementById('htmlCodeInput');
+    if (!ta) return;
+    const code = ta.value;
+    const success = this.importHtmlCode(code, isAppend);
+    if (success) {
+      this.closeHtmlModal();
+      ta.value = '';
+    }
+  },
+
+  /**
+   * 캔버스 전체 비우기
+   */
+  clearCanvas() {
+    if (confirm('캔버스의 모든 요소를 비우시겠습니까?')) {
+      const activeSvg = window.PicEditor.utils.getActiveSvg();
+      if (!activeSvg) return;
+      const mainGrp = activeSvg.querySelector('.main-diagram');
+      const textLayer = activeSvg.querySelector('.text-layer');
+      if (mainGrp) mainGrp.innerHTML = '';
+      if (textLayer) textLayer.innerHTML = '';
+      window.PicEditor.utils.deselectAll();
+    }
+  },
+
+  /**
+   * 편집된 현재 캔버스의 HTML/SVG 코드를 클립보드에 복사
+   */
+  copyHtmlCode() {
+    const activeSvg = window.PicEditor.utils.getActiveSvg();
+    if (!activeSvg) return;
+
+    window.PicEditor.utils.deselectAll();
+    const svgStr = new XMLSerializer().serializeToString(activeSvg);
+
+    navigator.clipboard.writeText(svgStr).then(() => {
+      alert('현재 편집된 캔버스의 HTML(SVG) 코드가 클립보드에 복사되었습니다!\n원하는 곳에 바로 붙여넣기(Ctrl+V)하여 사용하세요.');
+    }).catch(err => {
+      // 클립보드 권한 실패 시 모달로 제공
+      const ta = document.getElementById('htmlCodeInput');
+      if (ta) {
+        ta.value = svgStr;
+        this.openHtmlModal();
+        alert('클립보드 자동 복사가 제한되어 모달에 코드를 표시했습니다. 복사(Ctrl+C)하여 사용하세요.');
+      }
+    });
   },
 
   /**
    * 현재 캔버스 화면을 3배율 고해상도 PNG로 다운로드
    */
   downloadPNG() {
-    const state = window.PicEditor.state;
     const svg = window.PicEditor.utils.getActiveSvg();
     if (!svg) return;
 
@@ -53,8 +260,8 @@ window.PicEditor.storage = {
     const svgStr = new XMLSerializer().serializeToString(svg);
     const canvas = document.createElement('canvas');
     const vb = svg.viewBox.baseVal;
-    const width = vb.width || 650;
-    const height = vb.height || 420;
+    const width = vb.width || 800;
+    const height = vb.height || 600;
 
     canvas.width = width * 3;
     canvas.height = height * 3;
@@ -71,7 +278,7 @@ window.PicEditor.storage = {
       URL.revokeObjectURL(url);
 
       const a = document.createElement('a');
-      a.download = `physics_diagram_tab_${state.activeTab}.png`;
+      a.download = `physics_diagram_${Date.now()}.png`;
       a.href = canvas.toDataURL('image/png');
       a.click();
     };
@@ -82,3 +289,8 @@ window.PicEditor.storage = {
 // 전역 단축 참조
 window.loadExternalHTML = (e) => window.PicEditor.storage.loadExternalHTML(e);
 window.downloadPNG = () => window.PicEditor.storage.downloadPNG();
+window.openHtmlModal = () => window.PicEditor.storage.openHtmlModal();
+window.closeHtmlModal = () => window.PicEditor.storage.closeHtmlModal();
+window.applyPastedHtml = (append) => window.PicEditor.storage.applyPastedHtml(append);
+window.clearCanvas = () => window.PicEditor.storage.clearCanvas();
+window.copyHtmlCode = () => window.PicEditor.storage.copyHtmlCode();
