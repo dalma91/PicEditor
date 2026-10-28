@@ -85,6 +85,8 @@
         <input type="file" id="imgFileInput" style="display:none" accept="image/*" onclick="this.value=null" onchange="onImageFileInput(event)">
         <button type="button" class="image-btn full-btn" onclick="document.getElementById('imgFileInput').click()">🖼️ 그림(이미지) 업로드</button>
 
+        <button type="button" class="github-accent-btn full-btn" onclick="openGitHubGalleryModal()">🖼️ 깃허브 보관함 (썸네일 불러오기)</button>
+
         <div class="sidebar-btn-row">
           <button type="button" class="info-btn" onclick="openHtmlModal()">📝 HTML 코드</button>
           <button type="button" class="secondary" onclick="document.getElementById('htmlFileInput').click()">📂 HTML 파일</button>
@@ -232,14 +234,18 @@
       <!-- 8. 내보내기 및 코드 저장 -->
       <section class="sidebar-section">
         <h3>💾 내보내기 & 저장</h3>
-        <button type="button" class="danger full-btn" onclick="deleteSelected()">🗑️ 선택 요소 삭제</button>
-        <button type="button" class="success full-btn" onclick="downloadPNG()">📥 고해상도 PNG 다운로드</button>
+        <button type="button" class="github-btn full-btn" onclick="openGitHubSaveModal()">☁️ 깃허브에 저장</button>
+        <div class="sidebar-btn-row">
+          <button type="button" class="success" onclick="downloadPNG()">📥 PNG 다운</button>
+          <button type="button" class="secondary" onclick="openGitHubConfigModal()">⚙️ 깃허브 설정</button>
+        </div>
         <button type="button" class="full-btn" onclick="copyHtmlCode()">📄 편집된 HTML 코드 복사</button>
+        <button type="button" class="danger full-btn" onclick="deleteSelected()">🗑️ 선택 요소 삭제</button>
       </section>
     </aside>
   </div>
 
-  <!-- HTML 코드 직접 붙여넣기 팝업 모달 -->
+  <!-- 1. HTML 코드 직접 붙여넣기 팝업 모달 -->
   <div id="htmlModal" class="modal-overlay" style="display:none;">
     <div class="modal-box">
       <div class="modal-header">
@@ -258,14 +264,141 @@
     </div>
   </div>
 
+  <!-- 2. 깃허브 썸네일 갤러리 불러오기 모달 -->
+  <div id="githubGalleryModal" class="modal-overlay" style="display:none;">
+    <div class="modal-box modal-lg">
+      <div class="modal-header">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span style="font-size:20px;">🖼️</span>
+          <div>
+            <h3 style="margin:0; font-size:16px;">깃허브 도면 보관함 (불러오기)</h3>
+            <span style="font-size:12px; color:#6b7280;">썸네일을 확인하고 클릭하여 캔버스에 바로 불러오세요.</span>
+          </div>
+        </div>
+        <button type="button" class="modal-close-btn" onclick="closeGitHubGalleryModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <!-- 갤러리 툴바: 검색 및 통계 -->
+        <div class="gh-gallery-toolbar">
+          <div class="gh-search-wrap">
+            <span>🔍</span>
+            <input type="text" id="ghGallerySearchInput" class="gh-search-input" placeholder="도면 이름 검색 (예: 역학, 전자기, 성대0001)..." oninput="onGallerySearchInput(this.value)">
+          </div>
+          <div class="gh-gallery-meta">
+            <span id="ghGalleryCount">도면 목록 로딩 중...</span>
+            <button type="button" class="secondary" style="padding:4px 8px; font-size:12px;" onclick="refreshGalleryList()">🔄 새로고침</button>
+            <button type="button" class="secondary" style="padding:4px 8px; font-size:12px;" onclick="openGitHubConfigModal()">⚙️ 설정</button>
+          </div>
+        </div>
+
+        <!-- 썸네일 카드 그리드 컨테이너 -->
+        <div id="ghGalleryGrid" class="gh-gallery-grid">
+          <div class="gh-gallery-loading">🔄 깃허브 보관함에서 도면 목록을 불러오는 중...</div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="secondary" onclick="closeGitHubGalleryModal()">닫기</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. 깃허브 저장 팝업 모달 -->
+  <div id="githubSaveModal" class="modal-overlay" style="display:none;">
+    <div class="modal-box" style="max-width:520px;">
+      <div class="modal-header">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span style="font-size:20px;">☁️</span>
+          <div>
+            <h3 style="margin:0; font-size:16px;">깃허브에 도면 저장</h3>
+            <span style="font-size:12px; color:#6b7280;">현재 편집된 캔버스를 깃허브 저장소에 커밋합니다.</span>
+          </div>
+        </div>
+        <button type="button" class="modal-close-btn" onclick="closeGitHubSaveModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="gh-form-group">
+          <label for="ghSaveFileName">📁 저장할 파일 이름:</label>
+          <div style="display:flex; align-items:center; gap:6px;">
+            <input type="text" id="ghSaveFileName" placeholder="예: 성대0001_역학" style="flex:1;">
+            <span style="font-size:13px; color:#6b7280; font-weight:bold;">.html</span>
+          </div>
+        </div>
+        <div class="gh-form-group">
+          <label for="ghSaveCommitMsg">💬 커밋 메시지 (변경 내용 설명):</label>
+          <input type="text" id="ghSaveCommitMsg" placeholder="도면 저장: 성대0001_역학">
+        </div>
+        <div style="font-size:12px; color:#4b5563; background:#f3f4f6; padding:8px 10px; border-radius:6px; line-height:1.4;">
+          📍 <b>저장 대상:</b> <code id="ghSaveTargetDisplay">dalma91/PicEditor/saved/</code><br>
+          🖼️ <b>썸네일:</b> 고해상도 PNG 썸네일도 함께 자동 생성되어 갤러리에 반영됩니다.
+        </div>
+        <div id="ghSaveStatus" style="display:none;"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="secondary" onclick="closeGitHubSaveModal()">취소</button>
+        <button type="button" id="ghSaveSubmitBtn" class="github-btn" onclick="executeSaveToGitHub()">☁️ 깃허브에 저장 실행</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. 깃허브 연동 설정 모달 -->
+  <div id="githubConfigModal" class="modal-overlay" style="display:none;">
+    <div class="modal-box" style="max-width:540px;">
+      <div class="modal-header">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span style="font-size:20px;">⚙️</span>
+          <div>
+            <h3 style="margin:0; font-size:16px;">깃허브(GitHub) 연동 설정</h3>
+            <span style="font-size:12px; color:#6b7280;">도면을 저장하고 불러올 GitHub 저장소 정보와 토큰을 설정합니다.</span>
+          </div>
+        </div>
+        <button type="button" class="modal-close-btn" onclick="closeGitHubConfigModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="gh-form-row">
+          <div class="gh-form-group">
+            <label for="ghConfigOwner">저장소 소유자 (Owner):</label>
+            <input type="text" id="ghConfigOwner" value="dalma91" placeholder="예: dalma91">
+          </div>
+          <div class="gh-form-group">
+            <label for="ghConfigRepo">저장소 이름 (Repo):</label>
+            <input type="text" id="ghConfigRepo" value="PicEditor" placeholder="예: PicEditor">
+          </div>
+        </div>
+        <div class="gh-form-row">
+          <div class="gh-form-group">
+            <label for="ghConfigBranch">브랜치 (Branch):</label>
+            <input type="text" id="ghConfigBranch" value="main" placeholder="예: main">
+          </div>
+          <div class="gh-form-group">
+            <label for="ghConfigFolder">저장 폴더 경로 (Folder):</label>
+            <input type="text" id="ghConfigFolder" value="saved" placeholder="예: saved">
+          </div>
+        </div>
+        <div class="gh-form-group">
+          <label for="ghConfigToken">🔑 GitHub Personal Access Token (PAT):</label>
+          <input type="password" id="ghConfigToken" placeholder="ghp_ 또는 github_pat_ 토큰 입력">
+          <small style="color:#6b7280; font-size:11.5px; line-height:1.4;">
+            💡 <b>토큰 생성 방법:</b> GitHub &gt; Settings &gt; Developer settings &gt; Personal access tokens &gt; Tokens (classic)에서 <b>repo</b> 권한을 선택하여 생성하세요.<br>
+            🔒 토큰은 서버로 전송되지 않고 사용자의 웹 브라우저(<code>localStorage</code>)에만 안전하게 저장됩니다.
+          </small>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="secondary" onclick="closeGitHubConfigModal()">취소</button>
+        <button type="button" class="success" onclick="saveGitHubConfigFromUI()">💾 설정 저장</button>
+      </div>
+    </div>
+  </div>
+
   <!-- 자바스크립트 모듈 로드 (강제 캐시 갱신 파라미터 적용) -->
-  <script src="js/state.js?v=20261028_6"></script>
-  <script src="js/utils.js?v=20261028_6"></script>
-  <script src="js/canvas.js?v=20261028_6"></script>
-  <script src="js/tools.js?v=20261028_6"></script>
-  <script src="js/inspector.js?v=20261028_6"></script>
-  <script src="js/interaction.js?v=20261028_6"></script>
-  <script src="js/export-import.js?v=20261028_6"></script>
-  <script src="js/app.js?v=20261028_6"></script>
+  <script src="js/state.js?v=20261028_7"></script>
+  <script src="js/utils.js?v=20261028_7"></script>
+  <script src="js/canvas.js?v=20261028_7"></script>
+  <script src="js/tools.js?v=20261028_7"></script>
+  <script src="js/inspector.js?v=20261028_7"></script>
+  <script src="js/interaction.js?v=20261028_7"></script>
+  <script src="js/export-import.js?v=20261028_7"></script>
+  <script src="js/github.js?v=20261028_7"></script>
+  <script src="js/app.js?v=20261028_7"></script>
 </body>
 </html>
