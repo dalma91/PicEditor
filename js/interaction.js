@@ -242,9 +242,13 @@ window.PicEditor.interaction = {
         if (state.tempShape) {
           window.PicEditor.interaction.initMovableEvents();
           state.tempShape = null;
+          if (window.PicEditor.sync) window.PicEditor.sync.markModified();
         }
       }
-      state.isDragging = false;
+      if (state.isDragging) {
+        state.isDragging = false;
+        if (window.PicEditor.sync) window.PicEditor.sync.markModified();
+      }
     });
 
     // ESC 키 및 삭제 키

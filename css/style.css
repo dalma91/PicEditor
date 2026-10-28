@@ -60,12 +60,108 @@ body {
 }
 
 .canvas-info-bar {
-  font-size: 13px;
-  color: #3c4043;
-  font-weight: bold;
-  background: #f1f3f4;
-  padding: 4px 10px;
-  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #f8f9fa;
+  border: 1px solid #e2e8f0;
+  padding: 5px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  flex-wrap: wrap;
+}
+
+.canvas-info-item {
+  color: #475569;
+  font-weight: 600;
+}
+
+.canvas-info-divider {
+  width: 1px;
+  height: 14px;
+  background: #cbd5e1;
+}
+
+.sync-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 9px;
+  border-radius: 12px;
+  font-size: 11.5px;
+  font-weight: 700;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.sync-badge .sync-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.sync-badge.sync-saved {
+  background: #ecfdf5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
+}
+.sync-badge.sync-saved .sync-dot {
+  background: #10b981;
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.25);
+}
+
+.sync-badge.sync-modified {
+  background: #fffbeb;
+  color: #92400e;
+  border: 1px solid #fde68a;
+}
+.sync-badge.sync-modified .sync-dot {
+  background: #f59e0b;
+  box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.25);
+}
+
+.sync-badge.sync-syncing {
+  background: #eff6ff;
+  color: #1e40af;
+  border: 1px solid #bfdbfe;
+}
+.sync-badge.sync-syncing .sync-dot {
+  background: #3b82f6;
+  animation: pulse-sync 1s infinite;
+}
+
+.sync-badge.sync-error {
+  background: #fef2f2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+}
+.sync-badge.sync-error .sync-dot {
+  background: #ef4444;
+}
+
+.restore-badge-btn {
+  background: #f59e0b;
+  color: #ffffff;
+  border: none;
+  border-radius: 12px;
+  padding: 3px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: background 0.15s;
+}
+.restore-badge-btn:hover {
+  background: #d97706;
+}
+
+@keyframes pulse-sync {
+  0% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(1.2); }
+  100% { opacity: 1; transform: scale(1); }
 }
 
 /* 캔버스 카드 */
@@ -210,15 +306,35 @@ image.movable {
 
 /* 4. 버튼 및 공통 입력 컨트롤 */
 button, select, input[type="range"], input[type="number"] {
-  padding: 7px 12px;
-  font-size: 12px;
-  font-weight: bold;
+  padding: 5px 9px;
+  font-size: 11.5px;
+  font-weight: 600;
   color: #ffffff;
   background: #1a73e8;
   border: none;
-  border-radius: 6px;
+  border-radius: 5px;
   cursor: pointer;
   transition: all 0.15s ease;
+  min-height: 29px;
+  box-sizing: border-box;
+}
+
+button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.btn-icon {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  fill: currentColor;
+  display: inline-block;
+  vertical-align: middle;
 }
 
 input[type="number"] {
@@ -231,22 +347,56 @@ input[type="number"] {
 }
 
 button:hover { background: #1557b0; }
-button.danger { background: #d93025; }
-button.danger:hover { background: #b31412; }
-button.secondary { background: #5f6368; }
-button.secondary:hover { background: #3c4043; }
-button.success { background: #137333; }
-button.success:hover { background: #0d5424; }
-button.success.active-mode { background: #b80600; }
-button.done-btn { background: #e37400; }
-button.done-btn:hover { background: #b05700; }
-button.info-btn { background: #0077b6; }
-button.info-btn:hover { background: #005f94; }
-button.image-btn { background: #0f766e; }
-button.image-btn:hover { background: #115e59; }
+button.danger { background: #dc2626; }
+button.danger:hover { background: #b91c1c; }
+button.secondary { background: #4b5563; }
+button.secondary:hover { background: #374151; }
+button.success { background: #16a34a; }
+button.success:hover { background: #15803d; }
+button.success.active-mode { background: #dc2626; }
+button.done-btn { background: #ea580c; }
+button.done-btn:hover { background: #c2410c; }
+button.info-btn { background: #0284c7; }
+button.info-btn:hover { background: #0369a1; }
+button.image-btn { background: #0d9488; }
+button.image-btn:hover { background: #0f766e; }
+button.github-accent-btn { background: #4f46e5; }
+button.github-accent-btn:hover { background: #4338ca; }
 
 .full-btn {
   width: 100%;
+}
+
+.sidebar-btn-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  width: 100%;
+}
+
+/* 텍스트 크기 슬라이더 중앙 100% 눈금 스타일 */
+.text-scale-group {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 4px;
+}
+
+.slider-ticks {
+  display: flex;
+  justify-content: space-between;
+  font-size: 9.5px;
+  color: #64748b;
+  margin-top: 3px;
+  padding: 0 2px;
+  user-select: none;
+}
+
+.slider-ticks .center-tick {
+  color: #2563eb;
+  font-weight: 700;
+  background: #dbeafe;
+  padding: 1px 4px;
+  border-radius: 4px;
 }
 
 /* 5. 이미지 전용 인스펙터 패널 */

@@ -292,6 +292,7 @@ window.PicEditor.github = {
       statusEl.className = 'gh-status-info';
     }
     if (saveBtn) saveBtn.disabled = true;
+    if (window.PicEditor.sync) window.PicEditor.sync.markSyncing('깃허브에 저장 중...');
 
     try {
       const activeSvg = window.PicEditor.utils.getActiveSvg();
@@ -405,6 +406,9 @@ ${svgStr}
         statusEl.textContent = '✅ 깃허브 저장 및 동기화 완료!';
         statusEl.className = 'gh-status-success';
       }
+      if (window.PicEditor.sync) {
+        window.PicEditor.sync.markSaved('저장됨 (GitHub 동기화)');
+      }
 
       alert(`도면 "${fileName}"이(가) 깃허브에 성공적으로 저장되었습니다!\n\n저장 경로: ${cfg.owner}/${cfg.repo}/${htmlPath}\n브랜치: ${cfg.branch}\n\n이제 보관함에서 새로 바뀐 썸네일과 수정본 코드를 즉시 확인할 수 있습니다.`);
       this.closeSaveModal();
@@ -414,6 +418,9 @@ ${svgStr}
       if (statusEl) {
         statusEl.textContent = `❌ 오류: ${err.message}`;
         statusEl.className = 'gh-status-error';
+      }
+      if (window.PicEditor.sync) {
+        window.PicEditor.sync.markError('저장 실패 (확인 필요)');
       }
       alert(`깃허브 저장 중 오류가 발생했습니다:\n${err.message}`);
     } finally {
@@ -740,15 +747,122 @@ ${svgStr}
         window.PicEditor.state.currentDiagramName = item.name;
         if (item.sha) window.PicEditor.state.currentDiagramSha = item.sha;
 
+        if (window.PicEditor.sync) {
+          window.PicEditor.sync.markSaved('저장됨 (GitHub 최신본)');
+        }
+
         this.closeGalleryModal();
         alert(`도면 "${item.name}"을(를) 캔버스에 최신 상태로 불러왔습니다!\n\n이제 도면을 자유롭게 편집한 후 [☁️ 깃허브에 저장]을 누르면 이 도면에 바로 덮어쓰기 저장됩니다.`);
       }
     } catch (err) {
       console.error('도면 불러오기 실패:', err);
+      if (window.PicEditor.sync) {
+        window.PicEditor.sync.markError('불러오기 오류');
+      }
       alert(`도면 코드를 불러오는 도중 오류가 발생했습니다:\n${err.message}`);
     }
   }
 };
+
+/**
+ * 실시간 저장/동기화 상태 관리 및 로컬 자동 백업(Auto-Save)
+ */
+window.PicEditor.sync = {
+  status: 'saved',
+  autoSaveTimer: null,
+
+  setStatus(status, message) {
+    this.status = status;
+    const badge = document.getElementById('syncStatusBadge');
+    const textEl = document.getElementById('syncStatusText');
+    if (!badge || !textEl) return;
+
+    badge.className = `sync-badge sync-${status}`;
+    if (status === 'saved') {
+      textEl.textContent = message || '저장됨 (GitHub 동기화)';
+      badge.title = '모든 변경 사항이 깃허브에 최신 버전으로 저장되었습니다.';
+    } else if (status === 'modified') {
+      textEl.textContent = message || '수정됨 (미저장)';
+      badge.title = '미저장 변경 사항이 있습니다. [☁️ 깃허브에 저장]을 눌러 커밋하세요.';
+    } else if (status === 'syncing') {
+      textEl.textContent = message || '동기화 중...';
+      badge.title = '깃허브와 데이터를 송수신하는 중입니다.';
+    } else if (status === 'error') {
+      textEl.textContent = message || '저장 오류';
+      badge.title = '저장에 실패했습니다. 토큰이나 네트워크를 확인하세요.';
+    }
+  },
+
+  markModified() {
+    this.setStatus('modified');
+
+    clearTimeout(this.autoSaveTimer);
+    this.autoSaveTimer = setTimeout(() => {
+      this.executeAutoSave();
+    }, 600);
+  },
+
+  markSaved(msg) {
+    this.setStatus('saved', msg);
+    localStorage.removeItem('pic_autosave_svg');
+    const restoreBtn = document.getElementById('autoRestoreBtn');
+    if (restoreBtn) restoreBtn.style.display = 'none';
+  },
+
+  markSyncing(msg) {
+    this.setStatus('syncing', msg);
+  },
+
+  markError(msg) {
+    this.setStatus('error', msg);
+  },
+
+  executeAutoSave() {
+    try {
+      const activeSvg = window.PicEditor.utils.getActiveSvg();
+      if (!activeSvg) return;
+      const svgStr = new XMLSerializer().serializeToString(activeSvg);
+      localStorage.setItem('pic_autosave_svg', svgStr);
+      localStorage.setItem('pic_autosave_time', String(Date.now()));
+      localStorage.setItem('pic_autosave_name', window.PicEditor.state.currentDiagramName || '');
+
+      const restoreBtn = document.getElementById('autoRestoreBtn');
+      if (restoreBtn) restoreBtn.style.display = 'inline-flex';
+    } catch (e) {
+      console.warn('로컬 자동 백업 중 경고:', e);
+    }
+  },
+
+  checkAutoSaveOnLoad() {
+    const savedSvg = localStorage.getItem('pic_autosave_svg');
+    const savedTime = localStorage.getItem('pic_autosave_time');
+    const restoreBtn = document.getElementById('autoRestoreBtn');
+    if (savedSvg && savedTime && restoreBtn) {
+      restoreBtn.style.display = 'inline-flex';
+      const timeStr = new Date(parseInt(savedTime)).toLocaleTimeString();
+      restoreBtn.title = `최근 미저장 임시저장본(${timeStr})을 복원합니다.`;
+    }
+  },
+
+  restoreAutoSaved() {
+    const savedSvg = localStorage.getItem('pic_autosave_svg');
+    const savedName = localStorage.getItem('pic_autosave_name');
+    if (!savedSvg) {
+      alert('복원할 임시저장본이 없습니다.');
+      return;
+    }
+    if (confirm('최근 미저장 작업 내용을 캔버스에 복원하시겠습니까?')) {
+      const success = window.PicEditor.storage.importHtmlCode(savedSvg, false);
+      if (success) {
+        if (savedName) window.PicEditor.state.currentDiagramName = savedName;
+        this.setStatus('modified', '임시저장본 복구됨 (미저장)');
+        alert('최근 작업 내용이 성공적으로 복구되었습니다!\n수정 완료 후 [☁️ 깃허브에 저장]을 눌러주세요.');
+      }
+    }
+  }
+};
+
+window.restoreAutoSaved = () => window.PicEditor.sync.restoreAutoSaved();
 
 // 전역 단축 함수
 window.openGitHubSaveModal = () => window.PicEditor.github.openSaveModal();

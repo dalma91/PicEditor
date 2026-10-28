@@ -15,5 +15,10 @@ window.addEventListener('DOMContentLoaded', () => {
     window.PicEditor.canvas.updateAllTextBgBoxes();
   }, 100);
 
+  // 4. 로컬 미저장 임시저장본 확인
+  if (window.PicEditor.sync) {
+    window.PicEditor.sync.checkAutoSaveOnLoad();
+  }
+
   console.log('물리 마스터 에디터 스튜디오가 성공적으로 초기화되었습니다.');
 });

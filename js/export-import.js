@@ -394,6 +394,42 @@ window.PicEditor.storage = {
       a.click();
     };
     img.src = url;
+  },
+
+  /**
+   * 캔버스 현재 도면을 HTML 파일로 컴퓨터에 직접 다운로드 (로컬 백업)
+   */
+  downloadHtmlFile() {
+    const activeSvg = window.PicEditor.utils.getActiveSvg();
+    if (!activeSvg) {
+      alert('SVG 캔버스를 찾을 수 없습니다.');
+      return;
+    }
+
+    window.PicEditor.utils.deselectAll();
+    const svgStr = new XMLSerializer().serializeToString(activeSvg);
+    const fileName = window.PicEditor.state.currentDiagramName || `diagram_${new Date().toISOString().replace(/[-:T]/g, '').slice(0, 14)}`;
+
+    const htmlContent = `<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>${fileName}</title>
+</head>
+<body>
+${svgStr}
+</body>
+</html>`;
+
+    const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${fileName}.html`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
   }
 };
 
@@ -402,6 +438,7 @@ window.loadImageFile = (f, auto) => window.PicEditor.storage.loadImageFile(f, au
 window.onImageFileInput = (e) => window.PicEditor.storage.onImageFileInput(e);
 window.loadExternalHTML = (e) => window.PicEditor.storage.loadExternalHTML(e);
 window.downloadPNG = () => window.PicEditor.storage.downloadPNG();
+window.downloadHtmlFile = () => window.PicEditor.storage.downloadHtmlFile();
 window.openHtmlModal = () => window.PicEditor.storage.openHtmlModal();
 window.closeHtmlModal = () => window.PicEditor.storage.closeHtmlModal();
 window.applyPastedHtml = (append) => window.PicEditor.storage.applyPastedHtml(append);

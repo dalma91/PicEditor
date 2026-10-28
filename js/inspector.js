@@ -83,6 +83,7 @@ window.PicEditor.inspector = {
     if (target.tagName.toLowerCase() === 'image') {
       const op = Math.max(0.05, Math.min(1.0, parseFloat(val) / 100));
       target.setAttribute('opacity', op);
+      if (window.PicEditor.sync) window.PicEditor.sync.markModified();
     }
   },
 
@@ -96,6 +97,7 @@ window.PicEditor.inspector = {
     const parent = target.parentNode;
     if (parent) {
       parent.appendChild(target);
+      if (window.PicEditor.sync) window.PicEditor.sync.markModified();
     }
   },
 
@@ -106,6 +108,7 @@ window.PicEditor.inspector = {
     const parent = target.parentNode;
     if (parent) {
       parent.insertBefore(target, parent.firstChild);
+      if (window.PicEditor.sync) window.PicEditor.sync.markModified();
     }
   },
 
@@ -141,7 +144,8 @@ window.PicEditor.inspector = {
     const scaleNum = document.getElementById('textScaleNum');
     const bgSelect = document.getElementById('textBgModeSelect');
 
-    if (scaleRange) scaleRange.value = pct;
+    // 슬라이더 범위 (0 ~ 200, 중앙 100%)
+    if (scaleRange) scaleRange.value = Math.min(200, Math.max(0, pct));
     if (scaleNum) scaleNum.value = pct;
 
     let mode = 'transparent';
@@ -152,7 +156,7 @@ window.PicEditor.inspector = {
   },
 
   /**
-   * 글자 크기 (%) 조절
+   * 글자 크기 (%) 조절 (0~200% 범위, 100%가 슬라이더 정중앙 위치)
    */
   onTextScaleSlider(val) {
     const numEl = document.getElementById('textScaleNum');
@@ -164,7 +168,7 @@ window.PicEditor.inspector = {
     if (val === '') return;
     const num = parseFloat(val);
     const rangeEl = document.getElementById('textScaleRange');
-    if (rangeEl) rangeEl.value = num;
+    if (rangeEl) rangeEl.value = Math.min(200, Math.max(0, num));
     this.applyTextScale(num);
   },
 
@@ -172,7 +176,7 @@ window.PicEditor.inspector = {
     const state = window.PicEditor.state;
     if (!state.selectedElement || !state.selectedElement.classList.contains('text-el')) return;
 
-    const pct = parseInt(val);
+    const pct = Math.max(10, parseInt(val) || 100);
     const scale = pct / 100;
     const wrap = state.selectedElement.closest('.text-wrap');
     const t = window.PicEditor.utils.parseTransform(wrap);
@@ -182,6 +186,8 @@ window.PicEditor.inspector = {
     t.sx = scale * signX;
     t.sy = scale * signY;
     window.PicEditor.utils.setTransform(wrap, t);
+
+    if (window.PicEditor.sync) window.PicEditor.sync.markModified();
   },
 
   /**
@@ -215,6 +221,7 @@ window.PicEditor.inspector = {
       state.selectedElement.setAttribute('stroke', '#FFFFFF');
       state.selectedElement.setAttribute('stroke-width', '5px');
     }
+    if (window.PicEditor.sync) window.PicEditor.sync.markModified();
   },
 
   /**
@@ -233,6 +240,7 @@ window.PicEditor.inspector = {
     const signX = t.sx < 0 ? -1 : 1;
     t.sx = (targetW / bbox.width) * signX;
     window.PicEditor.utils.setTransform(target, t);
+    if (window.PicEditor.sync) window.PicEditor.sync.markModified();
   },
 
   onObjectHeightInput(val) {
@@ -248,6 +256,7 @@ window.PicEditor.inspector = {
     const signY = t.sy < 0 ? -1 : 1;
     t.sy = (targetH / bbox.height) * signY;
     window.PicEditor.utils.setTransform(target, t);
+    if (window.PicEditor.sync) window.PicEditor.sync.markModified();
   },
 
   /**
@@ -285,6 +294,7 @@ window.PicEditor.inspector = {
     const t = window.PicEditor.utils.parseTransform(target);
     t.r = angle;
     window.PicEditor.utils.setTransform(target, t);
+    if (window.PicEditor.sync) window.PicEditor.sync.markModified();
   },
 
   /**
@@ -301,6 +311,7 @@ window.PicEditor.inspector = {
     if (direction === 'H') t.sx *= -1;
     if (direction === 'V') t.sy *= -1;
     window.PicEditor.utils.setTransform(target, t);
+    if (window.PicEditor.sync) window.PicEditor.sync.markModified();
   },
 
   /**
@@ -317,6 +328,7 @@ window.PicEditor.inspector = {
       }
       target.remove();
       window.PicEditor.utils.deselectAll();
+      if (window.PicEditor.sync) window.PicEditor.sync.markModified();
     } else {
       alert('삭제할 요소를 먼저 클릭하여 선택해 주세요.');
     }

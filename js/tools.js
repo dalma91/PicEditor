@@ -116,6 +116,7 @@ window.PicEditor.tools = {
     const num = state.activeTab;
     this.applyArrowMarkers(state.selectedElement, arrowDir, num);
     window.PicEditor.interaction.initMovableEvents();
+    if (window.PicEditor.sync) window.PicEditor.sync.markModified();
     alert('선택한 직선이 화살표로 변경되었습니다!');
   }
 };

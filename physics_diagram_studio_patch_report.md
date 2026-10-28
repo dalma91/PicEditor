@@ -18,6 +18,7 @@
 
 | 패치 ID | 날짜 | 커밋 SHA | 주요 수정 내역 | 상태 |
 | :--- | :--- | :--- | :--- | :---: |
+| **PATCH-004** | 2026-10-28 | `진행 중` | **실시간 동기화 상태 표시등, 로컬 자동백업, 콤팩트 SVG 아이콘 UI, 100% 슬라이더 중앙 정렬**<br>- 캔버스 상단 동기화 상태 뱃지(저장됨/수정됨/동기화중/오류) 탑재<br>- 미저장 작업 로컬 자동백업(Auto-Save) 및 원클릭 복구 지원<br>- 버튼 크기 슬림화 및 직관적인 인라인 SVG 벡터 아이콘 적용 (2열 그리드 배치)<br>- 글자 크기 슬라이더 100% 정중앙 위치 및 시각 눈금 틱 라벨 구현<br>- 원클릭 로컬 HTML 파일 즉시 다운로드 기능 추가 | ✅ 완료 |
 | **PATCH-003** | 2026-10-28 | `9376987` | **깃허브 저장 후 재로딩 시 이전 파일 반환 및 썸네일 불변 버그 해결**<br>- Fastly CDN 300초 캐시 우회 (GitHub Contents API 0초 직접 수신)<br>- 썸네일 Git SHA 캐시 버스터 적용 및 57개 전수 고해상도 벡터 PNG 갱신<br>- 한글 파일명 URL 인코딩 (`encodeApiPath`) 및 기존 도면 덮어쓰기 상태 추적 | ✅ 완료 |
 | **PATCH-002** | 2026-10-28 | `dc1cb5b` | **성균관대 물리 심층면접 모의 문항 57종 100% 완전 벡터화**<br>- 비트맵(`<image>`) 잔재 전면 제거 및 순수 SVG 구조화<br>- 50여 종 일본어 물리 용어 표준 한국어 물리 용어로 전수 번역 치환 | ✅ 완료 |
 | **PATCH-001** | 2026-10-28 | `fa0739e` | **GitHub REST API 연동 및 시각적 썸네일 보관함 갤러리 구현**<br>- 캔버스 도면 및 썸네일 원클릭 GitHub 자동 커밋<br>- 썸네일 그리드 갤러리 모달 및 실시간 키워드 검색 엔진 탑재 | ✅ 완료 |
@@ -150,10 +151,72 @@ if (apiRes.ok) {
 
 ---
 
+## 🔍 [PATCH-004] 동기화 상태 표시등(Sync Badge), 로컬 자동백업, 콤팩트 SVG 아이콘 UI, 100% 슬라이더 중앙 정렬
+
+### 1. 이슈 개요 및 사용자 요구사항
+- **보고 일시:** 2026-10-28 20:10 KST
+- **사용자 요구사항:**
+  1. **동기화 상태 표시등(제안 3):** 현재 도면이 깃허브에 저장되었는지, 미저장 수정 상태인지 한눈에 알 수 있는 시각적 표시등 구현.
+  2. **효율적 추가 제안 반영:** 미저장 작업 보호를 위한 로컬 자동 백업(Auto-Save) 및 1초 원클릭 복원 기능 탑재, 오프라인 및 간편 저장을 위한 원클릭 로컬 HTML 다운로드 지원.
+  3. **버튼 콤팩트화 및 시각적 아이콘 그래픽화:** 기존 버튼이 너무 크고 세로로 긴 문제를 개선하여 크기를 슬림하게 축소하고, 직관적인 SVG 벡터 아이콘을 텍스트와 함께 배치하여 직관성 극대화.
+  4. **글자 크기 슬라이더 100% 중앙 정렬:** 글자 크기 슬라이더 바에서 100%가 슬라이더의 정확한 정중앙(50% 위치)에 오도록 수정 및 하단 눈금 표시.
+
+---
+
+### 2. 기술적 해결 조치 (Technical Implementation)
+
+#### ① 실시간 저장/동기화 상태 표시등 (Sync Indicator) & 로컬 자동 백업
+- [js/github.js](file:///E:/Git/PicEditor/js/github.js) 내 `window.PicEditor.sync` 모듈 구현:
+  - 캔버스 정보 바에 4가지 동기화 상태 뱃지 제공:
+    - 🟢 `저장됨 (GitHub 동기화)`: 깃허브에 커밋 완료되어 변경 사항이 없는 최신 상태
+    - 🟠 `수정됨 (미저장)`: 캔버스 내 이동, 크기, 회전, 반전, 작도, 텍스트 편집 등 변경 발생 상태
+    - 🔵 `동기화 중...`: 깃허브 API 업로드/다운로드 통신 중
+    - 🔴 `저장 오류`: 네트워크 단절 또는 토큰 권한 오류 발생 상태
+  - 캔버스 변형이 발생할 때마다 0.6초 디바운스로 `localStorage`에 현재 SVG 코드를 실시간 자동 임시저장.
+  - 새로고침이나 탭 닫힘 시 상단에 **`[🔄 임시저장본 복구]`** 버튼이 자동 노출되어 작업 내용 유실을 원천 차단.
+
+#### ② 버튼 슬림화 및 직관적 SVG 벡터 그래픽 아이콘 적용 (2열 그리드 레이아웃)
+- 사이드바 버튼을 모던 그래픽 툴 스타일로 슬림화:
+  - 패딩: `5px 9px`, 폰트: `11.5px`, 최소 높이: `29px`
+  - 2열 그리드(`sidebar-btn-grid`) 레이아웃을 도입하여 세로 스크롤을 50% 이상 단축.
+  - 각 버튼 내부에 선명한 14px 인라인 SVG 벡터 아이콘 탑재:
+    - 그림 올리기(사진), 보관함(갤러리 카드), HTML 코드(태그), HTML 파일(문서), 캔버스 비우기(지우개), 선택/편집(커서), 선택 해제(X), 직선↔화살표(방향 전환), 좌우/상하 반전(대칭축), 깃허브 저장(클라우드 업로드), HTML 다운(디스켓), PNG 다운(이미지 다운), 깃허브 설정(기어), HTML 복사(클립보드), 선택 삭제(휴지통).
+
+#### ③ 글자 크기 슬라이더 100% 정중앙 위치 및 시각적 눈금 틱 바
+- [index.html](file:///E:/Git/PicEditor/index.html) & [PicEditor.html](file:///E:/Git/PicEditor/PicEditor.html):
+  - 슬라이더 범위를 `min="0" max="200" step="5" value="100"`로 개편:
+  - 수학적 중앙값 `(0 + 200) / 2 = 100%`가 슬라이더의 물리적 정중앙(50% 지점)에 정확히 위치함.
+  - 슬라이더 하단에 `0% --------- ▲ 100% (기본) --------- 200%` 눈금 틱 라벨을 배치하여 시각적 직관성 확보.
+- [js/inspector.js](file:///E:/Git/PicEditor/js/inspector.js):
+  - 최소 크기 10% 클램핑으로 0% 조작 시 텍스트 소멸 방지.
+  - 숫자 입력창(`textScaleNum`)은 10% ~ 1000%까지 자유 입력 가능하도록 유지.
+
+#### ④ 원클릭 로컬 HTML 도면 파일 즉시 다운로드 (`downloadHtmlFile`)
+- [js/export-import.js](file:///E:/Git/PicEditor/js/export-import.js):
+  - GitHub PAT 설정이나 로그인 없이도 현재 캔버스 도면을 클릭 한 번으로 `${도면명}.html` 파일로 즉시 컴퓨터에 다운로드할 수 있는 원클릭 버튼 제공.
+
+---
+
+### 3. 변경된 파일 목록 (Files Modified)
+
+| 파일 경로 | 주요 변경 내용 |
+| :--- | :--- |
+| [css/style.css](file:///E:/Git/PicEditor/css/style.css) | `.canvas-info-bar`, `.sync-badge`, `.restore-badge-btn`, 슬림 버튼 및 `.btn-icon`, `.sidebar-btn-grid`, `.slider-ticks` 스타일 추가 |
+| [index.html](file:///E:/Git/PicEditor/index.html) | 상단 동기화 상태바 및 복원 버튼, 2열 슬림 아이콘 버튼 레이아웃, 0~200% 중앙 정렬 슬라이더 및 눈금 라벨 적용 |
+| [PicEditor.html](file:///E:/Git/PicEditor/PicEditor.html) | `index.html`과 100% 동일한 UI 및 마크업 동기화 |
+| [js/github.js](file:///E:/Git/PicEditor/js/github.js) | `window.PicEditor.sync` 실시간 동기화 상태 관리자 및 로컬 자동 백업(Auto-Save)/복원 로직 구현 |
+| [js/inspector.js](file:///E:/Git/PicEditor/js/inspector.js) | 0~200% 슬라이더 중앙값 동기화 및 모든 속성 변경 시 `markModified()` 호출 연동 |
+| [js/export-import.js](file:///E:/Git/PicEditor/js/export-import.js) | `downloadHtmlFile()` 원클릭 로컬 HTML 다운로드 함수 추가 |
+| [js/tools.js](file:///E:/Git/PicEditor/js/tools.js) | 화살표 변환 시 `markModified()` 상태 갱신 연동 |
+| [js/interaction.js](file:///E:/Git/PicEditor/js/interaction.js) | 마우스 드래그 및 신규 도형 작도 완료 시 `markModified()` 상태 갱신 연동 |
+| [js/app.js](file:///E:/Git/PicEditor/js/app.js) | 초기 구동 시 미저장 로컬 임시저장본 자동 확인 및 복구 버튼 활성화 |
+
+---
+
 ## 📝 향후 추가 수정 시 업데이트 지침 (Maintenance Rules)
 
 향후 PicEditor에 새로운 버그 수정이나 기능 개선 작업이 발생할 경우, 다음 규칙에 따라 본 문서를 지속적으로 갱신합니다:
 
-1. **패치 ID 부여:** 상단 요약 표에 `PATCH-004`, `PATCH-005` 순으로 일련번호를 추가하고 날짜, 커밋 SHA, 핵심 내용을 기록합니다.
+1. **패치 ID 부여:** 상단 요약 표에 `PATCH-005`, `PATCH-006` 순으로 일련번호를 추가하고 날짜, 커밋 SHA, 핵심 내용을 기록합니다.
 2. **상세 섹션 추가:** 이슈 개요, 근본 원인 분석, 기술적 해결 내역, 변경 파일, 테스트 결과를 체계적으로 기술합니다.
 3. **코드 및 문서 동기화:** README.md 및 개발 보고서(`physics_diagram_studio_development_report.md`)와의 버전 및 링크 일관성을 유지합니다.
