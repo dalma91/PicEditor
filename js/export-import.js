@@ -13,12 +13,26 @@ window.PicEditor.storage = {
     if (!file) return;
 
     const reader = new FileReader();
+    reader.onerror = (err) => {
+      console.error('FileReader 오류:', err);
+      alert('이미지 파일을 읽는 중 오류가 발생했습니다.');
+    };
+
     reader.onload = (e) => {
       const dataUrl = e.target.result;
       const img = new Image();
+      
+      img.onerror = (err) => {
+        console.error('Image 디코딩 오류:', err);
+        alert('이미지를 디코딩할 수 없습니다. 유효한 이미지 파일인지 확인해 주세요.');
+      };
+
       img.onload = () => {
         const activeSvg = window.PicEditor.utils.getActiveSvg();
-        if (!activeSvg) return;
+        if (!activeSvg) {
+          alert('SVG 캔버스를 찾을 수 없습니다.');
+          return;
+        }
 
         let mainGrp = activeSvg.querySelector('.main-diagram');
         if (!mainGrp) {
@@ -27,42 +41,61 @@ window.PicEditor.storage = {
           activeSvg.appendChild(mainGrp);
         }
 
-        let imgW = img.naturalWidth || img.width || 600;
-        let imgH = img.naturalHeight || img.height || 400;
+        const imgW = img.naturalWidth || img.width || 800;
+        const imgH = img.naturalHeight || img.height || 600;
 
-        // 캔버스 크기를 이미지에 맞추기 (가로 200~2000px 범위 자동 적응)
+        // 1. 캔버스 해상도를 이미지 원본 크기에 맞춤
         if (autoResizeCanvas) {
-          const vbW = Math.max(imgW, 400);
-          const vbH = Math.max(imgH, 300);
-          activeSvg.setAttribute('viewBox', `0 0 ${vbW} ${vbH}`);
-          window.PicEditor.canvas.updateCanvasInfo();
+          activeSvg.setAttribute('viewBox', `0 0 ${imgW} ${imgH}`);
+          const wInput = document.getElementById('canvasWidthInput');
+          const hInput = document.getElementById('canvasHeightInput');
+          const sizeDisplay = document.getElementById('canvasSizeDisplay');
+          if (wInput) wInput.value = imgW;
+          if (hInput) hInput.value = imgH;
+          if (sizeDisplay) sizeDisplay.textContent = `${imgW} × ${imgH} px`;
         }
 
+        // 2. 초기 기본 샘플(천장 실과 질점계)이 남아있다면 깨끗하게 비우기
+        const existingSample = mainGrp.querySelector('rect[fill="#E0E0E0"]');
+        if (existingSample) {
+          mainGrp.innerHTML = '';
+          const textLayer = activeSvg.querySelector('.text-layer');
+          if (textLayer) textLayer.innerHTML = '';
+        }
+
+        // 3. SVG <image> 요소 생성 및 모든 호환 속성 부여
         const svgImg = document.createElementNS("http://www.w3.org/2000/svg", "image");
-        svgImg.setAttributeNS("http://www.w3.org/1999/xlink", "href", dataUrl);
-        svgImg.setAttribute("href", dataUrl);
-        svgImg.setAttribute("x", "0");
-        svgImg.setAttribute("y", "0");
-        svgImg.setAttribute("width", imgW);
-        svgImg.setAttribute("height", imgH);
-        svgImg.setAttribute("class", "movable image-el");
-        svgImg.setAttribute("transform", "translate(0,0) scale(1,1) rotate(0)");
-        svgImg.setAttribute("opacity", "1");
+        svgImg.setAttribute('href', dataUrl);
+        svgImg.setAttribute('xlink:href', dataUrl);
+        svgImg.setAttributeNS('http://www.w3.org/1999/xlink', 'href', dataUrl);
+        svgImg.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', dataUrl);
+        svgImg.setAttribute('x', '0');
+        svgImg.setAttribute('y', '0');
+        svgImg.setAttribute('width', String(imgW));
+        svgImg.setAttribute('height', String(imgH));
+        svgImg.setAttribute('class', 'movable image-el');
+        svgImg.setAttribute('transform', 'translate(0,0) scale(1,1) rotate(0)');
+        svgImg.setAttribute('opacity', '1');
+        svgImg.style.pointerEvents = 'auto';
 
-        // 이미지는 도면의 밑바탕이 되도록 배경(맨 뒤)에 배치
-        mainGrp.insertBefore(svgImg, mainGrp.firstChild);
+        // 캔버스에 추가 (화면 맨 앞에 바로 보이도록 추가)
+        mainGrp.appendChild(svgImg);
 
+        // 4. 이벤트 등록 및 선택 상태 활성화
         window.PicEditor.interaction.initMovableEvents();
 
-        // 새로 추가된 이미지 자동 선택
-        setTimeout(() => {
-          svgImg.dispatchEvent(new MouseEvent('click', { bubbles: true }));
-        }, 60);
+        window.PicEditor.utils.deselectAll();
+        window.PicEditor.state.selectedElement = svgImg;
+        svgImg.classList.add('selected');
+        window.PicEditor.inspector.syncUItoSelected();
 
-        console.log(`이미지 로드 완료: ${imgW}x${imgH}px`);
+        console.log(`그림 파일 로드 성공: ${imgW}x${imgH}px`);
+        alert(`그림("${file.name || '이미지'}")이 캔버스에 성공적으로 표시되었습니다!\n(해상도: ${imgW} × ${imgH} px)`);
       };
+
       img.src = dataUrl;
     };
+
     reader.readAsDataURL(file);
   },
 
@@ -70,12 +103,10 @@ window.PicEditor.storage = {
    * 그림 파일 인풋 변경 이벤트 핸들러
    */
   onImageFileInput(event) {
-    const file = event.target.files[0];
+    const file = event.target.files && event.target.files[0];
     if (file) {
       this.loadImageFile(file, true);
-      alert(`그림("${file.name}")이 캔버스에 추가되었습니다!\n마우스로 위치를 이동하거나 크기, 회전, 투명도를 조절할 수 있습니다.`);
     }
-    event.target.value = '';
   },
 
   /**
@@ -238,7 +269,7 @@ window.PicEditor.storage = {
    * 외부 파일에서 HTML/SVG 불러오기
    */
   loadExternalHTML(event) {
-    const file = event.target.files[0];
+    const file = event.target.files && event.target.files[0];
     if (!file) return;
 
     // 만약 이미지 파일인 경우 이미지 로더로 자동 전환

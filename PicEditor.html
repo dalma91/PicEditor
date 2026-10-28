@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>물리 마스터 에디터 스튜디오 v14</title>
-  <link rel="stylesheet" href="css/style.css?v=20261028_4">
+  <link rel="stylesheet" href="css/style.css?v=20261028_6">
   <style>
     /* 브라우저 CSS 캐시 방지 및 강제 2열 그리드 레이아웃 (좌: 캔버스, 우: 메뉴) */
     .app-layout {
@@ -55,7 +55,7 @@
             </marker>
           </defs>
           <g class="main-diagram">
-            <!-- 기본 안내 및 샘플 요소 (클릭하여 자유롭게 편집/삭제 가능) -->
+            <!-- 기본 안내 및 샘플 요소 (그림 업로드 시 자동으로 깔끔하게 교체됩니다) -->
             <g class="movable" transform="translate(75,50) scale(1,1) rotate(0)">
               <rect x="80" y="40" width="490" height="30" fill="#E0E0E0" stroke="#000000" stroke-width="2.0" />
               <path d="M 80,40 L 110,70 M 110,40 L 140,70 M 140,40 L 170,70 M 170,40 L 200,70 M 200,40 L 230,70 M 230,40 L 260,70 M 260,40 L 290,70 M 290,40 L 320,70 M 320,40 L 350,70 M 350,40 L 380,70 M 380,40 L 410,70 M 410,40 L 440,70 M 440,40 L 470,70 M 470,40 L 500,70 M 500,40 L 530,70 M 530,40 L 560,70" stroke="#B0B0B0" stroke-width="1.5" />
@@ -82,14 +82,14 @@
       <!-- 1. 그림(이미지) & HTML 파일 올리기 -->
       <section class="sidebar-section">
         <h3>🖼️ 그림(이미지) / HTML 올리기</h3>
-        <input type="file" id="imgFileInput" style="display:none" accept="image/*" onchange="onImageFileInput(event)">
+        <input type="file" id="imgFileInput" style="display:none" accept="image/*" onclick="this.value=null" onchange="onImageFileInput(event)">
         <button type="button" class="image-btn full-btn" onclick="document.getElementById('imgFileInput').click()">🖼️ 그림(이미지) 업로드</button>
 
         <div class="sidebar-btn-row">
           <button type="button" class="info-btn" onclick="openHtmlModal()">📝 HTML 코드</button>
           <button type="button" class="secondary" onclick="document.getElementById('htmlFileInput').click()">📂 HTML 파일</button>
         </div>
-        <input type="file" id="htmlFileInput" style="display:none" accept=".html,.htm" onchange="loadExternalHTML(event)">
+        <input type="file" id="htmlFileInput" style="display:none" accept=".html,.htm" onclick="this.value=null" onchange="loadExternalHTML(event)">
 
         <button type="button" class="danger full-btn" onclick="clearCanvas()">🧹 캔버스 비우기</button>
         <div class="hint-box">
@@ -258,14 +258,14 @@
     </div>
   </div>
 
-  <!-- 자바스크립트 모듈 로드 -->
-  <script src="js/state.js"></script>
-  <script src="js/utils.js"></script>
-  <script src="js/canvas.js"></script>
-  <script src="js/tools.js"></script>
-  <script src="js/inspector.js"></script>
-  <script src="js/interaction.js"></script>
-  <script src="js/export-import.js"></script>
-  <script src="js/app.js"></script>
+  <!-- 자바스크립트 모듈 로드 (강제 캐시 갱신 파라미터 적용) -->
+  <script src="js/state.js?v=20261028_6"></script>
+  <script src="js/utils.js?v=20261028_6"></script>
+  <script src="js/canvas.js?v=20261028_6"></script>
+  <script src="js/tools.js?v=20261028_6"></script>
+  <script src="js/inspector.js?v=20261028_6"></script>
+  <script src="js/interaction.js?v=20261028_6"></script>
+  <script src="js/export-import.js?v=20261028_6"></script>
+  <script src="js/app.js?v=20261028_6"></script>
 </body>
 </html>
