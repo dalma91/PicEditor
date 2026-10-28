@@ -98,3 +98,9 @@
 1. **자동 수식 렌더러(KaTeX / MathJax SVG) 통합:** 첨자 및 그리스 문자를 브라우저 네이티브 KaTeX 벡터 패스로 자동 변환하여 타이포그래피 정밀도 극대화.
 2. **다중 객체 그룹화/그룹 해제(Group/Ungroup):** 복잡한 기계 장치(예: 피스톤+로드+추)를 단일 묶음 객체로 다루고 필요 시 분해할 수 있는 계층 구조 관리 기능.
 3. **SVG 클립보드 복사/붙여넣기:** 외부 드로잉 툴(Illustrator, PowerPoint, Inkscape) 간 벡터 객체 직접 복사·붙여넣기 지원.
+
+---
+
+## 5. 관련 문서 및 패치 보고서
+- **패치 및 수정 보고서:** [physics_diagram_studio_patch_report.md](file:///E:/Git/PicEditor/physics_diagram_studio_patch_report.md) (버그 수정, 캐시 최적화, 릴리즈 히스토리 지속 누적 관리)
+- **도면 복원 지침서:** [physics_drawing_guide.md](file:///E:/Git/PicEditor/physics_drawing_guide.md) (순수 벡터 작도 원칙 및 한글 물리 용어 번역 사전)

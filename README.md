@@ -30,6 +30,7 @@ PicEditor/
 │   ├── *.png             # 400px 미리보기 썸네일 이미지
 │   └── manifest.json     # 갤러리 썸네일 메타데이터 색인 파일
 ├── physics_diagram_studio_development_report.md # 개발 및 기술 진화 과정 상세 보고서
+├── physics_diagram_studio_patch_report.md       # 버그 수정 및 실시간 패치 보고서
 ├── physics_drawing_guide.md                     # 물리 시험지 도면 정밀 복원 지침서
 └── README.md
 ```
