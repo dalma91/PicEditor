@@ -2,191 +2,21 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>물리 마스터 에디터 스튜디오 v14</title>
-  <style>
-    body {
-      background-color: #f0f2f5;
-      font-family: sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 20px;
-      margin: 0;
-    }
-    .toolbar {
-      background: #fff;
-      padding: 12px 20px;
-      border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      margin-bottom: 15px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      align-items: center;
-      position: sticky;
-      top: 10px;
-      z-index: 100;
-      max-width: 1350px;
-    }
-    
-    .text-bg-rect {
-      display: none;
-      fill: #ffffff;
-      stroke: #cccccc;
-      stroke-width: 0.5;
-    }
-    .text-wrap.bg-box-white .text-bg-rect {
-      display: block;
-    }
-
-    .text-inspector {
-      background: #e8f0fe;
-      border: 2px solid #1a73e8;
-      padding: 8px 15px;
-      border-radius: 8px;
-      display: none;
-      align-items: center;
-      gap: 10px;
-      width: 100%;
-      box-sizing: border-box;
-    }
-    .text-inspector.active {
-      display: flex;
-    }
-    .tab-bar {
-      display: flex;
-      gap: 5px;
-      margin-bottom: 10px;
-      width: 100%;
-      max-width: 800px;
-    }
-    .tab-btn {
-      padding: 8px 16px;
-      font-size: 14px;
-      font-weight: bold;
-      background: #e0e0e0;
-      color: #333;
-      border: none;
-      border-radius: 6px 6px 0 0;
-      cursor: pointer;
-    }
-    .tab-btn.active {
-      background: #fff;
-      color: #1a73e8;
-      border-top: 3px solid #1a73e8;
-    }
-    .card {
-      background: #fff;
-      border-radius: 0 10px 10px 10px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      padding: 20px;
-      margin-bottom: 20px;
-      width: 100%;
-      max-width: 800px;
-      text-align: center;
-      display: none;
-    }
-    .card.active {
-      display: block;
-    }
-    .card h2 {
-      font-size: 16px;
-      margin-top: 0;
-      margin-bottom: 12px;
-      color: #333;
-      text-align: left;
-      border-bottom: 2px solid #1a73e8;
-      padding-bottom: 6px;
-    }
-    .canvas-info-bar {
-      font-size: 13px;
-      color: #5f6368;
-      margin-bottom: 8px;
-      text-align: right;
-      width: 100%;
-      max-width: 800px;
-      font-weight: bold;
-    }
-    svg {
-      background: #FFFFFF;
-      border: 1px solid #e0e0e0;
-      cursor: crosshair;
-      user-select: none;
-    }
-    svg.select-mode {
-      cursor: default;
-    }
-    .movable {
-      cursor: grab;
-      transform-origin: center;
-    }
-    .movable:active {
-      cursor: grabbing;
-    }
-    .selected {
-      outline: 2px dashed #1a73e8;
-      outline-offset: 4px;
-    }
-    button, select, input[type="range"], input[type="number"] {
-      padding: 6px 10px;
-      font-size: 12px;
-      font-weight: bold;
-      color: #fff;
-      background: #1a73e8;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-    input[type="number"] {
-      background: #fff;
-      color: #333;
-      border: 1px solid #ccc;
-      width: 55px;
-    }
-    button:hover { background: #1557b0; }
-    button.danger { background: #d93025; }
-    button.danger:hover { background: #b31412; }
-    button.secondary { background: #5f6368; }
-    button.secondary:hover { background: #3c4043; }
-    button.success { background: #137333; }
-    button.success.active-mode { background: #b80600; }
-    button.done-btn { background: #e37400; }
-    button.done-btn:hover { background: #b05700; }
-    .control-group {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      font-size: 12px;
-      background: #f8f9fa;
-      padding: 4px 8px;
-      border-radius: 6px;
-      border: 1px solid #dadce0;
-      color: #333;
-    }
-    .control-group input[type="range"] {
-      width: 50px;
-      padding: 0;
-      background: transparent;
-      cursor: pointer;
-    }
-    .control-group select {
-      background: #fff;
-      color: #333;
-      border: 1px solid #ccc;
-    }
-    .hint { font-size: 12px; color: #5f6368; width: 100%; }
-  </style>
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-  <div class="toolbar">
+  <!-- 상단 메인 툴바 -->
+  <header class="toolbar">
     <span class="hint">💡 <b>[글자 크기 %]</b> 입력 칸에 원하는 숫자를 직접 타이핑하여 정확한 크기로 조절하세요.</span>
     
     <button type="button" id="modeBtn" class="success" onclick="toggleMode()">🖱️ 모드: 선택/편집</button>
     <button type="button" class="done-btn" onclick="deselectAll()">✅ 선택 완료</button>
     
     <div class="control-group">
-      <label>도구:</label>
+      <label for="toolSelect">도구:</label>
       <select id="toolSelect" onchange="onToolChange()">
         <option value="line">직선</option>
         <option value="arrow">화살표</option>
@@ -195,7 +25,7 @@
     </div>
 
     <div class="control-group">
-      <label>선 종류:</label>
+      <label for="strokeStyleSelect">선 종류:</label>
       <select id="strokeStyleSelect">
         <option value="solid">실선</option>
         <option value="dashed">점선</option>
@@ -203,7 +33,7 @@
     </div>
 
     <div class="control-group" id="arrowOptionGroup">
-      <label>방향:</label>
+      <label for="arrowDirSelect">방향:</label>
       <select id="arrowDirSelect">
         <option value="end">오른쪽 끝 (→)</option>
         <option value="start">왼쪽 끝 (←)</option>
@@ -214,7 +44,7 @@
     </div>
 
     <div class="control-group" id="arcOptionGroup" style="display:none;">
-      <label>호 방향:</label>
+      <label for="arcDirSelect">호 방향:</label>
       <select id="arcDirSelect">
         <option value="right">오른쪽 / 위쪽 볼록</option>
         <option value="left">왼쪽 / 아래쪽 볼록</option>
@@ -225,23 +55,23 @@
     <button type="button" class="secondary" onclick="flipElement('H')">↔️ 반전</button>
     
     <div class="control-group">
-      <label>가로:</label>
+      <label for="objWidthNum">가로:</label>
       <input type="number" id="objWidthNum" min="5" max="2000" oninput="onObjectWidthInput(this.value)">
-      <label>세로:</label>
+      <label for="objHeightNum">세로:</label>
       <input type="number" id="objHeightNum" min="5" max="2000" oninput="onObjectHeightInput(this.value)">
     </div>
 
     <div class="control-group">
-      <label>회전:</label>
+      <label for="rotateRange">회전:</label>
       <input type="range" id="rotateRange" min="-180" max="180" step="1" value="0" oninput="onRotateSlider(this.value)">
       <input type="number" id="rotateNum" min="-360" max="360" step="1" value="0" oninput="onRotateNumber(this.value)">
       <label style="font-size:11px; font-weight:normal; cursor:pointer;"><input type="checkbox" id="snapCheck"> 45°</label>
     </div>
 
     <div class="control-group">
-      <label>캔버스 가로:</label>
+      <label for="canvasWidthInput">캔버스 가로:</label>
       <input type="number" id="canvasWidthInput" value="650" min="200" max="2000" onchange="resizeCanvas()">
-      <label>세로:</label>
+      <label for="canvasHeightInput">세로:</label>
       <input type="number" id="canvasHeightInput" value="420" min="200" max="2000" onchange="resizeCanvas()">
     </div>
 
@@ -250,17 +80,17 @@
     <button type="button" class="danger" onclick="deleteSelected()">🗑️ 삭제</button>
     <button type="button" onclick="downloadPNG()">PNG 다운로드</button>
 
-    <!-- 글자 선택 시 나타나는 전용 인스펙터 패널 (숫자 직접 입력 추가) -->
+    <!-- 글자 선택 시 나타나는 전용 인스펙터 패널 -->
     <div id="textInspector" class="text-inspector">
       <b>🔤 [선택한 글자 배경 옵션]</b>
       <div class="control-group">
-        <label>크기(%):</label>
+        <label for="textScaleRange">크기(%):</label>
         <input type="range" id="textScaleRange" min="50" max="300" step="5" value="100" oninput="onTextScaleSlider(this.value)">
         <input type="number" id="textScaleNum" min="10" max="1000" step="1" value="100" oninput="onTextScaleNumber(this.value)" style="width:55px;">
         <span>%</span>
       </div>
       <div class="control-group">
-        <label>배경 스타일:</label>
+        <label for="textBgModeSelect">배경 스타일:</label>
         <select id="textBgModeSelect" onchange="onChangeTextBgMode(this.value)">
           <option value="transparent">투명</option>
           <option value="box-white">박스 흰색 (내부 흰색 채우기)</option>
@@ -268,19 +98,21 @@
         </select>
       </div>
     </div>
-  </div>
+  </header>
 
+  <!-- 캔버스 정보 바 -->
   <div class="canvas-info-bar">
     편집 화면 크기: <span id="canvasSizeDisplay">650 × 420 px</span>
   </div>
 
-  <div class="tab-bar">
+  <!-- 탭 네비게이션 -->
+  <nav class="tab-bar">
     <button type="button" class="tab-btn active" onclick="switchTab(1)">그림 1: 천장 실과 질점계</button>
     <button type="button" class="tab-btn" onclick="switchTab(2)">그림 2: 단진자 운동 장치</button>
-  </div>
+  </nav>
 
-  <!-- 그림 1 카드 -->
-  <div id="card-1" class="card active">
+  <!-- 메인 편집 영역: 그림 1 카드 -->
+  <main id="card-1" class="card active">
     <h2>그림 1: 천장 고정 실과 질점계 (성대0002)</h2>
     <svg id="svg-editor-1" viewBox="0 0 650 420" width="100%" height="380" class="select-mode">
       <rect width="100%" height="100%" fill="#FFFFFF" />
@@ -324,10 +156,10 @@
         <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)"><rect class="text-bg-rect" rx="2"></rect><text class="text-el" x="38" y="220" font-family="'Times New Roman', serif" font-size="38" font-style="italic">h</text></g>
       </g>
     </svg>
-  </div>
+  </main>
 
-  <!-- 그림 2 카드 -->
-  <div id="card-2" class="card">
+  <!-- 메인 편집 영역: 그림 2 카드 -->
+  <section id="card-2" class="card">
     <h2>그림 2: 단진자 운동 장치 (그림 Ⅲ-2)</h2>
     <svg id="svg-editor-2" viewBox="0 0 330 398" width="100%" height="380" class="select-mode">
       <rect width="100%" height="100%" fill="#FFFFFF" />
@@ -355,574 +187,16 @@
         <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)"><rect class="text-bg-rect" rx="2"></rect><text class="text-el" x="115" y="376" font-family="'Batang', serif" font-size="42" text-anchor="middle">그림 Ⅲ － 2</text></g>
       </g>
     </svg>
-  </div>
+  </section>
 
-  <script>
-    let activeTab = 1;
-    let selectedElement = null;
-    let isDragging = false;
-    let startX, startY;
-    let isDrawMode = false;
-    let isDrawing = false;
-    let drawStart = { x: 0, y: 0 };
-    let tempShape = null;
-
-    function updateAllTextBgBoxes() {
-      [1, 2].forEach(num => {
-        let svg = document.getElementById(`svg-editor-${num}`);
-        if (!svg) return;
-        svg.querySelectorAll('.text-wrap').forEach(wrap => {
-          let textEl = wrap.querySelector('.text-el');
-          let bgRect = wrap.querySelector('.text-bg-rect');
-          if (textEl && bgRect) {
-            let bbox = textEl.getBBox();
-            bgRect.setAttribute('x', bbox.x - 4);
-            bgRect.setAttribute('y', bbox.y - 3);
-            bgRect.setAttribute('width', bbox.width + 8);
-            bgRect.setAttribute('height', bbox.height + 6);
-          }
-        });
-      });
-    }
-
-    window.addEventListener('DOMContentLoaded', () => {
-      updateAllTextBgBoxes();
-    });
-
-    function getActiveSvg() {
-      return document.getElementById(`svg-editor-${activeTab}`);
-    }
-
-    function switchTab(tabNum) {
-      activeTab = tabNum;
-      document.querySelectorAll('.tab-btn').forEach((btn, idx) => {
-        btn.classList.toggle('active', idx + 1 === tabNum);
-      });
-      document.querySelectorAll('.card').forEach((card, idx) => {
-        card.classList.toggle('active', idx + 1 === tabNum);
-      });
-      
-      updateCanvasInfo();
-      deselectAll();
-      setTimeout(updateAllTextBgBoxes, 50);
-    }
-
-    function deselectAll() {
-      if (selectedElement) {
-        let wrap = selectedElement.closest('.text-wrap') || selectedElement;
-        wrap.classList.remove('selected');
-        selectedElement = null;
-      }
-      document.getElementById('textInspector').classList.remove('active');
-    }
-
-    function updateCanvasInfo() {
-      let svg = getActiveSvg();
-      let vb = svg.viewBox.baseVal;
-      let w = vb.width || 650;
-      let h = vb.height || 420;
-      document.getElementById('canvasWidthInput').value = w;
-      document.getElementById('canvasHeightInput').value = h;
-      document.getElementById('canvasSizeDisplay').textContent = `${w} × ${h} px`;
-    }
-
-    function resizeCanvas() {
-      let w = parseInt(document.getElementById('canvasWidthInput').value) || 650;
-      let h = parseInt(document.getElementById('canvasHeightInput').value) || 420;
-      let svg = getActiveSvg();
-      svg.setAttribute('viewBox', `0 0 ${w} ${h}`);
-      updateCanvasInfo();
-    }
-
-    function toggleMode() {
-      isDrawMode = !isDrawMode;
-      let svg = getActiveSvg();
-      let modeBtn = document.getElementById('modeBtn');
-      if (isDrawMode) {
-        modeBtn.textContent = "✏️ 작도 모드 중";
-        modeBtn.classList.add('active-mode');
-        svg.classList.remove('select-mode');
-        deselectAll();
-      } else {
-        modeBtn.textContent = "🖱️ 선택/편집 모드";
-        modeBtn.classList.remove('active-mode');
-        svg.classList.add('select-mode');
-      }
-    }
-
-    function onToolChange() {
-      const tool = document.getElementById('toolSelect').value;
-      document.getElementById('arrowOptionGroup').style.display = (tool === 'arrow') ? 'flex' : 'none';
-      document.getElementById('arcOptionGroup').style.display = (tool === 'arc') ? 'flex' : 'none';
-    }
-    onToolChange();
-
-    function initMovableEvents() {
-      let svg = getActiveSvg();
-      svg.querySelectorAll('.movable').forEach(el => {
-        if (!el.getAttribute('transform')) {
-          el.setAttribute('transform', 'translate(0,0) scale(1,1) rotate(0)');
-        }
-
-        el.onclick = (e) => {
-          if (isDrawMode) return;
-          e.stopPropagation();
-          if (selectedElement) {
-            let prevWrap = selectedElement.closest('.text-wrap') || selectedElement;
-            prevWrap.classList.remove('selected');
-          }
-
-          let wrap = el.closest('.text-wrap') || el;
-          let textEl = wrap.querySelector('.text-el') || el;
-          selectedElement = textEl;
-          wrap.classList.add('selected');
-          syncUItoSelected();
-
-          if (wrap.classList.contains('text-wrap')) {
-            document.getElementById('textInspector').classList.add('active');
-            syncTextInspector();
-          } else {
-            document.getElementById('textInspector').classList.remove('active');
-          }
-        };
-
-        el.onmousedown = (e) => {
-          if (isDrawMode) return;
-          let wrap = el.closest('.text-wrap') || el;
-          let textEl = wrap.querySelector('.text-el') || el;
-          selectedElement = textEl;
-
-          svg.querySelectorAll('.movable').forEach(elem => {
-            let w = elem.closest('.text-wrap') || elem;
-            w.classList.remove('selected');
-          });
-          wrap.classList.add('selected');
-          syncUItoSelected();
-
-          if (wrap.classList.contains('text-wrap')) {
-            document.getElementById('textInspector').classList.add('active');
-            syncTextInspector();
-          } else {
-            document.getElementById('textInspector').classList.remove('active');
-          }
-
-          isDragging = true;
-          let pt = getSvgPoint(e, svg);
-          startX = pt.x;
-          startY = pt.y;
-        };
-      });
-    }
-
-    initMovableEvents();
-    updateCanvasInfo();
-    setTimeout(updateAllTextBgBoxes, 100);
-
-    [1, 2].forEach(num => {
-      let svg = document.getElementById(`svg-editor-${num}`);
-
-      svg.addEventListener('mousedown', (e) => {
-        if (!isDrawMode || num !== activeTab) return;
-        isDrawing = true;
-        let pt = getSvgPoint(e, svg);
-        drawStart = pt;
-
-        const tool = document.getElementById('toolSelect').value;
-        const strokeStyle = document.getElementById('strokeStyleSelect').value;
-        const arrowDir = document.getElementById('arrowDirSelect').value;
-        let mainGrp = svg.querySelector('.main-diagram');
-
-        if (tool === 'line' || tool === 'arrow') {
-          tempShape = document.createElementNS("http://www.w3.org/2000/svg", "line");
-          tempShape.setAttribute("x1", pt.x); tempShape.setAttribute("y1", pt.y);
-          tempShape.setAttribute("x2", pt.x); tempShape.setAttribute("y2", pt.y);
-          tempShape.setAttribute("stroke", "#000000"); tempShape.setAttribute("stroke-width", "2");
-
-          if (strokeStyle === 'dashed') {
-            tempShape.setAttribute("stroke-dasharray", "6,4");
-          }
-
-          if (tool === 'arrow') {
-            applyArrowMarkers(tempShape, arrowDir, num);
-          }
-        } else if (tool === 'arc') {
-          tempShape = document.createElementNS("http://www.w3.org/2000/svg", "path");
-          tempShape.setAttribute("fill", "none"); tempShape.setAttribute("stroke", "#000000"); tempShape.setAttribute("stroke-width", "1.8");
-          if (strokeStyle === 'dashed') tempShape.setAttribute("stroke-dasharray", "6,4");
-          updateArcPath(tempShape, drawStart, pt);
-        }
-        if (tempShape) {
-          tempShape.classList.add('movable');
-          mainGrp.appendChild(tempShape);
-        }
-      });
-    });
-
-    function updateArcPath(pathEl, p1, p2) {
-      const arcDir = document.getElementById('arcDirSelect').value;
-      let mx = (p1.x + p2.x) / 2;
-      let my = (p1.y + p2.y) / 2;
-      
-      let dx = p2.x - p1.x;
-      let dy = p2.y - p1.y;
-      let dist = Math.sqrt(dx*dx + dy*dy);
-      
-      let bulge = dist * 0.25; 
-      let nx = -dy / (dist || 1);
-      let ny = dx / (dist || 1);
-
-      if (arcDir === 'left') {
-        nx = -nx;
-        ny = -ny;
-      }
-
-      let cx = mx + nx * bulge;
-      let cy = my + ny * bulge;
-
-      pathEl.setAttribute("d", `M ${p1.x},${p1.y} Q ${cx},${cy} ${p2.x},${p2.y}`);
-    }
-
-    function applyArrowMarkers(el, dir, num) {
-      el.removeAttribute('marker-start');
-      el.removeAttribute('marker-end');
-      
-      let parent = el.parentNode;
-      if (parent) {
-        let oldMid = parent.querySelector(`g.mid-arrow[data-for="${el.id}"]`);
-        if (oldMid) oldMid.remove();
-      }
-
-      if (dir === 'end') {
-        el.setAttribute("marker-end", `url(#arrow-${num})`);
-      } else if (dir === 'start') {
-        el.setAttribute("marker-start", `url(#arrow-start-${num})`);
-      } else if (dir === 'both') {
-        el.setAttribute("marker-end", `url(#arrow-${num})`);
-        el.setAttribute("marker-start", `url(#arrow-start-${num})`);
-      } else if (dir === 'mid-right' || dir === 'mid-left') {
-        if (!el.id) el.id = 'line_' + Math.random().toString(36.25);
-        addMidArrow(el, dir, num);
-      }
-    }
-
-    function addMidArrow(lineEl, dir, num) {
-      let parent = lineEl.parentNode;
-      let x1 = parseFloat(lineEl.getAttribute('x1'));
-      let y1 = parseFloat(lineEl.getAttribute('y1'));
-      let x2 = parseFloat(lineEl.getAttribute('x2'));
-      let y2 = parseFloat(lineEl.getAttribute('y2'));
-
-      let mx = (x1 + x2) / 2;
-      let my = (y1 + y2) / 2;
-      let angle = Math.atan2(y2 - y1, x2 - x1) * (180 / Math.PI);
-      if (dir === 'mid-left') angle += 180;
-
-      let g = document.createElementNS("http://www.w3.org/2000/svg", "g");
-      g.setAttribute("class", "movable mid-arrow");
-      g.setAttribute("data-for", lineEl.id);
-      g.setAttribute("transform", `translate(${mx}, ${my}) rotate(${angle})`);
-
-      let polygon = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
-      polygon.setAttribute("points", "0,0 -10,-4 -10,4");
-      polygon.setAttribute("fill", "#000000");
-      g.appendChild(polygon);
-
-      parent.appendChild(g);
-    }
-
-    function convertToArrow() {
-      if (!selectedElement || selectedElement.tagName !== 'line') {
-        alert('변환할 "직선(line) 요소"를 먼저 클릭하여 선택해 주세요.');
-        return;
-      }
-      const arrowDir = document.getElementById('arrowDirSelect').value;
-      let num = activeTab;
-      applyArrowMarkers(selectedElement, arrowDir, num);
-      initMovableEvents();
-      alert('선택한 직선이 화살표로 변경되었습니다!');
-    }
-
-    window.addEventListener('mousemove', (e) => {
-      let svg = getActiveSvg();
-      let pt = getSvgPoint(e, svg);
-
-      if (isDrawMode && isDrawing && tempShape) {
-        const tool = document.getElementById('toolSelect').value;
-        if (tool === 'line' || tool === 'arrow') {
-          tempShape.setAttribute("x2", pt.x);
-          tempShape.setAttribute("y2", pt.y);
-          let arrowDir = document.getElementById('arrowDirSelect').value;
-          if (tool === 'arrow' && (arrowDir === 'mid-right' || arrowDir === 'mid-left')) {
-            applyArrowMarkers(tempShape, arrowDir, activeTab);
-          }
-        } else if (tool === 'arc') {
-          updateArcPath(tempShape, drawStart, pt);
-        }
-        return;
-      }
-
-      if (!isDrawMode && isDragging && selectedElement) {
-        let dx = pt.x - startX;
-        let dy = pt.y - startY;
-        startX = pt.x;
-        startY = pt.y;
-
-        let target = selectedElement.closest('.text-wrap') || selectedElement;
-        let t = parseTransform(target);
-        t.x += dx;
-        t.y += dy;
-        setTransform(target, t);
-      }
-    });
-
-    window.addEventListener('mouseup', () => {
-      if (isDrawMode && isDrawing) {
-        isDrawing = false;
-        if (tempShape) {
-          initMovableEvents();
-          tempShape = null;
-        }
-      }
-      isDragging = false;
-    });
-
-    function getSvgPoint(e, svgEl) {
-      let pt = svgEl.createSVGPoint();
-      pt.x = e.clientX;
-      pt.y = e.clientY;
-      let svgP = pt.matrixTransform(svgEl.getScreenCTM().inverse());
-      return { x: svgP.x, y: svgP.y };
-    }
-
-    function parseTransform(el) {
-      let tr = el.getAttribute('transform') || 'translate(0,0) scale(1,1) rotate(0)';
-      let tm = tr.match(/translate\(([^,\s]+)[,\s]+([^\)]+)\)/);
-      let sm = tr.match(/scale\(([^,\s]+)[,\s]+([^\)]+)\)/);
-      let rm = tr.match(/rotate\(([^,\s\)]+)/);
-      
-      return {
-        x: tm ? parseFloat(tm[1]) : 0,
-        y: tm ? parseFloat(tm[2]) : 0,
-        sx: sm ? parseFloat(sm[1]) : 1,
-        sy: sm ? parseFloat(sm[2]) : 1,
-        r: rm ? parseFloat(rm[1]) : 0
-      };
-    }
-
-    function setTransform(el, t) {
-      el.setAttribute('transform', `translate(${t.x}, ${t.y}) scale(${t.sx}, ${t.sy}) rotate(${t.r})`);
-    }
-
-    function syncUItoSelected() {
-      if (!selectedElement) return;
-      let target = selectedElement.closest('.text-wrap') || selectedElement;
-      let bbox = target.getBBox();
-      let t = parseTransform(target);
-      
-      let realW = Math.round(bbox.width * Math.abs(t.sx));
-      let realH = Math.round(bbox.height * Math.abs(t.sy));
-
-      document.getElementById('objWidthNum').value = realW > 0 ? realW : 10;
-      document.getElementById('objHeightNum').value = realH > 0 ? realH : 10;
-      document.getElementById('rotateRange').value = t.r;
-      document.getElementById('rotateNum').value = Math.round(t.r);
-    }
-
-    function syncTextInspector() {
-      if (!selectedElement || !selectedElement.classList.contains('text-el')) return;
-      let wrap = selectedElement.closest('.text-wrap');
-      let t = parseTransform(wrap);
-      let pct = Math.round(Math.abs(t.sx) * 100);
-      
-      document.getElementById('textScaleRange').value = pct;
-      document.getElementById('textScaleNum').value = pct;
-
-      let mode = 'transparent';
-      if (wrap.classList.contains('bg-box-white')) mode = 'box-white';
-      else if (selectedElement.classList.contains('bg-stroke-white')) mode = 'stroke-white';
-      
-      document.getElementById('textBgModeSelect').value = mode;
-    }
-
-    // 슬라이더 및 숫자 직접 입력 연동 (글자 크기 %)
-    function onTextScaleSlider(val) {
-      document.getElementById('textScaleNum').value = val;
-      applyTextScale(val);
-    }
-    function onTextScaleNumber(val) {
-      if (val === '') return;
-      let num = parseFloat(val);
-      document.getElementById('textScaleRange').value = num;
-      applyTextScale(num);
-    }
-    function applyTextScale(val) {
-      if (!selectedElement || !selectedElement.classList.contains('text-el')) return;
-      let pct = parseInt(val);
-      let scale = pct / 100;
-
-      let wrap = selectedElement.closest('.text-wrap');
-      let t = parseTransform(wrap);
-      let signX = t.sx < 0 ? -1 : 1;
-      let signY = t.sy < 0 ? -1 : 1;
-      t.sx = scale * signX;
-      t.sy = scale * signY;
-      setTransform(wrap, t);
-    }
-
-    function onChangeTextBgMode(mode) {
-      if (!selectedElement || !selectedElement.classList.contains('text-el')) return;
-      let wrap = selectedElement.closest('.text-wrap');
-
-      wrap.classList.remove('bg-box-white');
-      selectedElement.classList.remove('bg-stroke-white');
-      selectedElement.removeAttribute('paint-order');
-      selectedElement.removeAttribute('stroke');
-      selectedElement.removeAttribute('stroke-width');
-
-      if (mode === 'box-white') {
-        wrap.classList.add('bg-box-white');
-        let textEl = wrap.querySelector('.text-el');
-        let bgRect = wrap.querySelector('.text-bg-rect');
-        if (textEl && bgRect) {
-          let bbox = textEl.getBBox();
-          bgRect.setAttribute('x', bbox.x - 4);
-          bgRect.setAttribute('y', bbox.y - 3);
-          bgRect.setAttribute('width', bbox.width + 8);
-          bgRect.setAttribute('height', bbox.height + 6);
-        }
-      } else if (mode === 'stroke-white') {
-        selectedElement.classList.add('bg-stroke-white');
-        selectedElement.setAttribute('paint-order', 'stroke fill');
-        selectedElement.setAttribute('stroke', '#FFFFFF');
-        selectedElement.setAttribute('stroke-width', '5px');
-      }
-    }
-
-    function onObjectWidthInput(val) {
-      if (!selectedElement || val === '') return;
-      let targetW = parseFloat(val);
-      let target = selectedElement.closest('.text-wrap') || selectedElement;
-      let bbox = target.getBBox();
-      if (bbox.width === 0) return;
-      
-      let t = parseTransform(target);
-      let signX = t.sx < 0 ? -1 : 1;
-      let newSx = (targetW / bbox.width) * signX;
-      t.sx = newSx;
-      setTransform(target, t);
-    }
-
-    function onObjectHeightInput(val) {
-      if (!selectedElement || val === '') return;
-      let targetH = parseFloat(val);
-      let target = selectedElement.closest('.text-wrap') || selectedElement;
-      let bbox = target.getBBox();
-      if (bbox.height === 0) return;
-      
-      let t = parseTransform(target);
-      let signY = t.sy < 0 ? -1 : 1;
-      let newSy = (targetH / bbox.height) * signY;
-      t.sy = newSy;
-      setTransform(target, t);
-    }
-
-    function onRotateSlider(val) {
-      document.getElementById('rotateNum').value = val;
-      applyRotate(val);
-    }
-    function onRotateNumber(val) {
-      if (val === '') return;
-      let num = parseFloat(val);
-      document.getElementById('rotateRange').value = num;
-      applyRotate(num);
-    }
-    function applyRotate(val) {
-      if (!selectedElement) return;
-      let angle = parseFloat(val);
-      if (document.getElementById('snapCheck').checked) {
-        angle = Math.round(angle / 45) * 45;
-        document.getElementById('rotateRange').value = angle;
-        document.getElementById('rotateNum').value = angle;
-      }
-      let target = selectedElement.closest('.text-wrap') || selectedElement;
-      let t = parseTransform(target);
-      t.r = angle;
-      setTransform(target, t);
-    }
-
-    function flipElement(direction) {
-      if (!selectedElement) {
-        alert('반전할 요소를 먼저 선택해 주세요.');
-        return;
-      }
-      let target = selectedElement.closest('.text-wrap') || selectedElement;
-      let t = parseTransform(target);
-      if (direction === 'H') t.sx *= -1;
-      if (direction === 'V') t.sy *= -1;
-      setTransform(target, t);
-    }
-
-    function deleteSelected() {
-      if (selectedElement) {
-        let target = selectedElement.closest('.text-wrap') || selectedElement;
-        if (selectedElement.id) {
-          let svg = getActiveSvg();
-          let midG = svg.querySelector(`g.mid-arrow[data-for="${selectedElement.id}"]`);
-          if (midG) midG.remove();
-        }
-        target.remove();
-        deselectAll();
-      } else {
-        alert('삭제할 요소를 먼저 클릭하여 선택해 주세요.');
-      }
-    }
-
-    function loadExternalHTML(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(e.target.result, 'text/html');
-        const importedSvg = doc.querySelector('svg');
-        if (importedSvg) {
-          let svg = getActiveSvg();
-          let mainGrp = svg.querySelector('.main-diagram');
-          importedSvg.querySelectorAll('g, line, path, circle, rect').forEach(node => {
-            node.classList.add('movable');
-            mainGrp.appendChild(node.cloneNode(true));
-          });
-          initMovableEvents();
-          alert('외부 HTML 도면 요소가 성공적으로 불러와졌습니다!');
-        } else {
-          alert('선택한 파일에서 유효한 SVG 요소를 찾을 수 없습니다.');
-        }
-      };
-      reader.readAsText(file);
-    }
-
-    function downloadPNG() {
-      let svg = getActiveSvg();
-      deselectAll();
-      const svgStr = new XMLSerializer().serializeToString(svg);
-      const canvas = document.createElement('canvas');
-      canvas.width = svg.viewBox.baseVal.width * 3;
-      canvas.height = svg.viewBox.baseVal.height * 3;
-      const ctx = canvas.getContext('2d');
-      const img = new Image();
-      const url = URL.createObjectURL(new Blob([svgStr], {type: 'image/svg+xml;charset=utf-8'}));
-      img.onload = function() {
-        ctx.fillStyle = '#FFFFFF';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-        URL.revokeObjectURL(url);
-        const a = document.createElement('a');
-        a.download = `physics_diagram_tab_${activeTab}.png`;
-        a.href = canvas.toDataURL('image/png');
-        a.click();
-      };
-      img.src = url;
-    }
-  </script>
+  <!-- 기능별 자바스크립트 모듈 로드 -->
+  <script src="js/state.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/canvas.js"></script>
+  <script src="js/tools.js"></script>
+  <script src="js/inspector.js"></script>
+  <script src="js/interaction.js"></script>
+  <script src="js/export-import.js"></script>
+  <script src="js/app.js"></script>
 </body>
 </html>
