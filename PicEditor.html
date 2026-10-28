@@ -4,7 +4,22 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>물리 마스터 에디터 스튜디오 v14</title>
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/style.css?v=20261028_2">
+  <style>
+    /* 브라우저 CSS 캐시 방지 및 강제 2열 그리드 레이아웃 (좌: 캔버스, 우: 메뉴) */
+    .app-layout {
+      display: grid !important;
+      grid-template-columns: minmax(0, 1fr) 340px !important;
+      gap: 20px !important;
+      width: 100% !important;
+      align-items: start !important;
+    }
+    @media (max-width: 700px) {
+      .app-layout {
+        grid-template-columns: 1fr !important;
+      }
+    }
+  </style>
 </head>
 <body>
 

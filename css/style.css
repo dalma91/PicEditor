@@ -10,26 +10,25 @@
 body {
   background-color: #f0f2f5;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  padding: 15px 25px;
+  padding: 15px 20px;
   margin: 0;
   color: #333333;
 }
 
-/* 전체 2열 레이아웃 (좌: 대형 편집화면, 우: 사이드바 메뉴) */
+/* 전체 2열 그리드 레이아웃 (좌측: 가변 대형 캔버스, 우측: 340px 고정 메뉴) */
 .app-layout {
-  display: flex;
-  flex-direction: row;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
   gap: 20px;
   width: 100%;
-  max-width: 1750px;
+  max-width: 1800px;
   margin: 0 auto;
-  align-items: flex-start;
+  align-items: start;
 }
 
 /* 2. 좌측: 메인 편집 작업 영역 (캔버스 대형화) */
 .editor-main {
-  flex: 1;
-  min-width: 0;
+  min-width: 0; /* 내부 SVG 크기가 커져도 그리드 폭을 넘지 않도록 제한 */
   display: flex;
   flex-direction: column;
 }
@@ -77,12 +76,12 @@ body {
   padding-bottom: 4px;
 }
 
-/* 캔버스 카드 (화면 가득 채우기) */
+/* 캔버스 카드 */
 .card {
   background: #ffffff;
   border-radius: 0 10px 10px 10px;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-  padding: 24px;
+  padding: 20px;
   width: 100%;
   text-align: center;
   display: none;
@@ -93,9 +92,9 @@ body {
 }
 
 .card h2 {
-  font-size: 17px;
+  font-size: 16px;
   margin-top: 0;
-  margin-bottom: 16px;
+  margin-bottom: 14px;
   color: #202124;
   text-align: left;
   border-bottom: 2px solid #1a73e8;
@@ -135,8 +134,7 @@ svg.select-mode {
 
 /* 3. 우측: 사이드바 메뉴 툴바 */
 .editor-sidebar {
-  width: 330px;
-  flex-shrink: 0;
+  width: 340px;
   background: #ffffff;
   padding: 18px;
   border-radius: 10px;
@@ -300,10 +298,10 @@ button.done-btn:hover { background: #b05700; }
   border-radius: 6px;
 }
 
-/* 7. 반응형 레이아웃 (모바일 / 좁은 화면 대응) */
-@media (max-width: 1024px) {
+/* 7. 초소형 화면(모바일 700px 이하)에서만 1열 전환 */
+@media (max-width: 700px) {
   .app-layout {
-    flex-direction: column;
+    grid-template-columns: 1fr;
   }
   .editor-sidebar {
     width: 100%;
@@ -311,6 +309,6 @@ button.done-btn:hover { background: #b05700; }
     max-height: none;
   }
   svg {
-    height: 500px;
+    height: 480px;
   }
 }
