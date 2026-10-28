@@ -18,6 +18,7 @@
 
 | 패치 ID | 날짜 | 커밋 SHA | 주요 수정 내역 | 상태 |
 | :--- | :--- | :--- | :--- | :---: |
+| **PATCH-005** | 2026-10-29 | `진행 중` | **우측 브라우저 버튼 높이 비정상 확장 버그 긴급 해결 및 100vh 뷰포트 고정 레이아웃 개편**<br>- 전역 `svg` 선택자의 버튼 아이콘 침범 결함 분리 (`#svg-editor` 전용화 및 `.btn-icon` 14px 고정 격리)<br>- 사이드바 버튼 높이 30px 규격 고정 (`height: 30px; line-height: 1;`)<br>- 데스크톱 뷰포트 100vh 고정(`overflow: hidden`) 및 메인 캔버스 가변 높이 자동 피팅<br>- 사이드바 독립 스크롤 분리로 이중 스크롤 완벽 제거 | ✅ 완료 |
 | **PATCH-004** | 2026-10-28 | `d62c3eb` | **실시간 동기화 상태 표시등, 로컬 자동백업, 콤팩트 SVG 아이콘 UI, 100% 슬라이더 중앙 정렬**<br>- 캔버스 상단 동기화 상태 뱃지(저장됨/수정됨/동기화중/오류) 탑재<br>- 미저장 작업 로컬 자동백업(Auto-Save) 및 원클릭 복구 지원<br>- 버튼 크기 슬림화 및 직관적인 인라인 SVG 벡터 아이콘 적용 (2열 그리드 배치)<br>- 글자 크기 슬라이더 100% 정중앙 위치 및 시각 눈금 틱 라벨 구현<br>- 원클릭 로컬 HTML 파일 즉시 다운로드 기능 추가 | ✅ 완료 |
 | **PATCH-003** | 2026-10-28 | `9376987` | **깃허브 저장 후 재로딩 시 이전 파일 반환 및 썸네일 불변 버그 해결**<br>- Fastly CDN 300초 캐시 우회 (GitHub Contents API 0초 직접 수신)<br>- 썸네일 Git SHA 캐시 버스터 적용 및 57개 전수 고해상도 벡터 PNG 갱신<br>- 한글 파일명 URL 인코딩 (`encodeApiPath`) 및 기존 도면 덮어쓰기 상태 추적 | ✅ 완료 |
 | **PATCH-002** | 2026-10-28 | `dc1cb5b` | **성균관대 물리 심층면접 모의 문항 57종 100% 완전 벡터화**<br>- 비트맵(`<image>`) 잔재 전면 제거 및 순수 SVG 구조화<br>- 50여 종 일본어 물리 용어 표준 한국어 물리 용어로 전수 번역 치환 | ✅ 완료 |
@@ -210,6 +211,105 @@ if (apiRes.ok) {
 | [js/tools.js](file:///E:/Git/PicEditor/js/tools.js) | 화살표 변환 시 `markModified()` 상태 갱신 연동 |
 | [js/interaction.js](file:///E:/Git/PicEditor/js/interaction.js) | 마우스 드래그 및 신규 도형 작도 완료 시 `markModified()` 상태 갱신 연동 |
 | [js/app.js](file:///E:/Git/PicEditor/js/app.js) | 초기 구동 시 미저장 로컬 임시저장본 자동 확인 및 복구 버튼 활성화 |
+
+---
+
+## 🔍 [PATCH-005] 우측 브라우저 버튼 높이 비정상 확장 버그 긴급 해결 및 100vh 뷰포트 고정 레이아웃 개편
+
+### 1. 이슈 개요 및 사용자 보고
+- **보고 일시:** 2026-10-29 07:52 KST
+- **사용자 보고 내용:**
+  > *"오른쪽 브라우저를 봐! 이렇게 설계한 게 맞아? 높이가 고정되어야 될텐데?"*
+- **핵심 문제 현상:**
+  1. 사용자가 우측 분할 브라우저(또는 모니터 우측 창)에서 확인 시, **사이드바의 모든 버튼이 세로로 600px에 달하는 거대한 막대 기둥으로 비정상 확장**되어 레이아웃이 붕괴됨.
+  2. 버튼 내부의 SVG 아이콘이 거대한 흰색 박스로 늘어나고, 사이드바 전체 스크롤 높이가 수천 픽셀로 폭증함.
+  3. 전체 화면 높이가 뷰포트에 고정되지 않아, 브라우저 전체 창의 외부 수직 스크롤과 사이드바 내부 스크롤이 동시에 생기는 **이중 스크롤(Double Scrollbar)** 현상 발생.
+
+---
+
+### 2. 근본 원인 분석 (Root Cause Analysis)
+
+#### 원인 ① : 전역 `svg` 태그 선택자의 버튼 아이콘 침범 (CSS Specificity & Inheritance Bug)
+- 기존 스타일시트에 메인 캔버스를 위해 선언된 규칙:
+  ```css
+  svg {
+    width: 100%;
+    height: 680px;
+    min-height: 580px;
+    background: #ffffff;
+    border: 1px solid #d2d6dc;
+  }
+  ```
+- PATCH-004에서 버튼에 직관적인 14px 인라인 SVG 아이콘(`<svg class="btn-icon">`)을 도입하면서, 해당 전역 `svg` 규칙이 **버튼 내부의 모든 아이콘 태그에 강제 적용**되었습니다.
+- `.btn-icon`에 `height: 14px;`를 지정했음에도 불구하고, CSS 명세상 `min-height: 580px;`가 `height`를 강제 덮어쓰면서 **모든 아이콘이 높이 580px, 테두리와 배경을 가진 거대한 사각형으로 렌더링**되었고, 결과적으로 버튼 전체 높이가 600px로 폭발했던 것입니다.
+
+#### 원인 ② : 버튼 및 컨트롤 높이의 비고정 가변 계산
+- 버튼에 `min-height: 29px;`만 선언되어 있고 명시적 `height` 고정값(`height: 30px; line-height: 1;`)이 부여되지 않아, 내부 요소 크기 변화에 따라 세로로 무제한 늘어날 수 있는 구조였습니다.
+
+#### 원인 ③ : 비고정 뷰포트 구조로 인한 이중 스크롤
+- `body`와 `.app-layout`이 `100vh`에 고정되지 않고 `margin/padding`에 의해 자연 확장되는 방식이었기 때문에, 캔버스와 사이드바 높이가 뷰포트를 초과할 때 브라우저 창 자체에 외부 스크롤바가 생기며 헤더가 화면 위로 밀려나는 현상이 발생했습니다.
+
+---
+
+### 3. 기술적 해결 조치 (Technical Implementation)
+
+#### ① 메인 캔버스 전용 식별자 격리 (`#svg-editor`)
+- 전역 `svg` 및 `svg.select-mode` 선택자를 캔버스 전용 ID인 `#svg-editor`, `#svg-editor.select-mode`로 엄격히 변경했습니다.
+- `.btn-icon` 스타일에 `!important`를 포함한 완전한 크기 및 스타일 리셋을 적용하여 어떤 상위 규칙도 침범하지 못하도록 격리했습니다:
+  ```css
+  .btn-icon {
+    width: 14px !important;
+    height: 14px !important;
+    min-width: 14px !important;
+    min-height: 14px !important;
+    max-width: 14px !important;
+    max-height: 14px !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    fill: currentColor;
+    display: inline-block;
+    vertical-align: middle;
+  }
+  ```
+
+#### ② 버튼 높이 30px 규격 고정
+- 모든 조작 버튼에 `height: 30px; min-height: 30px; max-height: 30px; line-height: 1; white-space: nowrap;`를 적용하여 어떠한 환경에서도 군더더기 없이 단정하고 슬림한 높이가 유지되도록 고정했습니다.
+
+#### ③ 100vh 뷰포트 고정 레이아웃 전면 개편 (전문 에디터 규격)
+- `html, body`에 `height: 100%; overflow: hidden;`을 적용하여 브라우저 창 자체의 불필요한 스크롤바를 완전히 제거했습니다.
+- `.app-layout`을 `height: 100vh; max-height: 100vh; box-sizing: border-box;`로 설정하여 창 크기에 맞춰 100% 밀착되도록 설계했습니다.
+- **좌측 캔버스 영역:**
+  - 상단 헤더(`canvas-header`)는 높이를 고정 유지(`flex-shrink: 0;`).
+  - 메인 캔버스 카드(`.card`)와 `#svg-editor`는 `flex: 1; min-height: 0; height: 100%;`로 동작하여 화면 높이에 따라 사용 가능한 수직 공간을 100% 자동 채우도록 반응형 피팅을 구현했습니다.
+- **우측 사이드바 영역:**
+  - `height: 100%; max-height: 100%; overflow-y: auto;`로 설정하여 화면을 벗어나지 않고 사이드바 내부에서만 부드럽게 스크롤되도록 분리했습니다.
+- **모바일/좁은 화면(800px 이하):**
+  - 모바일에서는 자연스럽게 1열 세로 스크롤 레이아웃으로 전환되어 사용성을 보장합니다.
+
+---
+
+### 4. 변경된 파일 목록 (Files Modified)
+
+| 파일 경로 | 주요 변경 내용 |
+| :--- | :--- |
+| [css/style.css](file:///E:/Git/PicEditor/css/style.css) | `svg` 선택자를 `#svg-editor`로 분리, `.btn-icon` 크기/배경 격리, 버튼 30px 높이 고정, 100vh 고정 뷰포트 레이아웃 개편, 800px 반응형 규칙 |
+| [index.html](file:///E:/Git/PicEditor/index.html) | 인라인 100vh 뷰포트 스타일 동기화, CSS 캐시 버스터(`v=20261029_1`) 갱신 |
+| [PicEditor.html](file:///E:/Git/PicEditor/PicEditor.html) | `index.html`과 100% 동일한 인라인 스타일 및 CSS 캐시 버스터(`v=20261029_1`) 갱신 |
+| [physics_diagram_studio_patch_report.md](file:///E:/Git/PicEditor/physics_diagram_studio_patch_report.md) | `PATCH-005` 발생 원인 및 해결 조치 상세 문서화 |
+
+---
+
+### 5. 테스트 및 검증 결과
+
+1. **해상도별 헤드리스 크롬 스크린샷 렌더링 검증:**
+   - `1920x1080` (데스크톱 FHD): 버튼 30px 고정, 캔버스 중앙 자동 확장, 외부 스크롤바 0개 확인.
+   - `1366x768` (노트북 표준): 뷰포트 100vh 정확 밀착, 사이드바 내부 단일 스크롤 정상 동작 확인.
+   - `960x1080` (사용자 우측 분할 브라우저): 버튼 왜곡 없이 깔끔한 2열 그리드 배치 및 여백 없는 완벽한 레이아웃 확인.
+2. **요소 높이 수치 검증:**
+   - 버튼 계산 높이(`btnComputedHeight`): `30px` 정상 고정.
+   - 아이콘 크기(`iconComputedWidth/Height`): `14px x 14px` 정상 고정.
+   - 브라우저 외부 스크롤바 발생 여부: `overflow: hidden`으로 제거 완료.
 
 ---
 

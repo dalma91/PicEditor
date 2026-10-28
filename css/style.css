@@ -7,11 +7,13 @@
   box-sizing: border-box;
 }
 
-body {
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
   background-color: #f0f2f5;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  padding: 15px 20px;
-  margin: 0;
   color: #333333;
 }
 
@@ -19,28 +21,36 @@ body {
 .app-layout {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 340px;
-  gap: 20px;
-  width: 100%;
-  max-width: 1800px;
+  gap: 16px;
+  width: 100vw;
+  max-width: 100vw;
+  height: 100vh;
+  max-height: 100vh;
+  padding: 14px 18px;
   margin: 0 auto;
-  align-items: start;
+  align-items: stretch;
+  box-sizing: border-box;
 }
 
 /* 2. 좌측: 메인 편집 작업 영역 */
 .editor-main {
   min-width: 0;
+  height: 100%;
+  max-height: 100%;
   display: flex;
   flex-direction: column;
+  gap: 10px;
+  overflow: hidden;
 }
 
 .canvas-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 10px;
+  flex-shrink: 0;
   width: 100%;
   background: #ffffff;
-  padding: 12px 18px;
+  padding: 10px 16px;
   border-radius: 10px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
@@ -166,13 +176,19 @@ body {
 
 /* 캔버스 카드 */
 .card {
+  flex: 1;
+  min-height: 0;
   background: #ffffff;
   border-radius: 10px;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-  padding: 20px;
+  padding: 14px;
   width: 100%;
   text-align: center;
   position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
   transition: all 0.2s ease;
 }
 
@@ -182,19 +198,20 @@ body {
 }
 
 /* 대형화된 SVG 캔버스 */
-svg {
+#svg-editor {
   background: #ffffff;
   border: 1px solid #d2d6dc;
   border-radius: 8px;
   cursor: crosshair;
   user-select: none;
   width: 100%;
-  height: 680px;
-  min-height: 580px;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
   box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.03);
 }
 
-svg.select-mode {
+#svg-editor.select-mode {
   cursor: default;
 }
 
@@ -220,17 +237,17 @@ image.movable {
 /* 3. 우측: 사이드바 메뉴 툴바 */
 .editor-sidebar {
   width: 340px;
+  height: 100%;
+  max-height: 100%;
   background: #ffffff;
-  padding: 18px;
+  padding: 16px;
   border-radius: 10px;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  position: sticky;
-  top: 15px;
-  max-height: calc(100vh - 30px);
+  gap: 12px;
   overflow-y: auto;
+  box-sizing: border-box;
 }
 
 .sidebar-section {
@@ -305,7 +322,7 @@ image.movable {
 }
 
 /* 4. 버튼 및 공통 입력 컨트롤 */
-button, select, input[type="range"], input[type="number"] {
+button {
   padding: 5px 9px;
   font-size: 11.5px;
   font-weight: 600;
@@ -315,11 +332,10 @@ button, select, input[type="range"], input[type="number"] {
   border-radius: 5px;
   cursor: pointer;
   transition: all 0.15s ease;
-  min-height: 29px;
+  height: 30px;
+  min-height: 30px;
+  max-height: 30px;
   box-sizing: border-box;
-}
-
-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -328,9 +344,32 @@ button {
   white-space: nowrap;
 }
 
+select {
+  padding: 5px 9px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #333333;
+  background: #ffffff;
+  border: 1px solid #cccccc;
+  border-radius: 5px;
+  cursor: pointer;
+  height: 30px;
+  min-height: 30px;
+  max-height: 30px;
+  box-sizing: border-box;
+}
+
 .btn-icon {
-  width: 14px;
-  height: 14px;
+  width: 14px !important;
+  height: 14px !important;
+  min-width: 14px !important;
+  min-height: 14px !important;
+  max-width: 14px !important;
+  max-height: 14px !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
   flex-shrink: 0;
   fill: currentColor;
   display: inline-block;
@@ -550,18 +589,27 @@ button.github-accent-btn:hover { background: #4338ca; }
   background: #f8f9fa;
 }
 
-/* 9. 반응형 처리 (모바일 700px 이하) */
-@media (max-width: 700px) {
+/* 9. 반응형 처리 (모바일 / 좁은 화면 800px 이하) */
+@media (max-width: 800px) {
+  html, body {
+    height: auto;
+    overflow-y: auto;
+  }
   .app-layout {
     grid-template-columns: 1fr;
+    height: auto;
+    max-height: none;
+    padding: 10px;
+    gap: 12px;
   }
   .editor-sidebar {
     width: 100%;
-    position: static;
+    height: auto;
     max-height: none;
   }
-  svg {
+  #svg-editor {
     height: 480px;
+    min-height: 400px;
   }
 }
 

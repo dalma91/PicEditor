@@ -4,19 +4,33 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>물리 마스터 에디터 스튜디오 v15</title>
-  <link rel="stylesheet" href="css/style.css?v=20261028_9">
+  <link rel="stylesheet" href="css/style.css?v=20261029_1">
   <style>
-    /* 브라우저 CSS 캐시 방지 및 강제 2열 그리드 레이아웃 (좌: 캔버스, 우: 메뉴) */
+    /* 브라우저 100vh 고정 뷰포트 및 2열 그리드 레이아웃 */
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+    }
     .app-layout {
       display: grid !important;
       grid-template-columns: minmax(0, 1fr) 340px !important;
-      gap: 20px !important;
-      width: 100% !important;
-      align-items: start !important;
+      gap: 16px !important;
+      width: 100vw !important;
+      height: 100vh !important;
+      padding: 14px 18px !important;
+      box-sizing: border-box !important;
     }
-    @media (max-width: 700px) {
+    @media (max-width: 800px) {
+      html, body {
+        height: auto;
+        overflow-y: auto;
+      }
       .app-layout {
         grid-template-columns: 1fr !important;
+        height: auto !important;
+        padding: 10px !important;
       }
     }
   </style>
