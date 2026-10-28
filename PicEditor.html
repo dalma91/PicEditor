@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>물리 마스터 에디터 스튜디오 v14</title>
-  <link rel="stylesheet" href="css/style.css?v=20261028_3">
+  <link rel="stylesheet" href="css/style.css?v=20261028_4">
   <style>
     /* 브라우저 CSS 캐시 방지 및 강제 2열 그리드 레이아웃 (좌: 캔버스, 우: 메뉴) */
     .app-layout {
@@ -29,7 +29,7 @@
       <div class="canvas-header">
         <div class="canvas-title-wrap">
           <h2>🎨 물리 그래픽 편집 스튜디오</h2>
-          <span class="canvas-subtitle">HTML 코드를 올려 마우스로 자유롭게 선택, 이동, 크기/회전 조절을 할 수 있습니다.</span>
+          <span class="canvas-subtitle">그림(이미지)이나 HTML을 올려서 마우스로 자유롭게 이동, 크기/회전 조절, 작도를 할 수 있습니다.</span>
         </div>
         <div class="canvas-info-bar">
           해상도: <span id="canvasSizeDisplay">800 × 600 px</span>
@@ -79,17 +79,21 @@
 
     <!-- 우측: 사이드바 메뉴 툴바 -->
     <aside class="editor-sidebar">
-      <!-- 1. HTML 코드 올리기 및 파일 관리 -->
+      <!-- 1. 그림(이미지) & HTML 파일 올리기 -->
       <section class="sidebar-section">
-        <h3>📥 HTML 코드 올리기</h3>
-        <button type="button" class="info-btn full-btn" onclick="openHtmlModal()">📝 HTML 코드 직접 붙여넣기</button>
+        <h3>🖼️ 그림(이미지) / HTML 올리기</h3>
+        <input type="file" id="imgFileInput" style="display:none" accept="image/*" onchange="onImageFileInput(event)">
+        <button type="button" class="image-btn full-btn" onclick="document.getElementById('imgFileInput').click()">🖼️ 그림(이미지) 업로드</button>
+
         <div class="sidebar-btn-row">
-          <button type="button" class="secondary" onclick="document.getElementById('htmlFileInput').click()">📂 파일 열기</button>
-          <button type="button" class="danger" onclick="clearCanvas()">🧹 캔버스 비우기</button>
+          <button type="button" class="info-btn" onclick="openHtmlModal()">📝 HTML 코드</button>
+          <button type="button" class="secondary" onclick="document.getElementById('htmlFileInput').click()">📂 HTML 파일</button>
         </div>
         <input type="file" id="htmlFileInput" style="display:none" accept=".html,.htm" onchange="loadExternalHTML(event)">
+
+        <button type="button" class="danger full-btn" onclick="clearCanvas()">🧹 캔버스 비우기</button>
         <div class="hint-box">
-          💡 HTML 파일을 캔버스 위로 <b>드래그 앤 드롭</b>해도 바로 올릴 수 있습니다!
+          💡 그림 파일(PNG/JPG)을 <b>드래그 앤 드롭</b>하거나, 캡처 후 <b>Ctrl+V</b>로 바로 붙여넣을 수 있습니다!
         </div>
       </section>
 
@@ -149,9 +153,9 @@
           <label>크기:</label>
           <div class="inputs-wrap">
             <span>W</span>
-            <input type="number" id="objWidthNum" min="5" max="2000" oninput="onObjectWidthInput(this.value)">
+            <input type="number" id="objWidthNum" min="5" max="2500" oninput="onObjectWidthInput(this.value)">
             <span>H</span>
-            <input type="number" id="objHeightNum" min="5" max="2000" oninput="onObjectHeightInput(this.value)">
+            <input type="number" id="objHeightNum" min="5" max="2500" oninput="onObjectHeightInput(this.value)">
           </div>
         </div>
 
@@ -174,7 +178,24 @@
         </div>
       </section>
 
-      <!-- 5. 글자 전용 인스펙터 (선택 시 노출) -->
+      <!-- 5. 이미지 전용 인스펙터 (그림 선택 시 노출) -->
+      <section id="imageInspector" class="image-inspector">
+        <span class="image-inspector-title">🖼️ 그림(이미지) 옵션</span>
+        <div class="control-group">
+          <label for="imgOpacityRange">투명도(%):</label>
+          <div class="inputs-wrap">
+            <input type="range" id="imgOpacityRange" min="10" max="100" step="5" value="100" oninput="onImageOpacitySlider(this.value)">
+            <input type="number" id="imgOpacityNum" min="10" max="100" step="5" value="100" oninput="onImageOpacityNumber(this.value)">
+          </div>
+        </div>
+        <div class="sidebar-btn-row">
+          <button type="button" class="secondary" onclick="bringToFront()">⬆️ 맨 앞으로</button>
+          <button type="button" class="secondary" onclick="sendToBack()">⬇️ 맨 뒤로(배경)</button>
+        </div>
+        <button type="button" class="info-btn full-btn" onclick="fitCanvasToSelectedImage()">📐 캔버스를 그림 크기에 맞춤</button>
+      </section>
+
+      <!-- 6. 글자 전용 인스펙터 (선택 시 노출) -->
       <section id="textInspector" class="text-inspector">
         <span class="text-inspector-title">🔤 글자 옵션</span>
         <div class="control-group">
@@ -194,7 +215,7 @@
         </div>
       </section>
 
-      <!-- 6. 캔버스 해상도 조절 -->
+      <!-- 7. 캔버스 해상도 조절 -->
       <section class="sidebar-section">
         <h3>🖼️ 캔버스 해상도</h3>
         <div class="control-group">
@@ -208,7 +229,7 @@
         </div>
       </section>
 
-      <!-- 7. 내보내기 및 코드 저장 -->
+      <!-- 8. 내보내기 및 코드 저장 -->
       <section class="sidebar-section">
         <h3>💾 내보내기 & 저장</h3>
         <button type="button" class="danger full-btn" onclick="deleteSelected()">🗑️ 선택 요소 삭제</button>

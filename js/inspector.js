@@ -1,5 +1,5 @@
 /**
- * inspector.js - 속성 인스펙터 (크기, 회전, 반전, 글자 배경, 삭제)
+ * inspector.js - 속성 인스펙터 (크기, 회전, 반전, 글자 배경, 이미지 투명도 및 레이어 순서)
  */
 window.PicEditor = window.PicEditor || {};
 
@@ -12,6 +12,7 @@ window.PicEditor.inspector = {
     if (!state.selectedElement) return;
 
     const target = state.selectedElement.closest('.text-wrap') || state.selectedElement;
+    const tag = target.tagName.toLowerCase();
     const bbox = target.getBBox();
     const t = window.PicEditor.utils.parseTransform(target);
     
@@ -27,6 +28,102 @@ window.PicEditor.inspector = {
     if (hNum) hNum.value = realH > 0 ? realH : 10;
     if (rRange) rRange.value = t.r;
     if (rNum) rNum.value = Math.round(t.r);
+
+    const textInspector = document.getElementById('textInspector');
+    const imageInspector = document.getElementById('imageInspector');
+
+    if (tag === 'image') {
+      if (imageInspector) imageInspector.classList.add('active');
+      if (textInspector) textInspector.classList.remove('active');
+      this.syncImageInspector(target);
+    } else if (target.classList.contains('text-wrap') || state.selectedElement.classList.contains('text-el')) {
+      if (textInspector) textInspector.classList.add('active');
+      if (imageInspector) imageInspector.classList.remove('active');
+      this.syncTextInspector();
+    } else {
+      if (textInspector) textInspector.classList.remove('active');
+      if (imageInspector) imageInspector.classList.remove('active');
+    }
+  },
+
+  /**
+   * 이미지 전용 인스펙터 동기화
+   */
+  syncImageInspector(imgEl) {
+    let opacity = parseFloat(imgEl.getAttribute('opacity') || 1);
+    let pct = Math.round(opacity * 100);
+
+    const opRange = document.getElementById('imgOpacityRange');
+    const opNum = document.getElementById('imgOpacityNum');
+    if (opRange) opRange.value = pct;
+    if (opNum) opNum.value = pct;
+  },
+
+  /**
+   * 이미지 투명도 조절
+   */
+  onImageOpacitySlider(val) {
+    const numEl = document.getElementById('imgOpacityNum');
+    if (numEl) numEl.value = val;
+    this.applyImageOpacity(val);
+  },
+
+  onImageOpacityNumber(val) {
+    if (val === '') return;
+    const num = parseFloat(val);
+    const rangeEl = document.getElementById('imgOpacityRange');
+    if (rangeEl) rangeEl.value = num;
+    this.applyImageOpacity(num);
+  },
+
+  applyImageOpacity(val) {
+    const state = window.PicEditor.state;
+    if (!state.selectedElement) return;
+    const target = state.selectedElement.closest('image') || state.selectedElement;
+    if (target.tagName.toLowerCase() === 'image') {
+      const op = Math.max(0.05, Math.min(1.0, parseFloat(val) / 100));
+      target.setAttribute('opacity', op);
+    }
+  },
+
+  /**
+   * 레이어 순서 제어 (맨 앞으로 / 맨 뒤로)
+   */
+  bringToFront() {
+    const state = window.PicEditor.state;
+    if (!state.selectedElement) return;
+    const target = state.selectedElement.closest('.text-wrap') || state.selectedElement;
+    const parent = target.parentNode;
+    if (parent) {
+      parent.appendChild(target);
+    }
+  },
+
+  sendToBack() {
+    const state = window.PicEditor.state;
+    if (!state.selectedElement) return;
+    const target = state.selectedElement.closest('.text-wrap') || state.selectedElement;
+    const parent = target.parentNode;
+    if (parent) {
+      parent.insertBefore(target, parent.firstChild);
+    }
+  },
+
+  /**
+   * 캔버스 크기를 현재 선택된 이미지 크기에 맞추기
+   */
+  fitCanvasToSelectedImage() {
+    const state = window.PicEditor.state;
+    if (!state.selectedElement) return;
+    const target = state.selectedElement.closest('image') || state.selectedElement;
+    if (target.tagName.toLowerCase() === 'image') {
+      const bbox = target.getBBox();
+      const activeSvg = window.PicEditor.utils.getActiveSvg();
+      if (activeSvg && bbox.width > 0 && bbox.height > 0) {
+        activeSvg.setAttribute('viewBox', `0 0 ${Math.round(bbox.width)} ${Math.round(bbox.height)}`);
+        window.PicEditor.canvas.updateCanvasInfo();
+      }
+    }
   },
 
   /**
@@ -229,6 +326,11 @@ window.PicEditor.inspector = {
 // 전역 단축 참조
 window.syncUItoSelected = () => window.PicEditor.inspector.syncUItoSelected();
 window.syncTextInspector = () => window.PicEditor.inspector.syncTextInspector();
+window.onImageOpacitySlider = (v) => window.PicEditor.inspector.onImageOpacitySlider(v);
+window.onImageOpacityNumber = (v) => window.PicEditor.inspector.onImageOpacityNumber(v);
+window.bringToFront = () => window.PicEditor.inspector.bringToFront();
+window.sendToBack = () => window.PicEditor.inspector.sendToBack();
+window.fitCanvasToSelectedImage = () => window.PicEditor.inspector.fitCanvasToSelectedImage();
 window.onTextScaleSlider = (v) => window.PicEditor.inspector.onTextScaleSlider(v);
 window.onTextScaleNumber = (v) => window.PicEditor.inspector.onTextScaleNumber(v);
 window.onChangeTextBgMode = (m) => window.PicEditor.inspector.onChangeTextBgMode(m);

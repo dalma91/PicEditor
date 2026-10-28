@@ -77,7 +77,7 @@ body {
   width: 100%;
   text-align: center;
   position: relative;
-  transition: border-color 0.2s ease;
+  transition: all 0.2s ease;
 }
 
 .card.drag-over {
@@ -114,6 +114,11 @@ svg.select-mode {
 .selected {
   outline: 2px dashed #1a73e8;
   outline-offset: 4px;
+}
+
+/* 이미지 요소 스타일 */
+image.movable {
+  pointer-events: auto;
 }
 
 /* 3. 우측: 사이드바 메뉴 툴바 */
@@ -237,12 +242,35 @@ button.done-btn { background: #e37400; }
 button.done-btn:hover { background: #b05700; }
 button.info-btn { background: #0077b6; }
 button.info-btn:hover { background: #005f94; }
+button.image-btn { background: #0f766e; }
+button.image-btn:hover { background: #115e59; }
 
 .full-btn {
   width: 100%;
 }
 
-/* 5. 글자 전용 인스펙터 패널 */
+/* 5. 이미지 전용 인스펙터 패널 */
+.image-inspector {
+  background: #f0fdf4;
+  border: 1.5px solid #16a34a;
+  padding: 10px;
+  border-radius: 8px;
+  display: none;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.image-inspector.active {
+  display: flex;
+}
+
+.image-inspector-title {
+  font-size: 12px;
+  font-weight: bold;
+  color: #16a34a;
+}
+
+/* 6. 글자 전용 인스펙터 패널 */
 .text-inspector {
   background: #e8f0fe;
   border: 1.5px solid #1a73e8;
@@ -263,7 +291,7 @@ button.info-btn:hover { background: #005f94; }
   color: #1a73e8;
 }
 
-/* 6. 텍스트 배경 사각형 스타일 */
+/* 7. 텍스트 배경 사각형 스타일 */
 .text-bg-rect {
   display: none;
   fill: #ffffff;
@@ -284,7 +312,7 @@ button.info-btn:hover { background: #005f94; }
   border-radius: 6px;
 }
 
-/* 7. HTML 코드 입력 팝업 모달 */
+/* 8. HTML 코드 입력 팝업 모달 */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -372,7 +400,7 @@ button.info-btn:hover { background: #005f94; }
   background: #f8f9fa;
 }
 
-/* 8. 반응형 처리 (모바일 700px 이하) */
+/* 9. 반응형 처리 (모바일 700px 이하) */
 @media (max-width: 700px) {
   .app-layout {
     grid-template-columns: 1fr;

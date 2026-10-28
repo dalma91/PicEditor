@@ -1,5 +1,5 @@
 /**
- * interaction.js - 마우스 드래그, 이동, 작도/선택 모드 전환, 드래그앤드롭 파일 업로드 이벤트 처리
+ * interaction.js - 마우스 드래그, 이동, 작도/선택 모드 전환, 이미지 드래그앤드롭 및 클립보드(Ctrl+V) 붙여넣기
  */
 window.PicEditor = window.PicEditor || {};
 
@@ -58,14 +58,6 @@ window.PicEditor.interaction = {
         wrap.classList.add('selected');
         
         window.PicEditor.inspector.syncUItoSelected();
-
-        const inspector = document.getElementById('textInspector');
-        if (wrap.classList.contains('text-wrap')) {
-          if (inspector) inspector.classList.add('active');
-          window.PicEditor.inspector.syncTextInspector();
-        } else {
-          if (inspector) inspector.classList.remove('active');
-        }
       };
 
       el.onmousedown = (e) => {
@@ -82,14 +74,6 @@ window.PicEditor.interaction = {
         
         window.PicEditor.inspector.syncUItoSelected();
 
-        const inspector = document.getElementById('textInspector');
-        if (wrap.classList.contains('text-wrap')) {
-          if (inspector) inspector.classList.add('active');
-          window.PicEditor.inspector.syncTextInspector();
-        } else {
-          if (inspector) inspector.classList.remove('active');
-        }
-
         state.isDragging = true;
         const pt = window.PicEditor.utils.getSvgPoint(e, svg);
         state.startX = pt.x;
@@ -99,7 +83,7 @@ window.PicEditor.interaction = {
   },
 
   /**
-   * 전역 마우스 이벤트 및 SVG 캔버스 작도/드래그앤드롭 이벤트 초기화
+   * 전역 마우스 이벤트 및 SVG 캔버스 작도/드래그앤드롭/클립보드 이벤트 초기화
    */
   initGlobalEvents() {
     const state = window.PicEditor.state;
@@ -159,7 +143,7 @@ window.PicEditor.interaction = {
       });
     });
 
-    // 드래그앤드롭 파일 업로드 (HTML 파일을 캔버스에 직접 끌어다 놓기)
+    // 드래그앤드롭 파일 업로드 (그림 이미지 및 HTML 파일 모두 지원)
     const cardEl = document.querySelector('.card');
     if (cardEl) {
       cardEl.addEventListener('dragover', (e) => {
@@ -175,15 +159,44 @@ window.PicEditor.interaction = {
         cardEl.classList.remove('drag-over');
         if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0]) {
           const file = e.dataTransfer.files[0];
-          const reader = new FileReader();
-          reader.onload = (re) => {
-            window.PicEditor.storage.importHtmlCode(re.target.result, false);
-            alert(`"${file.name}" 파일을 캔버스에 성공적으로 올렸습니다!`);
-          };
-          reader.readAsText(file);
+          if (file.type.startsWith('image/')) {
+            window.PicEditor.storage.loadImageFile(file, true);
+          } else {
+            const reader = new FileReader();
+            reader.onload = (re) => {
+              window.PicEditor.storage.importHtmlCode(re.target.result, false);
+              alert(`"${file.name}" 코드를 캔버스에 성공적으로 올렸습니다!`);
+            };
+            reader.readAsText(file);
+          }
         }
       });
     }
+
+    // 클립보드 붙여넣기 (Ctrl + V): 스크린샷이나 복사한 이미지를 캔버스에 즉시 추가
+    window.addEventListener('paste', (e) => {
+      const activeTag = document.activeElement ? document.activeElement.tagName.toLowerCase() : '';
+      if (activeTag === 'textarea' || activeTag === 'input') {
+        return; // 입력 필드 내부에서는 기본 붙여넣기 동작 허용
+      }
+
+      const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+      let foundImage = false;
+
+      for (let index in items) {
+        const item = items[index];
+        if (item.kind === 'file' && item.type.startsWith('image/')) {
+          const blob = item.getAsFile();
+          window.PicEditor.storage.loadImageFile(blob, true);
+          foundImage = true;
+          break;
+        }
+      }
+
+      if (foundImage) {
+        e.preventDefault();
+      }
+    });
 
     // 마우스 이동 (mousemove)
     window.addEventListener('mousemove', (e) => {
@@ -234,7 +247,7 @@ window.PicEditor.interaction = {
       state.isDragging = false;
     });
 
-    // ESC 키로 모달 닫기 및 선택 해제
+    // ESC 키 및 삭제 키
     window.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
         window.PicEditor.storage.closeHtmlModal();
