@@ -3,169 +3,87 @@
    ========================================================================== */
 
 /* 1. 기본 레이아웃 & 초기화 */
-body {
-  background-color: #f0f2f5;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 20px;
-  margin: 0;
-}
-
-/* 2. 상단 툴바 */
-.toolbar {
-  background: #ffffff;
-  padding: 12px 20px;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  margin-bottom: 15px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  align-items: center;
-  position: sticky;
-  top: 10px;
-  z-index: 100;
-  max-width: 1350px;
-}
-
-.hint {
-  font-size: 12px;
-  color: #5f6368;
-  width: 100%;
-}
-
-.control-group {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 12px;
-  background: #f8f9fa;
-  padding: 4px 8px;
-  border-radius: 6px;
-  border: 1px solid #dadce0;
-  color: #333333;
-}
-
-.control-group input[type="range"] {
-  width: 50px;
-  padding: 0;
-  background: transparent;
-  cursor: pointer;
-}
-
-.control-group select {
-  background: #ffffff;
-  color: #333333;
-  border: 1px solid #cccccc;
-}
-
-/* 3. 버튼 및 입력 요소 */
-button, select, input[type="range"], input[type="number"] {
-  padding: 6px 10px;
-  font-size: 12px;
-  font-weight: bold;
-  color: #ffffff;
-  background: #1a73e8;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background 0.15s ease;
-}
-
-input[type="number"] {
-  background: #ffffff;
-  color: #333333;
-  border: 1px solid #cccccc;
-  width: 55px;
-}
-
-button:hover { background: #1557b0; }
-button.danger { background: #d93025; }
-button.danger:hover { background: #b31412; }
-button.secondary { background: #5f6368; }
-button.secondary:hover { background: #3c4043; }
-button.success { background: #137333; }
-button.success:hover { background: #0d5424; }
-button.success.active-mode { background: #b80600; }
-button.done-btn { background: #e37400; }
-button.done-btn:hover { background: #b05700; }
-
-/* 4. 글자 전용 인스펙터 패널 */
-.text-inspector {
-  background: #e8f0fe;
-  border: 2px solid #1a73e8;
-  padding: 8px 15px;
-  border-radius: 8px;
-  display: none;
-  align-items: center;
-  gap: 10px;
-  width: 100%;
+* {
   box-sizing: border-box;
 }
 
-.text-inspector.active {
+body {
+  background-color: #f0f2f5;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  padding: 15px 25px;
+  margin: 0;
+  color: #333333;
+}
+
+/* 전체 2열 레이아웃 (좌: 대형 편집화면, 우: 사이드바 메뉴) */
+.app-layout {
   display: flex;
-}
-
-/* 5. 텍스트 배경 사각형 스타일 */
-.text-bg-rect {
-  display: none;
-  fill: #ffffff;
-  stroke: #cccccc;
-  stroke-width: 0.5;
-}
-
-.text-wrap.bg-box-white .text-bg-rect {
-  display: block;
-}
-
-/* 6. 캔버스 정보 바 & 탭 바 */
-.canvas-info-bar {
-  font-size: 13px;
-  color: #5f6368;
-  margin-bottom: 8px;
-  text-align: right;
+  flex-direction: row;
+  gap: 20px;
   width: 100%;
-  max-width: 800px;
-  font-weight: bold;
+  max-width: 1750px;
+  margin: 0 auto;
+  align-items: flex-start;
+}
+
+/* 2. 좌측: 메인 편집 작업 영역 (캔버스 대형화) */
+.editor-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.canvas-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 8px;
+  width: 100%;
 }
 
 .tab-bar {
   display: flex;
-  gap: 5px;
-  margin-bottom: 10px;
-  width: 100%;
-  max-width: 800px;
+  gap: 4px;
 }
 
 .tab-btn {
-  padding: 8px 16px;
+  padding: 10px 20px;
   font-size: 14px;
   font-weight: bold;
-  background: #e0e0e0;
-  color: #333333;
+  background: #e2e5e9;
+  color: #4a4a4a;
   border: none;
-  border-radius: 6px 6px 0 0;
+  border-radius: 8px 8px 0 0;
   cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tab-btn:hover {
+  background: #d4d8de;
 }
 
 .tab-btn.active {
   background: #ffffff;
   color: #1a73e8;
   border-top: 3px solid #1a73e8;
+  box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.05);
 }
 
-/* 7. 카드 및 SVG 캔버스 */
+.canvas-info-bar {
+  font-size: 13px;
+  color: #5f6368;
+  font-weight: bold;
+  padding-bottom: 4px;
+}
+
+/* 캔버스 카드 (화면 가득 채우기) */
 .card {
   background: #ffffff;
   border-radius: 0 10px 10px 10px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  padding: 20px;
-  margin-bottom: 20px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  padding: 24px;
   width: 100%;
-  max-width: 800px;
   text-align: center;
   display: none;
 }
@@ -175,20 +93,26 @@ button.done-btn:hover { background: #b05700; }
 }
 
 .card h2 {
-  font-size: 16px;
+  font-size: 17px;
   margin-top: 0;
-  margin-bottom: 12px;
-  color: #333333;
+  margin-bottom: 16px;
+  color: #202124;
   text-align: left;
   border-bottom: 2px solid #1a73e8;
-  padding-bottom: 6px;
+  padding-bottom: 8px;
 }
 
+/* 대형화된 SVG 캔버스 */
 svg {
   background: #ffffff;
-  border: 1px solid #e0e0e0;
+  border: 1px solid #d2d6dc;
+  border-radius: 8px;
   cursor: crosshair;
   user-select: none;
+  width: 100%;
+  height: 680px;
+  min-height: 580px;
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.03);
 }
 
 svg.select-mode {
@@ -207,4 +131,186 @@ svg.select-mode {
 .selected {
   outline: 2px dashed #1a73e8;
   outline-offset: 4px;
+}
+
+/* 3. 우측: 사이드바 메뉴 툴바 */
+.editor-sidebar {
+  width: 330px;
+  flex-shrink: 0;
+  background: #ffffff;
+  padding: 18px;
+  border-radius: 10px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  position: sticky;
+  top: 15px;
+  max-height: calc(100vh - 30px);
+  overflow-y: auto;
+}
+
+.sidebar-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-bottom: 1px solid #edf0f2;
+  padding-bottom: 12px;
+}
+
+.sidebar-section:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.sidebar-section h3 {
+  font-size: 13px;
+  font-weight: 700;
+  color: #1a73e8;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.sidebar-btn-row {
+  display: flex;
+  gap: 6px;
+  width: 100%;
+}
+
+.sidebar-btn-row > * {
+  flex: 1;
+}
+
+.control-group {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 12px;
+  background: #f8f9fa;
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #dadce0;
+}
+
+.control-group label {
+  font-weight: 600;
+  color: #3c4043;
+}
+
+.control-group .inputs-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.control-group input[type="range"] {
+  width: 70px;
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.control-group select {
+  background: #ffffff;
+  color: #333333;
+  border: 1px solid #cccccc;
+  flex: 1;
+  max-width: 190px;
+}
+
+/* 4. 버튼 및 공통 입력 컨트롤 */
+button, select, input[type="range"], input[type="number"] {
+  padding: 7px 12px;
+  font-size: 12px;
+  font-weight: bold;
+  color: #ffffff;
+  background: #1a73e8;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+input[type="number"] {
+  background: #ffffff;
+  color: #333333;
+  border: 1px solid #cccccc;
+  width: 58px;
+  padding: 4px 6px;
+  font-size: 12px;
+}
+
+button:hover { background: #1557b0; }
+button.danger { background: #d93025; }
+button.danger:hover { background: #b31412; }
+button.secondary { background: #5f6368; }
+button.secondary:hover { background: #3c4043; }
+button.success { background: #137333; }
+button.success:hover { background: #0d5424; }
+button.success.active-mode { background: #b80600; }
+button.done-btn { background: #e37400; }
+button.done-btn:hover { background: #b05700; }
+
+.full-btn {
+  width: 100%;
+}
+
+/* 5. 글자 전용 인스펙터 패널 (사이드바 내부) */
+.text-inspector {
+  background: #e8f0fe;
+  border: 1.5px solid #1a73e8;
+  padding: 10px;
+  border-radius: 8px;
+  display: none;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.text-inspector.active {
+  display: flex;
+}
+
+.text-inspector-title {
+  font-size: 12px;
+  font-weight: bold;
+  color: #1a73e8;
+}
+
+/* 6. 텍스트 배경 사각형 스타일 */
+.text-bg-rect {
+  display: none;
+  fill: #ffffff;
+  stroke: #cccccc;
+  stroke-width: 0.5;
+}
+
+.text-wrap.bg-box-white .text-bg-rect {
+  display: block;
+}
+
+.hint-box {
+  font-size: 11px;
+  color: #5f6368;
+  line-height: 1.4;
+  background: #f1f3f4;
+  padding: 6px 8px;
+  border-radius: 6px;
+}
+
+/* 7. 반응형 레이아웃 (모바일 / 좁은 화면 대응) */
+@media (max-width: 1024px) {
+  .app-layout {
+    flex-direction: column;
+  }
+  .editor-sidebar {
+    width: 100%;
+    position: static;
+    max-height: none;
+  }
+  svg {
+    height: 500px;
+  }
 }
