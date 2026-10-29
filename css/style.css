@@ -894,3 +894,137 @@ button.github-accent-btn:hover {
   font-weight: bold;
 }
 
+
+/* 9. 작도 도구 아이콘 그리드 및 팔레트 */
+.tool-grid-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #475569;
+  margin: 5px 0 3px 0;
+}
+
+.tool-icon-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 3px;
+  margin-bottom: 5px;
+}
+
+.tool-icon-grid.curves-grid {
+  grid-template-columns: repeat(5, 1fr);
+}
+
+.tool-btn {
+  width: 100%;
+  height: 38px;
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #334155;
+  transition: all 0.15s ease;
+}
+
+.tool-btn svg {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+  stroke: currentColor;
+  pointer-events: none;
+}
+
+.tool-btn .btn-sublabel {
+  font-size: 9px;
+  line-height: 1;
+  margin-top: 1px;
+  font-weight: 600;
+}
+
+.tool-btn:hover {
+  background: #e2e8f0;
+  border-color: #94a3b8;
+  color: #0f172a;
+  transform: translateY(-1px);
+}
+
+.tool-btn.active {
+  background: #2563eb;
+  border-color: #1d4ed8;
+  color: #ffffff;
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.35);
+}
+
+.tool-btn.active svg {
+  stroke: #ffffff;
+  fill: #ffffff;
+}
+
+.sub-options-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  background: #f1f5f9;
+  padding: 5px 8px;
+  border-radius: 6px;
+  margin-top: 5px;
+  font-size: 11.5px;
+}
+
+.style-toggle-group {
+  display: flex;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.style-toggle-btn {
+  border: none;
+  background: #ffffff;
+  padding: 3px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  color: #475569;
+  transition: all 0.1s ease;
+}
+
+.style-toggle-btn.active {
+  background: #2563eb;
+  color: #ffffff;
+}
+
+.arrow-dir-btn {
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  color: #334155;
+  transition: all 0.1s ease;
+}
+
+.arrow-dir-btn.active {
+  background: #2563eb;
+  color: #ffffff;
+  border-color: #1d4ed8;
+}
+
+.tool-tip-box {
+  margin-top: 6px;
+  padding: 6px 8px;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 6px;
+  font-size: 11px;
+  line-height: 1.35;
+  color: #1e40af;
+}

@@ -140,8 +140,9 @@ window.PicEditor.interaction = {
         const pt = window.PicEditor.utils.getSvgPoint(e, svg);
         state.drawStart = pt;
 
-        const toolEl = document.getElementById('toolSelect');
-        const tool = toolEl ? toolEl.value : 'line';
+        const tool = (window.PicEditor.tools && window.PicEditor.tools.getCurrentTool) 
+          ? window.PicEditor.tools.getCurrentTool() 
+          : (document.getElementById('toolSelect') ? document.getElementById('toolSelect').value : 'line');
         const strokeStyleEl = document.getElementById('strokeStyleSelect');
         const strokeStyle = strokeStyleEl ? strokeStyleEl.value : 'solid';
         const arrowDirEl = document.getElementById('arrowDirSelect');
@@ -227,6 +228,32 @@ window.PicEditor.interaction = {
           }
           const mid = { x: (pt.x + pt.x) / 2, y: (pt.y + pt.y) / 2 };
           window.PicEditor.tools.updateArcPath(state.tempShape, state.drawStart, pt, mid);
+        } else if (tool === 'rect') {
+          state.tempShape = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+          state.tempShape.setAttribute("x", pt.x);
+          state.tempShape.setAttribute("y", pt.y);
+          state.tempShape.setAttribute("width", "0");
+          state.tempShape.setAttribute("height", "0");
+          state.tempShape.setAttribute("fill", "none");
+          state.tempShape.setAttribute("stroke", "#000000");
+          state.tempShape.setAttribute("stroke-width", "2");
+          if (strokeStyle === 'dashed') state.tempShape.setAttribute("stroke-dasharray", "6,4");
+        } else if (tool === 'circle') {
+          state.tempShape = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+          state.tempShape.setAttribute("cx", pt.x);
+          state.tempShape.setAttribute("cy", pt.y);
+          state.tempShape.setAttribute("r", "0");
+          state.tempShape.setAttribute("fill", "none");
+          state.tempShape.setAttribute("stroke", "#000000");
+          state.tempShape.setAttribute("stroke-width", "2");
+          if (strokeStyle === 'dashed') state.tempShape.setAttribute("stroke-dasharray", "6,4");
+        } else if (['parabola2', 'parabola3', 'hyperbola', 'sqrt', 'exp'].includes(tool)) {
+          state.tempShape = document.createElementNS("http://www.w3.org/2000/svg", "path");
+          state.tempShape.setAttribute("fill", "none");
+          state.tempShape.setAttribute("stroke", "#000000");
+          state.tempShape.setAttribute("stroke-width", "2");
+          if (strokeStyle === 'dashed') state.tempShape.setAttribute("stroke-dasharray", "6,4");
+          state.tempShape.setAttribute("d", `M ${pt.x},${pt.y} L ${pt.x},${pt.y}`);
         }
 
         if (state.tempShape) {
@@ -392,17 +419,75 @@ window.PicEditor.interaction = {
       // 2. 작도 모드 드로잉
       if (state.isDrawMode && state.isDrawing && state.tempShape) {
         if (e.cancelable) e.preventDefault();
-        const tool = document.getElementById('toolSelect').value;
+        const tool = (window.PicEditor.tools && window.PicEditor.tools.getCurrentTool) 
+          ? window.PicEditor.tools.getCurrentTool() 
+          : (document.getElementById('toolSelect') ? document.getElementById('toolSelect').value : 'line');
+
         if (tool === 'line' || tool === 'arrow') {
           state.tempShape.setAttribute("x2", pt.x);
           state.tempShape.setAttribute("y2", pt.y);
-          const arrowDir = document.getElementById('arrowDirSelect').value;
+          const arrowDirEl = document.getElementById('arrowDirSelect');
+          const arrowDir = arrowDirEl ? arrowDirEl.value : 'end';
           if (tool === 'arrow' && (arrowDir === 'mid-right' || arrowDir === 'mid-left')) {
             window.PicEditor.tools.applyArrowMarkers(state.tempShape, arrowDir, 1);
           }
         } else if (tool === 'arc') {
           const mid = { x: (state.drawStart.x + pt.x) / 2, y: (state.drawStart.y + pt.y) / 2 };
           window.PicEditor.tools.updateArcPath(state.tempShape, state.drawStart, pt, mid);
+        } else if (tool === 'rect') {
+          const x = Math.min(state.drawStart.x, pt.x);
+          const y = Math.min(state.drawStart.y, pt.y);
+          const w = Math.abs(pt.x - state.drawStart.x);
+          const h = Math.abs(pt.y - state.drawStart.y);
+          state.tempShape.setAttribute("x", x.toFixed(1));
+          state.tempShape.setAttribute("y", y.toFixed(1));
+          state.tempShape.setAttribute("width", Math.max(1, w).toFixed(1));
+          state.tempShape.setAttribute("height", Math.max(1, h).toFixed(1));
+        } else if (tool === 'circle') {
+          const r = Math.hypot(pt.x - state.drawStart.x, pt.y - state.drawStart.y);
+          state.tempShape.setAttribute("cx", state.drawStart.x.toFixed(1));
+          state.tempShape.setAttribute("cy", state.drawStart.y.toFixed(1));
+          state.tempShape.setAttribute("r", Math.max(1, r).toFixed(1));
+        } else if (tool === 'parabola2') {
+          // 꼭짓점(vertex) = drawStart, 끝점 = pt
+          const x0 = state.drawStart.x, y0 = state.drawStart.y;
+          const x1 = pt.x, y1 = pt.y;
+          const d = `M ${x0.toFixed(1)},${y0.toFixed(1)} Q ${x1.toFixed(1)},${y0.toFixed(1)} ${x1.toFixed(1)},${y1.toFixed(1)}`;
+          state.tempShape.setAttribute("d", d);
+        } else if (tool === 'parabola3') {
+          // 좌측 시점 = drawStart, 우측 낙하지점 = (pt.x, drawStart.y), 최고점 높이 = pt.y
+          const x1 = state.drawStart.x, y1 = state.drawStart.y;
+          const x2 = pt.x, y2 = pt.y;
+          const xv = ((x1 + x2) / 2).toFixed(1);
+          const yc = (2 * y2 - y1).toFixed(1);
+          const d = `M ${x1.toFixed(1)},${y1.toFixed(1)} Q ${xv},${yc} ${x2.toFixed(1)},${y1.toFixed(1)}`;
+          state.tempShape.setAttribute("d", d);
+        } else if (tool === 'hyperbola') {
+          // 반비례 곡선 y=k/x: 바운딩 영역 내 매끄러운 쌍곡선
+          const x1 = Math.min(state.drawStart.x, pt.x);
+          const x2 = Math.max(state.drawStart.x, pt.x);
+          const y1 = Math.min(state.drawStart.y, pt.y);
+          const y2 = Math.max(state.drawStart.y, pt.y);
+          const dx = x2 - x1, dy = y2 - y1;
+          const d = `M ${x1.toFixed(1)},${y1.toFixed(1)} C ${x1.toFixed(1)},${(y1 + 0.60 * dy).toFixed(1)} ${(x1 + 0.40 * dx).toFixed(1)},${y2.toFixed(1)} ${x2.toFixed(1)},${y2.toFixed(1)}`;
+          state.tempShape.setAttribute("d", d);
+        } else if (tool === 'sqrt') {
+          // 무리함수 y=√x: 원점(하단)에서 출발하여 상단으로 완만해지는 곡선
+          const x1 = Math.min(state.drawStart.x, pt.x);
+          const x2 = Math.max(state.drawStart.x, pt.x);
+          const y1 = Math.min(state.drawStart.y, pt.y);
+          const y2 = Math.max(state.drawStart.y, pt.y);
+          const d = `M ${x1.toFixed(1)},${y2.toFixed(1)} Q ${x1.toFixed(1)},${y1.toFixed(1)} ${x2.toFixed(1)},${y1.toFixed(1)}`;
+          state.tempShape.setAttribute("d", d);
+        } else if (tool === 'exp') {
+          // 지수함수 y=e⁻ˣ: 좌상단에서 우하단 수평 점근선으로 감쇠하는 곡선
+          const x1 = Math.min(state.drawStart.x, pt.x);
+          const x2 = Math.max(state.drawStart.x, pt.x);
+          const y1 = Math.min(state.drawStart.y, pt.y);
+          const y2 = Math.max(state.drawStart.y, pt.y);
+          const dx = x2 - x1, dy = y2 - y1;
+          const d = `M ${x1.toFixed(1)},${y1.toFixed(1)} C ${(x1 + 0.30 * dx).toFixed(1)},${(y1 + 0.65 * dy).toFixed(1)} ${(x1 + 0.60 * dx).toFixed(1)},${y2.toFixed(1)} ${x2.toFixed(1)},${y2.toFixed(1)}`;
+          state.tempShape.setAttribute("d", d);
         }
         return;
       }
@@ -491,7 +576,9 @@ window.PicEditor.interaction = {
           window.PicEditor.interaction.initMovableEvents();
           state.tempShape = null;
 
-          const tool = document.getElementById('toolSelect').value;
+          const tool = (window.PicEditor.tools && window.PicEditor.tools.getCurrentTool)
+            ? window.PicEditor.tools.getCurrentTool()
+            : (document.getElementById('toolSelect') ? document.getElementById('toolSelect').value : 'line');
           if (tool === 'arc') {
             // 호(arc) 작도 완료 즉시 선택 모드로 전환하고 붉은 중심점 핸들 노출
             window.PicEditor.interaction.toggleMode();

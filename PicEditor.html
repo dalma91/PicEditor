@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>물리 마스터 에디터 스튜디오 v15</title>
-  <link rel="stylesheet" href="css/style.css?v=20261029_9">
+  <link rel="stylesheet" href="css/style.css?v=20261029_10">
   <style>
     /* 브라우저 100vh 고정 뷰포트 및 2열 그리드 레이아웃 */
     html, body {
@@ -153,55 +153,136 @@
         </div>
       </section>
 
-      <!-- 3. 작도 도구 -->
+      <!-- 3. 작도 도구 (직관적 아이콘 팔레트) -->
       <section class="sidebar-section">
-        <h3>✏️ 그리기 도구</h3>
-        <div class="control-group">
-          <label for="toolSelect">도구:</label>
-          <select id="toolSelect" onchange="onToolChange()">
-            <option value="line">직선</option>
-            <option value="arrow">화살표</option>
-            <option value="arc">호 (드래그)</option>
-            <option value="text">글자 추가 (클릭)</option>
-          </select>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+          <h3 style="margin:0;">✏️ 작도 도구</h3>
+          <span class="badge" id="currentToolBadge" style="font-size:10.5px; font-weight:700; background:#eff6ff; color:#2563eb; padding:2px 7px; border-radius:10px; border:1px solid #bfdbfe;">직선</span>
         </div>
 
-        <div class="control-group">
-          <label for="strokeStyleSelect">선 종류:</label>
-          <select id="strokeStyleSelect">
-            <option value="solid">실선</option>
-            <option value="dashed">점선</option>
-          </select>
+        <!-- 하위 호환용 hidden select -->
+        <select id="toolSelect" style="display:none;" onchange="onToolChange()">
+          <option value="line">직선</option>
+          <option value="arrow">화살표</option>
+          <option value="rect">사각형</option>
+          <option value="circle">원</option>
+          <option value="arc">호</option>
+          <option value="text">글자</option>
+          <option value="parabola2">포물선(2점)</option>
+          <option value="parabola3">포물선(3점)</option>
+          <option value="hyperbola">반비례(1/x)</option>
+          <option value="sqrt">루트(√x)</option>
+          <option value="exp">지수(e⁻ˣ)</option>
+        </select>
+        <select id="strokeStyleSelect" style="display:none;">
+          <option value="solid">실선</option>
+          <option value="dashed">점선</option>
+        </select>
+        <select id="arrowDirSelect" style="display:none;">
+          <option value="end">오른쪽 끝 (→)</option>
+          <option value="start">왼쪽 끝 (←)</option>
+          <option value="both">양쪽 (↔)</option>
+          <option value="mid-right">중앙 오른쪽 (→)</option>
+          <option value="mid-left">중앙 왼쪽 (←)</option>
+        </select>
+
+        <!-- 1. 기본 도형 팔레트 (6개) -->
+        <div class="tool-grid-label">기본 도형</div>
+        <div class="tool-icon-grid">
+          <button type="button" class="tool-btn active" data-tool="line" onclick="setTool('line')" title="직선 (Line)">
+            <svg viewBox="0 0 24 24"><line x1="4" y1="20" x2="20" y2="4" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>
+            <span class="btn-sublabel">직선</span>
+          </button>
+          <button type="button" class="tool-btn" data-tool="arrow" onclick="setTool('arrow')" title="화살표 (Arrow)">
+            <svg viewBox="0 0 24 24"><line x1="4" y1="20" x2="17" y2="7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><polygon points="11,5 20,4 19,13" fill="currentColor" stroke="none"/></svg>
+            <span class="btn-sublabel">화살표</span>
+          </button>
+          <button type="button" class="tool-btn" data-tool="rect" onclick="setTool('rect')" title="사각형 (Rectangle)">
+            <svg viewBox="0 0 24 24"><rect x="3.5" y="5.5" width="17" height="13" rx="1.5" fill="none" stroke="currentColor" stroke-width="2.3"/></svg>
+            <span class="btn-sublabel">사각형</span>
+          </button>
+          <button type="button" class="tool-btn" data-tool="circle" onclick="setTool('circle')" title="원 (Circle)">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="2.3"/></svg>
+            <span class="btn-sublabel">원</span>
+          </button>
+          <button type="button" class="tool-btn" data-tool="arc" onclick="setTool('arc')" title="원호 (Arc)">
+            <svg viewBox="0 0 24 24"><path d="M 4,17 A 10,10 0 0,1 20,17" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"/><circle cx="12" cy="17" r="1.5" fill="#dc2626" stroke="none"/></svg>
+            <span class="btn-sublabel">호</span>
+          </button>
+          <button type="button" class="tool-btn" data-tool="text" onclick="setTool('text')" title="글자 (Text)">
+            <svg viewBox="0 0 24 24"><path d="M5 4h14v3.5h-5.5v12.5h-3V7.5H5V4z" fill="currentColor" stroke="none"/></svg>
+            <span class="btn-sublabel">글자</span>
+          </button>
         </div>
 
-        <div class="control-group" id="arrowOptionGroup">
-          <label for="arrowDirSelect">방향:</label>
-          <select id="arrowDirSelect">
-            <option value="end">오른쪽 끝 (→)</option>
-            <option value="start">왼쪽 끝 (←)</option>
-            <option value="both">양쪽 (↔)</option>
-            <option value="mid-right">중앙 오른쪽 (→)</option>
-            <option value="mid-left">중앙 왼쪽 (←)</option>
-          </select>
+        <!-- 2. 물리 및 함수 곡선 팔레트 (5개) -->
+        <div class="tool-grid-label">물리 / 수학 곡선</div>
+        <div class="tool-icon-grid curves-grid">
+          <button type="button" class="tool-btn" data-tool="parabola2" onclick="setTool('parabola2')" title="포물선 2점 (꼭짓점-끝점)">
+            <svg viewBox="0 0 24 24"><path d="M 4,6 Q 19,6 20,20" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"/><circle cx="4" cy="6" r="2.2" fill="#dc2626" stroke="none"/></svg>
+            <span class="btn-sublabel">포물선2</span>
+          </button>
+          <button type="button" class="tool-btn" data-tool="parabola3" onclick="setTool('parabola3')" title="포물선 3점 (좌-꼭짓점-우)">
+            <svg viewBox="0 0 24 24"><path d="M 3,19 Q 12,1 21,19" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"/><circle cx="12" cy="5.5" r="2.2" fill="#dc2626" stroke="none"/></svg>
+            <span class="btn-sublabel">포물선3</span>
+          </button>
+          <button type="button" class="tool-btn" data-tool="hyperbola" onclick="setTool('hyperbola')" title="반비례 곡선 (y=k/x)">
+            <svg viewBox="0 0 24 24"><path d="M 3,3 v 18 h 18" fill="none" stroke="#94a3b8" stroke-width="1.2"/><path d="M 5,5 C 5,14 10,19 19,19" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"/></svg>
+            <span class="btn-sublabel">1/x</span>
+          </button>
+          <button type="button" class="tool-btn" data-tool="sqrt" onclick="setTool('sqrt')" title="무리함수 곡선 (y=√x)">
+            <svg viewBox="0 0 24 24"><path d="M 3,3 v 18 h 18" fill="none" stroke="#94a3b8" stroke-width="1.2"/><path d="M 3,21 Q 3,7 19,7" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"/></svg>
+            <span class="btn-sublabel">√x</span>
+          </button>
+          <button type="button" class="tool-btn" data-tool="exp" onclick="setTool('exp')" title="지수함수 감쇠 (y=e⁻ˣ)">
+            <svg viewBox="0 0 24 24"><path d="M 3,3 v 18 h 18" fill="none" stroke="#94a3b8" stroke-width="1.2"/><path d="M 3,6 C 8,14 13,20 20,20" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"/></svg>
+            <span class="btn-sublabel">e⁻ˣ</span>
+          </button>
         </div>
 
-        <div class="control-group" id="arcOptionGroup" style="display:none; flex-direction:column; align-items:flex-start; gap:4px; background:#eff6ff; border-color:#bfdbfe; font-size:11.5px; color:#1e40af;">
-          <span style="font-weight:700;">💡 호(Arc) 작도 안내</span>
-          <span style="font-size:11px; line-height:1.4; color:#2563eb;">드래그하여 호를 그린 뒤, 나타나는 <strong>🔴 호의 중심</strong>이나 <strong>🔵 파란 끝점</strong>을 드래그하면 호의 중심과 길이, 곡률을 자유롭게 조절할 수 있습니다.</span>
+        <!-- 3. 실선/점선 토글 바 -->
+        <div class="sub-options-bar">
+          <span style="font-weight:600; color:#475569;">선 종류:</span>
+          <div class="style-toggle-group">
+            <button type="button" class="style-toggle-btn active" id="btnStrokeSolid" onclick="setStrokeStyle('solid')">실선</button>
+            <button type="button" class="style-toggle-btn" id="btnStrokeDashed" onclick="setStrokeStyle('dashed')">점선</button>
+          </div>
+          <button type="button" class="secondary" style="margin-left:auto; padding:3px 7px; font-size:11px;" onclick="convertToArrow()" title="선택된 직선과 화살표 상호 변환">
+            <span>↔ 변환</span>
+          </button>
         </div>
 
-        <div class="control-group" id="textOptionGroup" style="display:none; flex-direction:column; align-items:flex-start; gap:4px; background:#eff6ff; border-color:#bfdbfe; font-size:11.5px; color:#1e40af;">
+        <!-- 4. 화살표 방향 옵션 바 (화살표 선택 시 노출) -->
+        <div id="arrowOptionGroup" style="display:none; flex-direction:column; gap:4px; margin-top:5px; background:#eff6ff; padding:6px 8px; border-radius:6px; border:1px solid #bfdbfe;">
+          <span style="font-size:11px; font-weight:700; color:#1e40af;">화살표 방향:</span>
+          <div style="display:flex; gap:3px;">
+            <button type="button" class="arrow-dir-btn active" data-dir="end" onclick="setArrowDir('end')" title="오른쪽 끝 (→)">끝 →</button>
+            <button type="button" class="arrow-dir-btn" data-dir="start" onclick="setArrowDir('start')" title="왼쪽 끝 (←)">← 시점</button>
+            <button type="button" class="arrow-dir-btn" data-dir="both" onclick="setArrowDir('both')" title="양쪽 (↔)">↔ 양쪽</button>
+            <button type="button" class="arrow-dir-btn" data-dir="mid-right" onclick="setArrowDir('mid-right')" title="중앙 오른쪽 (→)">중앙→</button>
+            <button type="button" class="arrow-dir-btn" data-dir="mid-left" onclick="setArrowDir('mid-left')" title="중앙 왼쪽 (←)">←중앙</button>
+          </div>
+        </div>
+
+        <!-- 5. 호 작도 안내 -->
+        <div id="arcOptionGroup" style="display:none; flex-direction:column; gap:4px; margin-top:5px; background:#eff6ff; padding:6px 8px; border-radius:6px; border:1px solid #bfdbfe; font-size:11px; color:#1e40af;">
+          <span style="font-weight:700;">💡 호(Arc) 조작 안내</span>
+          <span>드래그 후 <strong>🔴호의 중심</strong>이나 <strong>🔵양 끝점</strong>을 드래그하여 곡률과 길이를 조절하세요.</span>
+        </div>
+
+        <!-- 6. 글자 추가 안내 -->
+        <div id="textOptionGroup" style="display:none; flex-direction:column; gap:4px; margin-top:5px; background:#eff6ff; padding:6px 8px; border-radius:6px; border:1px solid #bfdbfe; font-size:11px; color:#1e40af;">
           <span style="font-weight:700;">💡 글자(Text) 추가 안내</span>
-          <span style="font-size:11px; line-height:1.4; color:#2563eb;">캔버스에서 글자를 넣을 위치를 마우스로 클릭하면 새 글자가 생성되며 즉시 편집할 수 있습니다.</span>
+          <span>캔버스에서 글자를 넣을 위치를 마우스로 클릭하면 즉시 입력창이 열립니다.</span>
         </div>
 
-        <button type="button" class="success full-btn" onclick="convertToArrow()">
-          <svg class="btn-icon" viewBox="0 0 24 24"><path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/></svg>
-          <span>직선 ↔ 화살표 변경</span>
-        </button>
+        <!-- 7. 하단 직관적 팁 박스 -->
+        <div class="tool-tip-box" id="toolTipBox">
+          💡 <b>직선</b>: 마우스로 드래그하여 시점부터 종점까지 직선을 그립니다.
+        </div>
       </section>
 
-      <!-- 4. 요소 변환 (크기/회전/반전) -->
+<!-- 4. 요소 변환 (크기/회전/반전) -->
       <section class="sidebar-section">
         <h3>📐 크기 및 변환</h3>
         <div class="control-group">
@@ -552,14 +633,14 @@
   </div>
 
   <!-- 자바스크립트 모듈 로드 (강제 캐시 갱신 파라미터 적용) -->
-  <script src="js/state.js?v=20261029_9"></script>
-  <script src="js/utils.js?v=20261029_9"></script>
-  <script src="js/canvas.js?v=20261029_9"></script>
-  <script src="js/tools.js?v=20261029_9"></script>
-  <script src="js/inspector.js?v=20261029_9"></script>
-  <script src="js/interaction.js?v=20261029_9"></script>
-  <script src="js/export-import.js?v=20261029_9"></script>
-  <script src="js/github.js?v=20261029_9"></script>
-  <script src="js/app.js?v=20261029_9"></script>
+  <script src="js/state.js?v=20261029_10"></script>
+  <script src="js/utils.js?v=20261029_10"></script>
+  <script src="js/canvas.js?v=20261029_10"></script>
+  <script src="js/tools.js?v=20261029_10"></script>
+  <script src="js/inspector.js?v=20261029_10"></script>
+  <script src="js/interaction.js?v=20261029_10"></script>
+  <script src="js/export-import.js?v=20261029_10"></script>
+  <script src="js/github.js?v=20261029_10"></script>
+  <script src="js/app.js?v=20261029_10"></script>
 </body>
 </html>

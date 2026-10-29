@@ -7,19 +7,108 @@ window.PicEditor.tools = {
   /**
    * 도구 선택 셀렉트 박스 변경 시 옵션 표시 제어
    */
+  currentTool: 'line',
+
+  getCurrentTool() {
+    return this.currentTool || (document.getElementById('toolSelect') ? document.getElementById('toolSelect').value : 'line');
+  },
+
+  /**
+   * 아이콘 버튼 클릭 시 도구 설정
+   */
+  setTool(toolName) {
+    this.currentTool = toolName;
+    const toolSelect = document.getElementById('toolSelect');
+    if (toolSelect) toolSelect.value = toolName;
+
+    // 아이콘 버튼 활성화 상태 갱신
+    document.querySelectorAll('.tool-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.tool === toolName);
+    });
+
+    // 상단 뱃지 갱신
+    const badge = document.getElementById('currentToolBadge');
+    const toolNames = {
+      line: '직선',
+      arrow: '화살표',
+      rect: '사각형',
+      circle: '원',
+      arc: '호',
+      text: '글자',
+      parabola2: '포물선(2점)',
+      parabola3: '포물선(3점)',
+      hyperbola: '반비례(1/x)',
+      sqrt: '루트(√x)',
+      exp: '지수(e⁻ˣ)'
+    };
+    if (badge) badge.textContent = toolNames[toolName] || toolName;
+
+    // 서브 옵션 표시/숨김
+    const arrowGrp = document.getElementById('arrowOptionGroup');
+    const arcGrp = document.getElementById('arcOptionGroup');
+    const textGrp = document.getElementById('textOptionGroup');
+
+    if (arrowGrp) arrowGrp.style.display = (toolName === 'arrow') ? 'flex' : 'none';
+    if (arcGrp) arcGrp.style.display = (toolName === 'arc') ? 'flex' : 'none';
+    if (textGrp) textGrp.style.display = (toolName === 'text') ? 'flex' : 'none';
+
+    // 안내 박스 텍스트 갱신
+    const tipBox = document.getElementById('toolTipBox');
+    const tips = {
+      line: '💡 <b>직선</b>: 마우스로 드래그하여 시점부터 종점까지 직선을 그립니다.',
+      arrow: '💡 <b>화살표</b>: 드래그하여 벡터 화살표를 작도합니다. (하단에서 방향 선택 가능)',
+      rect: '💡 <b>사각형</b>: 드래그하여 사각형(물체/블록/경사면)을 작도합니다.',
+      circle: '💡 <b>원</b>: 중심점을 클릭하고 바깥으로 드래그하여 원(도르래/구체)을 그립니다.',
+      arc: '💡 <b>원호</b>: 드래그 후 나타나는 🔴호의 중심이나 🔵끝점을 당겨 곡률을 조절합니다.',
+      text: '💡 <b>글자</b>: 캔버스에서 글자를 넣을 위치를 클릭하면 즉시 입력창이 열립니다.',
+      parabola2: '💡 <b>포물선 (꼭짓점-끝점)</b>: 꼭짓점을 누른 채 좌/우 낙하지점으로 드래그합니다.',
+      parabola3: '💡 <b>포물선 (3점)</b>: 발사점에서 최고점 및 반대편 낙하지점으로 드래그합니다.',
+      hyperbola: '💡 <b>반비례 곡선 (y=k/x)</b>: 대각선으로 드래그하여 보일 법칙(등온선) 쌍곡선을 작도합니다.',
+      sqrt: '💡 <b>무리함수 (y=√x)</b>: 원점에서 드래그하여 위로 완만해지는 루트 곡선을 작도합니다.',
+      exp: '💡 <b>지수 곡선 (y=e⁻ˣ)</b>: 대각선으로 드래그하여 지수 감쇠(방사성/방전) 곡선을 작도합니다.'
+    };
+    if (tipBox && tips[toolName]) {
+      tipBox.innerHTML = tips[toolName];
+    }
+
+    // 선택 모드인 경우 자동으로 작도 모드로 전환
+    const state = window.PicEditor.state;
+    if (state && !state.isDrawMode) {
+      window.PicEditor.interaction.toggleMode();
+    }
+  },
+
+  /**
+   * 레거시 셀렉트 호환 및 초기화
+   */
   onToolChange() {
     const toolEl = document.getElementById('toolSelect');
     if (!toolEl) return;
-    const tool = toolEl.value;
-    const arrowGrp = document.getElementById('arrowOptionGroup');
-    const arcGrp = document.getElementById('arcOptionGroup');
-    
-    const textGrp = document.getElementById('textOptionGroup');
-    if (arrowGrp) arrowGrp.style.display = (tool === 'arrow') ? 'flex' : 'none';
-    if (arcGrp) arcGrp.style.display = (tool === 'arc') ? 'flex' : 'none';
-    if (textGrp) textGrp.style.display = (tool === 'text') ? 'flex' : 'none';
+    this.setTool(toolEl.value);
   },
 
+  /**
+   * 실선/점선 토글
+   */
+  setStrokeStyle(style) {
+    const sel = document.getElementById('strokeStyleSelect');
+    if (sel) sel.value = style;
+    const btnSolid = document.getElementById('btnStrokeSolid');
+    const btnDashed = document.getElementById('btnStrokeDashed');
+    if (btnSolid) btnSolid.classList.toggle('active', style === 'solid');
+    if (btnDashed) btnDashed.classList.toggle('active', style === 'dashed');
+  },
+
+  /**
+   * 화살표 방향 설정
+   */
+  setArrowDir(dir) {
+    const sel = document.getElementById('arrowDirSelect');
+    if (sel) sel.value = dir;
+    document.querySelectorAll('.arrow-dir-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.dir === dir);
+    });
+  },
   /**
    * W3C 표준 SVG 타원 호(Arc) 엔드포인트 파라미터로부터 실제 원의 중심 좌표(cx, cy) 산출
    */
@@ -582,3 +671,7 @@ window.PicEditor.tools = {
 // 전역 단축 참조
 window.onToolChange = () => window.PicEditor.tools.onToolChange();
 window.convertToArrow = () => window.PicEditor.tools.convertToArrow();
+
+window.setTool = (t) => window.PicEditor.tools.setTool(t);
+window.setStrokeStyle = (s) => window.PicEditor.tools.setStrokeStyle(s);
+window.setArrowDir = (d) => window.PicEditor.tools.setArrowDir(d);
