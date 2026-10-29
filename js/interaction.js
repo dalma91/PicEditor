@@ -452,7 +452,7 @@ window.PicEditor.interaction = {
     window.addEventListener('mouseup', handlePointerUp);
     window.addEventListener('touchend', handlePointerUp);
 
-    // ESC 키 및 삭제 키
+    // ESC 키, 삭제 키 및 방향키(Arrow Keys) 이동
     window.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
         window.PicEditor.storage.closeHtmlModal();
@@ -462,6 +462,51 @@ window.PicEditor.interaction = {
         if (activeTag !== 'input' && activeTag !== 'textarea') {
           if (state.selectedElement) {
             window.PicEditor.inspector.deleteSelected();
+          }
+        }
+      } else if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+        // 입력 필드(input, textarea)에서 타이핑 중일 때는 텍스트 커서 이동 허용
+        const activeTag = document.activeElement ? document.activeElement.tagName.toLowerCase() : '';
+        if (activeTag === 'input' || activeTag === 'textarea') return;
+
+        // 선택된 객체가 있을 경우 방향키로 미세 이동
+        if (state.selectedElement) {
+          e.preventDefault(); // 브라우저 창 스크롤 방지
+          const step = e.shiftKey ? 10 : 1; // Shift 키 누르면 10px씩 고속 이동, 기본 1px 정밀 미세 이동
+          let dx = 0;
+          let dy = 0;
+
+          if (e.key === 'ArrowUp') dy = -step;
+          else if (e.key === 'ArrowDown') dy = step;
+          else if (e.key === 'ArrowLeft') dx = -step;
+          else if (e.key === 'ArrowRight') dx = step;
+
+          const target = state.selectedElement.closest('.text-wrap') || state.selectedElement;
+          const t = window.PicEditor.utils.parseTransform(target);
+          t.x += dx;
+          t.y += dy;
+          window.PicEditor.utils.setTransform(target, t);
+
+          if (window.PicEditor.tools) {
+            if (window.PicEditor.tools.isArcElement(target)) {
+              window.PicEditor.tools.updateArcGizmoTransform(target);
+            } else if (window.PicEditor.tools.isLineElement(target)) {
+              window.PicEditor.tools.updateLineGizmoTransform(target);
+              if (target.id) {
+                const svg = window.PicEditor.utils.getActiveSvg();
+                const midG = svg ? svg.querySelector(`g.mid-arrow[data-for="${target.id}"]`) : null;
+                if (midG) {
+                  const mt = window.PicEditor.utils.parseTransform(midG);
+                  mt.x += dx;
+                  mt.y += dy;
+                  window.PicEditor.utils.setTransform(midG, mt);
+                }
+              }
+            }
+          }
+
+          if (window.PicEditor.sync) {
+            window.PicEditor.sync.markModified();
           }
         }
       }

@@ -752,6 +752,7 @@ if (apiRes.ok) {
 
 ---
 
+| **PATCH-012** | 2026-10-29 | `TBD` | **[키보드 방향키] 선택 객체 1px 정밀 미세 이동 및 Shift 10px 고속 이동 네비게이션 구현**<br>- 선택된 객체(글자, 선, 화살표, 호, 이미지 등)를 키보드 상/하/좌/우 방향키(`ArrowUp/Down/Left/Right`)로 1px씩 정밀 이동<br>- `Shift + 방향키` 조합 시 10px 단위 고속 이동 지원<br>- 브라우저 기본 스크롤 간섭 방지(`e.preventDefault()`) 및 텍스트 입력창(`input`, `textarea`) 포커스 시 보호 예외 처리<br>- 이동 시 호의 중심, 선 양 끝점 조작 핸들, 중간 화살표(`mid-arrow`) 실시간 동기화 및 자동 백업 연동 | ✅ 완료 |
 ## 🔍 [PATCH-011] 글자 배경 '박스 흰색' 선택 시 외곽 테두리선(stroke) 완전 제거
 
 ### 1. 이슈 개요 및 사용자 보고
@@ -828,3 +829,96 @@ if (apiRes.ok) {
      - `display`: `block` (✅ PASS)
      - `stroke`: `none` (✅ PASS, 테두리 선 완전 제거 확인)
      - `fill`: `#ffffff` (✅ PASS, 순수 흰색 배경 유지 확인)
+
+---
+
+## 🔍 [PATCH-012] 키보드 방향키를 통한 선택 객체 1px 정밀 이동 및 Shift 10px 고속 이동 구현
+
+### 1. 이슈 개요 및 사용자 보고
+- **보고 일시:** 2026-10-29 11:46 KST
+- **사용자 보고 내용:**
+  > *"마우스 방향키로 객체 이동시키는 건 반영 안된거 같은데? 이건 안되는 거야?"*
+- **핵심 요구사항:**
+  - 마우스 드래그 외에도 키보드의 상/하/좌/우 방향키(`↑`, `↓`, `←`, `→`)를 눌러 현재 선택된 객체(글자, 직선, 화살표, 호, 그림 등)를 원하는 방향으로 정밀하게 1px씩 이동할 수 있어야 함.
+  - 큰 폭의 이동이 필요할 때를 대비하여 `Shift` 키와 함께 누르면 10px씩 빠르게 이동할 수 있는 보조 기능 필요.
+
+---
+
+### 2. 기술적 해결 조치 (Technical Implementation)
+
+1. **[js/interaction.js](file:///E:/Git/PicEditor/js/interaction.js) 전역 방향키 이벤트(`keydown`) 리스너 구현:**
+   ```javascript
+   } else if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+     // 입력 필드(input, textarea)에서 타이핑 중일 때는 텍스트 커서 이동 허용
+     const activeTag = document.activeElement ? document.activeElement.tagName.toLowerCase() : '';
+     if (activeTag === 'input' || activeTag === 'textarea') return;
+
+     // 선택된 객체가 있을 경우 방향키로 미세 이동
+     if (state.selectedElement) {
+       e.preventDefault(); // 브라우저 창 스크롤 방지
+       const step = e.shiftKey ? 10 : 1; // Shift 시 10px, 기본 1px
+       let dx = 0, dy = 0;
+
+       if (e.key === 'ArrowUp') dy = -step;
+       else if (e.key === 'ArrowDown') dy = step;
+       else if (e.key === 'ArrowLeft') dx = -step;
+       else if (e.key === 'ArrowRight') dx = step;
+
+       const target = state.selectedElement.closest('.text-wrap') || state.selectedElement;
+       const t = window.PicEditor.utils.parseTransform(target);
+       t.x += dx;
+       t.y += dy;
+       window.PicEditor.utils.setTransform(target, t);
+
+       // 기즈모 및 중간 화살표 동반 이동 동기화
+       if (window.PicEditor.tools) {
+         if (window.PicEditor.tools.isArcElement(target)) {
+           window.PicEditor.tools.updateArcGizmoTransform(target);
+         } else if (window.PicEditor.tools.isLineElement(target)) {
+           window.PicEditor.tools.updateLineGizmoTransform(target);
+           if (target.id) {
+             const svg = window.PicEditor.utils.getActiveSvg();
+             const midG = svg ? svg.querySelector(`g.mid-arrow[data-for="${target.id}"]`) : null;
+             if (midG) {
+               const mt = window.PicEditor.utils.parseTransform(midG);
+               mt.x += dx;
+               mt.y += dy;
+               window.PicEditor.utils.setTransform(midG, mt);
+             }
+           }
+         }
+       }
+
+       if (window.PicEditor.sync) {
+         window.PicEditor.sync.markModified();
+       }
+     }
+   }
+   ```
+2. **입력 폼 보호 및 브라우저 스크롤 격리:**
+   - 보관함 검색창, 파일명 입력창, 토큰 설정창 등 `<input>`/`<textarea>`에서 작업 중일 때는 텍스트 커서 이동이 정상 동작하도록 예외 처리.
+   - 객체 조작 중에는 `e.preventDefault()`를 호출하여 방향키를 눌렀을 때 페이지가 스크롤되는 현상 차단.
+3. **캐시 버스터 갱신:**
+   - [index.html](file:///E:/Git/PicEditor/index.html) 및 [PicEditor.html](file:///E:/Git/PicEditor/PicEditor.html) 스크립트 모듈 캐시 버스터 `v=20261029_8` 일괄 갱신.
+
+---
+
+### 3. 변경된 파일 목록 (Files Modified)
+
+| 파일 경로 | 주요 변경 내용 |
+| :--- | :--- |
+| [js/interaction.js](file:///E:/Git/PicEditor/js/interaction.js) | 전역 keydown 리스너에 방향키(1px) 및 Shift+방향키(10px) 이동, 스크롤 방지 및 기즈모 동기화 추가 |
+| [index.html](file:///E:/Git/PicEditor/index.html) | 스크립트 모듈 캐시 버스터 `v=20261029_8` 갱신 |
+| [PicEditor.html](file:///E:/Git/PicEditor/PicEditor.html) | `index.html`과 100% 동일 동기화 |
+| [physics_diagram_studio_patch_report.md](file:///E:/Git/PicEditor/physics_diagram_studio_patch_report.md) | `PATCH-012` 상세 구현 및 자동화 검증 보고서 작성 |
+
+---
+
+### 4. 테스트 및 검증 결과
+
+1. **자동화 검증 ([scratch/test_arrow_keys.html](file:///E:/Git/PicEditor/scratch/test_arrow_keys.html)):**
+   - 직선 선택 후 `ArrowRight` 입력 시: `dx = +1px` 이동 (✅ PASS)
+   - `ArrowDown` 입력 시: `dy = +1px` 이동 (✅ PASS)
+   - `Shift + ArrowRight` 입력 시: `dx = +10px` 고속 이동 (✅ PASS)
+   - `Shift + ArrowUp` 입력 시: `dy = -10px` 고속 이동 (✅ PASS)
+   - 텍스트 입력창(`input`) 포커스 상태에서 방향키 입력 시: 객체 위치 불변 및 폼 커서 보호 (✅ PASS)
