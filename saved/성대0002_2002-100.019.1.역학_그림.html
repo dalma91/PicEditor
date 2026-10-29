@@ -5,76 +5,30 @@
   <title>성대0002_2002-100.019.1.역학_그림</title>
 </head>
 <body>
-<svg viewBox="0 0 786 858" width="786" height="858" class="select-mode">
-  <rect width="100%" height="100%" fill="#FFFFFF" />
-  <defs>
-    <marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-      <path d="M 0 0 L 10 5 L 0 10 z" fill="#000000" />
-    </marker>
-    <marker id="arrow-start" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto">
-      <path d="M 10 0 L 0 5 L 10 10 z" fill="#000000" />
-    </marker>
-    <pattern id="hatch" width="10" height="10" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
-      <line x1="0" y1="0" x2="0" y2="10" stroke="#888888" stroke-width="1.5" />
-    </pattern>
-  </defs>
-
-  <g class="main-diagram">
-    <!-- 천장 패턴 및 테두리 -->
-    <rect class="movable" x="35" y="30" width="540" height="80" fill="url(#hatch)" stroke="#000000" stroke-width="2.5" transform="translate(0,0) scale(1,1) rotate(0)" />
-    <line class="movable" x1="35" y1="110" x2="575" y2="110" stroke="#000000" stroke-width="3" transform="translate(0,0) scale(1,1) rotate(0)" />
-
-    <!-- 지면 선 -->
-    <line class="movable" x1="0" y1="760" x2="680" y2="760" stroke="#000000" stroke-width="3.2" transform="translate(0,0) scale(1,1) rotate(0)" />
-
-    <!-- 수직 실 S1 (P -> Q) -->
-    <line class="movable" x1="280" y1="110" x2="280" y2="480" stroke="#000000" stroke-width="2.5" transform="translate(0,0) scale(1,1) rotate(0)" />
-
-    <!-- l 길이 안내 곡선 -->
-    <path class="movable" d="M 275,120 Q 230,290 275,470" fill="none" stroke="#000000" stroke-width="1.5" transform="translate(0,0) scale(1,1) rotate(0)" />
-
-    <!-- Q에서 지면 O까지의 수직 점선 -->
-    <line class="movable" x1="280" y1="480" x2="280" y2="760" stroke="#000000" stroke-width="2" stroke-dasharray="5,4" transform="translate(0,0) scale(1,1) rotate(0)" />
-
-    <!-- 경사 실 (P -> R) 및 장력 T1 화살표 -->
-    <line class="movable" x1="280" y1="110" x2="460" y2="420" stroke="#000000" stroke-width="3" transform="translate(0,0) scale(1,1) rotate(0)" />
-    <line class="movable" x1="420" y1="351" x2="360" y2="248" stroke="#000000" stroke-width="2.5" marker-end="url(#arrow)" transform="translate(0,0) scale(1,1) rotate(0)" />
-
-    <!-- 수평 실 (R -> S2) 및 장력 T2 화살표 -->
-    <line class="movable" x1="460" y1="420" x2="680" y2="420" stroke="#000000" stroke-width="2.5" transform="translate(0,0) scale(1,1) rotate(0)" />
-    <line class="movable" x1="510" y1="420" x2="570" y2="420" stroke="#000000" stroke-width="2.5" marker-end="url(#arrow)" transform="translate(0,0) scale(1,1) rotate(0)" />
-
-    <!-- Q에서 R까지의 점선 궤적 (원호) -->
-    <path class="movable" d="M 280,480 Q 380,480 460,420" fill="none" stroke="#000000" stroke-width="2" stroke-dasharray="5,4" transform="translate(0,0) scale(1,1) rotate(0)" />
-
-    <!-- 각도 theta_0 호 -->
-    <path class="movable" d="M 280,225 Q 315,225 338,210" fill="none" stroke="#000000" stroke-width="1.8" transform="translate(0,0) scale(1,1) rotate(0)" />
-
-    <!-- 높이 h 양방향 치수 화살표 -->
-    <line class="movable" x1="95" y1="110" x2="95" y2="760" stroke="#000000" stroke-width="2.2" marker-start="url(#arrow-start)" marker-end="url(#arrow)" transform="translate(0,0) scale(1,1) rotate(0)" />
-
-    <!-- 질점 및 지점 원 -->
-    <circle class="movable" cx="280" cy="110" r="5" fill="#000000" transform="translate(0,0) scale(1,1) rotate(0)" />
-    <circle class="movable" cx="280" cy="480" r="6" fill="#000000" transform="translate(0,0) scale(1,1) rotate(0)" />
-    <circle class="movable" cx="460" cy="420" r="5" fill="#000000" transform="translate(0,0) scale(1,1) rotate(0)" />
-  </g>
-
-  <g class="text-layer">
-    <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)"><rect class="text-bg-rect" rx="2" fill="#FFFFFF"></rect><text class="text-el" x="480" y="85" font-family="'Batang', serif" font-size="44" font-weight="bold">천장</text></g>
-    <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)"><rect class="text-bg-rect" rx="2" fill="#FFFFFF"></rect><text class="text-el" x="550" y="825" font-family="'Batang', serif" font-size="44" font-weight="bold">지면</text></g>
-    <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)"><rect class="text-bg-rect" rx="2"></rect><text class="text-el" x="280" y="85" font-family="'Times New Roman', serif" font-size="44" text-anchor="middle">P</text></g>
-    <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)"><rect class="text-bg-rect" rx="2"></rect><text class="text-el" x="245" y="195" font-family="'Times New Roman', serif" font-size="42">S<tspan font-size="28" dy="10">1</tspan></text></g>
-    <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)"><rect class="text-bg-rect" rx="2" fill="#FFFFFF"></rect><text class="text-el" x="235" y="315" font-family="'Times New Roman', serif" font-size="42" font-style="italic">l</text></g>
-    <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)"><rect class="text-bg-rect" rx="2"></rect><text class="text-el" x="315" y="295" font-family="'Times New Roman', serif" font-size="40" font-style="italic">θ<tspan font-size="26" dy="8">0</tspan></text></g>
-    <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)"><rect class="text-bg-rect" rx="2"></rect><text class="text-el" x="420" y="225" font-family="'Times New Roman', serif" font-size="44" font-style="italic">T<tspan font-size="28" dy="10">1</tspan></text></g>
-    <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)"><rect class="text-bg-rect" rx="2"></rect><text class="text-el" x="320" y="470" font-family="'Times New Roman', serif" font-size="42" font-style="italic">m</text></g>
-    <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)"><rect class="text-bg-rect" rx="2"></rect><text class="text-el" x="240" y="530" font-family="'Times New Roman', serif" font-size="44">Q</text></g>
-    <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)"><rect class="text-bg-rect" rx="2"></rect><text class="text-el" x="460" y="475" font-family="'Times New Roman', serif" font-size="44" text-anchor="middle">R</text></g>
-    <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)"><rect class="text-bg-rect" rx="2"></rect><text class="text-el" x="555" y="380" font-family="'Times New Roman', serif" font-size="44" font-style="italic">T<tspan font-size="28" dy="10">2</tspan></text></g>
-    <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)"><rect class="text-bg-rect" rx="2"></rect><text class="text-el" x="725" y="435" font-family="'Times New Roman', serif" font-size="44">S<tspan font-size="28" dy="10">2</tspan></text></g>
-    <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)"><rect class="text-bg-rect" rx="2" fill="#FFFFFF"></rect><text class="text-el" x="95" y="455" font-family="'Times New Roman', serif" font-size="52" font-style="italic" font-weight="bold" text-anchor="middle">h</text></g>
-    <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)"><rect class="text-bg-rect" rx="2"></rect><text class="text-el" x="280" y="820" font-family="'Times New Roman', serif" font-size="46" text-anchor="middle">O</text></g>
-  </g>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" id="svg-editor" viewBox="0 0 786 858" class="select-mode">
+          <rect width="100%" height="100%" fill="#FFFFFF"/>
+          <defs>
+            <marker id="arrow-1" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="#000000"/>
+            </marker>
+            <marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="#000000"/>
+            </marker>
+            <marker id="arrow-start-1" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+              <path d="M 10 0 L 0 5 L 10 10 z" fill="#000000"/>
+            </marker>
+            <marker id="arrow-start" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+              <path d="M 10 0 L 0 5 L 10 10 z" fill="#000000"/>
+            </marker>
+          <marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#000000"/>
+    </marker><marker id="arrow-start" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 10 0 L 0 5 L 10 10 z" fill="#000000"/>
+    </marker><pattern id="hatch" width="10" height="10" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
+      <line x1="0" y1="0" x2="0" y2="10" stroke="#888888" stroke-width="1.5"/>
+    </pattern></defs>
+          <g class="main-diagram"><rect class="movable" x="35" y="30" width="540" height="80" fill="url(#hatch)" stroke="#000000" stroke-width="2.5" transform="translate(0,0) scale(1,1) rotate(0)"/><line class="movable" x1="35" y1="110" x2="575" y2="110" stroke="#000000" stroke-width="3" transform="translate(0,0) scale(1,1) rotate(0)"/><line class="movable" x1="0" y1="760" x2="680" y2="760" stroke="#000000" stroke-width="3.2" transform="translate(0,0) scale(1,1) rotate(0)"/><line class="movable" x1="280" y1="110" x2="280" y2="480" stroke="#000000" stroke-width="2.5" transform="translate(0,0) scale(1,1) rotate(0)"/><path class="movable" d="M 275,120 Q 230,290 275,470" fill="none" stroke="#000000" stroke-width="1.5" transform="translate(0,0) scale(1,1) rotate(0)"/><line class="movable" x1="280" y1="480" x2="280" y2="760" stroke="#000000" stroke-width="2" stroke-dasharray="5,4" transform="translate(0,0) scale(1,1) rotate(0)"/><line class="movable" x1="280" y1="110" x2="460" y2="420" stroke="#000000" stroke-width="3" transform="translate(0,0) scale(1,1) rotate(0)"/><line class="movable" x1="420" y1="351" x2="360" y2="248" stroke="#000000" stroke-width="2.5" marker-end="url(#arrow)" transform="translate(0,0) scale(1,1) rotate(0)"/><line class="movable" x1="460" y1="420" x2="680" y2="420" stroke="#000000" stroke-width="2.5" transform="translate(0,0) scale(1,1) rotate(0)"/><line class="movable" x1="510" y1="420" x2="570" y2="420" stroke="#000000" stroke-width="2.5" marker-end="url(#arrow)" transform="translate(0,0) scale(1,1) rotate(0)"/><path class="movable" d="M 280,480 Q 380,480 460,420" fill="none" stroke="#000000" stroke-width="2" stroke-dasharray="5,4" transform="translate(0,0) scale(1,1) rotate(0)"/><path class="movable" d="M 280,225 Q 315,225 338,210" fill="none" stroke="#000000" stroke-width="1.8" transform="translate(0,0) scale(1,1) rotate(0)"/><line class="movable" x1="95" y1="110" x2="95" y2="760" stroke="#000000" stroke-width="2.2" marker-start="url(#arrow-start)" marker-end="url(#arrow)" transform="translate(0,0) scale(1,1) rotate(0)"/><circle class="movable" cx="280" cy="110" r="5" fill="#000000" transform="translate(0,0) scale(1,1) rotate(0)"/><circle class="movable" cx="280" cy="480" r="6" fill="#000000" transform="translate(0,0) scale(1,1) rotate(0)"/><circle class="movable" cx="460" cy="420" r="5" fill="#000000" transform="translate(0,0) scale(1,1) rotate(0)"/></g>
+          <g class="text-layer"><g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)"><rect class="text-bg-rect" rx="2" fill="#FFFFFF" x="476" y="44.073211669921875" width="97.7287368774414" height="50.46588897705078"/><text class="text-el" x="480" y="85" font-family="'Batang', serif" font-size="44" font-weight="bold">천장</text></g><g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)"><rect class="text-bg-rect" rx="2" fill="#FFFFFF" x="546" y="784.0732421875" width="97.7287368774414" height="50.46588897705078"/><text class="text-el" x="550" y="825" font-family="'Batang', serif" font-size="44" font-weight="bold">지면</text></g><g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)"><rect class="text-bg-rect" rx="2" x="263.7596130371094" y="42.76538848876953" width="32.48076248168945" height="54.38935089111328"/><text class="text-el" x="280" y="85" font-family="'Times New Roman', serif" font-size="44" text-anchor="middle">P</text></g><g class="movable text-wrap bg-box-white" transform="translate(-11.7703857421875, 2.615631103515625) scale(1, 1) rotate(0)"><rect class="text-bg-rect" rx="2" x="241.00001525878906" y="154.07322692871094" width="45.35462951660156" height="60.46589660644531"/><text class="text-el" x="245" y="195" font-family="'Times New Roman', serif" font-size="42">S<tspan font-size="28" dy="10">1</tspan></text></g><g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)"><rect class="text-bg-rect" rx="2" fill="#FFFFFF" x="231" y="274.0732116699219" width="21.078203201293945" height="53.0815315246582"/><text class="text-el" x="235" y="315" font-family="'Times New Roman', serif" font-size="42" font-style="italic">l</text></g><g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)"><rect class="text-bg-rect" rx="2" x="311" y="256.6888732910156" width="42.044189453125" height="54.54241943359375"/><text class="text-el" x="315" y="295" font-family="'Times New Roman', serif" font-size="40" font-style="italic">θ<tspan font-size="26" dy="8">0</tspan></text></g><g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)"><rect class="text-bg-rect" rx="2" x="415.9999694824219" y="182.765380859375" width="46.478546142578125" height="61.773712158203125"/><text class="text-el" x="420" y="225" font-family="'Times New Roman', serif" font-size="44" font-style="italic">T<tspan font-size="28" dy="10">1</tspan></text></g><g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)"><rect class="text-bg-rect" rx="2" x="316" y="429.0732116699219" width="38.34553909301758" height="53.0815315246582"/><text class="text-el" x="320" y="470" font-family="'Times New Roman', serif" font-size="42" font-style="italic">m</text></g><g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)"><rect class="text-bg-rect" rx="2" x="236" y="487.7654113769531" width="39.77594757080078" height="54.38935089111328"/><text class="text-el" x="240" y="530" font-family="'Times New Roman', serif" font-size="44">Q</text></g><g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)"><rect class="text-bg-rect" rx="2" x="441.31768798828125" y="432.765380859375" width="39.38768768310547" height="54.38935089111328"/><text class="text-el" x="460" y="475" font-family="'Times New Roman', serif" font-size="44" text-anchor="middle">R</text></g><g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)"><rect class="text-bg-rect" rx="2" x="551" y="337.765380859375" width="46.8668212890625" height="61.773712158203125"/><text class="text-el" x="555" y="380" font-family="'Times New Roman', serif" font-size="44" font-style="italic">T<tspan font-size="28" dy="10">2</tspan></text></g><g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)"><rect class="text-bg-rect" rx="2" x="721" y="392.765380859375" width="46.47845458984375" height="61.773712158203125"/><text class="text-el" x="725" y="435" font-family="'Times New Roman', serif" font-size="44">S<tspan font-size="28" dy="10">2</tspan></text></g><g class="movable text-wrap" transform="translate(-31.38768768310547, -1.30780029296875) scale(1, 1) rotate(0)"><rect class="text-bg-rect" rx="2" fill="#FFFFFF" x="76.53223419189453" y="406.226318359375" width="36.935523986816406" height="63.54409408569336"/><text class="text-el" x="95" y="455" font-family="'Times New Roman', serif" font-size="52" font-style="italic" font-weight="bold" text-anchor="middle">h</text></g><g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)"><rect class="text-bg-rect" rx="2" x="259.3865966796875" y="776.4575805664062" width="41.226810455322266" height="57.0049934387207"/><text class="text-el" x="280" y="820" font-family="'Times New Roman', serif" font-size="46" text-anchor="middle">O</text></g></g>
+        </svg>
 </body>
 </html>
