@@ -18,7 +18,8 @@
 
 | 패치 ID | 날짜 | 커밋 SHA | 주요 수정 내역 | 상태 |
 | :--- | :--- | :--- | :--- | :---: |
-| **PATCH-008** | 2026-10-29 | `TBD` | **호(Arc) 곡률 방향 및 원의 중심 기하학적 오류(sweep-flag 반전) 완전 해결**<br>- 호가 중심(붉은 점) 쪽으로 역방향으로 솟아오르던 SVG sweep-flag 반전 결함 완전 정상화<br>- 원의 중심(붉은 점)은 항상 호의 오목한 안쪽에 위치하고, 호는 중심을 축으로 자연스럽게 회전하도록 기하학적 정의 확립<br>- W3C 표준 endpoint-to-center 수식 기반 `getSvgArcCenter` 알고리즘 탑재<br>- 기본 단진자 도면의 호 경로를 천장 피벗(400, 120) 중심 물리적 원호로 동기화 | ✅ 완료 |
+| **PATCH-009** | 2026-10-29 | `TBD` | **[호의 중심] 용어 개편 및 파란색 양 끝점(P1, P2) 원의 방정식 연동 드래그 이동 구현**<br>- 붉은 점 라벨 및 도구 안내 문구를 "원의 중심"에서 **"호의 중심"**으로 직관적 개편<br>- 호의 양 끝점(시점 P1, 종점 P2)을 직접 잡고 늘리거나 줄일 수 있는 파란색 조작 핸들 탑재<br>- 호의 중심과 한 점이 고정된 상태에서 **마우스의 X좌표만을 읽어 원의 방정식으로부터 Y좌표를 자동 산출($y = cy \pm \sqrt{R^2 - (x-cx)^2}$)**하여 항상 완벽한 원호 궤적을 유지하는 구속 드래그 구현 | ✅ 완료 |
+| **PATCH-008** | 2026-10-29 | `ccbc2b3` | **호(Arc) 곡률 방향 및 원의 중심 기하학적 오류(sweep-flag 반전) 완전 해결**<br>- 호가 중심(붉은 점) 쪽으로 역방향으로 솟아오르던 SVG sweep-flag 반전 결함 완전 정상화<br>- 원의 중심(붉은 점)은 항상 호의 오목한 안쪽에 위치하고, 호는 중심을 축으로 자연스럽게 회전하도록 기하학적 정의 확립<br>- W3C 표준 endpoint-to-center 수식 기반 `getSvgArcCenter` 알고리즘 탑재<br>- 기본 단진자 도면의 호 경로를 천장 피벗(400, 120) 중심 물리적 원호로 동기화 | ✅ 완료 |
 | **PATCH-007** | 2026-10-29 | `c0d8ed0` | **호(Arc) 클릭 시 붉은 중심점 영구 유지 및 손가락/마우스 뗌 직후 소멸 버그 해결, 드래그 위치 수정 보장**<br>- 손가락이나 마우스를 뗄 때 붉은 점이 사라지던 버그(자동 백업 `getCleanSvgString` 내 `deselectAll()` 호출) 원천 제거<br>- 사용자가 `[선택 해제]` 버튼을 누르거나 다른 객체를 선택하기 전까지 붉은 중심점 영구 노출 유지<br>- 빈 캔버스 클릭/터치 시 호 선택 풀림 방지 보호 로직 구현<br>- 모바일/태블릿 터치(`touchstart`/`touchmove`/`touchend`) 및 포인터 이벤트 완벽 지원<br>- 붉은 중심점 터치 반경 24px 확대 및 드래그를 통한 원의 중심 위치/곡률 360° 자유 조정 보장 | ✅ 완료 |
 | **PATCH-006** | 2026-10-29 | `45e90ce` | **호(Arc) 작도 방식 전면 개편: 시점-종점 중점 원의 중심(붉은 점) 표시, 드래그 곡률 제어 및 조건부 노출 핸들 구현**<br>- 호 시점($P_1$)-종점($P_2$)의 중점을 원의 중심($C$)으로 초기화하고 붉은색 조작 핸들(`🔴`) 표시<br>- 붉은 중심점을 마우스로 실시간 드래그하여 원의 중심 위치 및 반지름($R$), 볼록 방향을 360° 자유롭게 조정<br>- 선택 해제(`deselectAll`) 및 다른 객체(선, 글자, 그림) 선택 시 붉은 중심점 자동 은닉<br>- 호 재선택 시 저장된 원의 중심 좌표로 붉은 점 즉시 재노출<br>- 내보내기/저장/다운로드(GitHub, HTML, PNG) 시 에디터 조작용 기즈모 100% 완전 분리 및 배제 | ✅ 완료 |
 | **PATCH-005** | 2026-10-29 | `83ea488` | **우측 브라우저 버튼 높이 비정상 확장 버그 긴급 해결 및 100vh 뷰포트 고정 레이아웃 개편**<br>- 전역 `svg` 선택자의 버튼 아이콘 침범 결함 분리 (`#svg-editor` 전용화 및 `.btn-icon` 14px 고정 격리)<br>- 사이드바 버튼 높이 30px 규격 고정 (`height: 30px; line-height: 1;`)<br>- 데스크톱 뷰포트 100vh 고정(`overflow: hidden`) 및 메인 캔버스 가변 높이 자동 피팅<br>- 사이드바 독립 스크롤 분리로 이중 스크롤 완벽 제거 | ✅ 완료 |
@@ -576,3 +577,69 @@ if (apiRes.ok) {
    - 호의 곡률이 아래로 오목하게 처지며 단진자 운동 궤적과 100% 일치함을 시각적으로 검증 완료.
 2. **비교 검증 그래픽 생성 ([scratch/arc_center_comparison.png](file:///E:/Git/PicEditor/scratch/arc_center_comparison.png)):**
    - 오류 상태(볼록 외측 중심) vs 수정 상태(오목 내측 중심)의 기하학적 비교 차트를 생성하여 시각적 타당성 검증 완료.
+
+
+---
+
+## 🔍 [PATCH-009] 호의 중심 용어 개편 및 파란색 양 끝점(P1, P2) 원의 방정식 연동 드래그 구현
+
+### 1. 이슈 개요 및 사용자 보고
+- **보고 일시:** 2026-10-29 11:00 KST
+- **사용자 보고 내용:**
+  > *"수정하고, 원의 중심 -> 호의 중심으로 수정해. 파란색 점을 이동시킬 수 있도록 해. 호의 중심과 한 점이 정해져 있으므로 마우스의 x포인트만을 읽어서 y포인터의 값을 정해서 그려. 이해했어? 즉시 코드 수정하고 반영해."*
+- **핵심 요구사항:**
+  1. 기즈모 라벨 텍스트 및 UI 안내 문구에서 **"원의 중심"**이라는 표현을 **"호의 중심"**으로 전면 교체.
+  2. 호의 양 끝에 위치한 **파란색 점(시점 P1, 종점 P2)**을 마우스나 터치로 직접 잡고 드래그하여 이동할 수 있도록 조작 핸들화.
+  3. 파란색 점을 드래그할 때, **호의 중심 $C(cx, cy)$과 반대편 고정점 $P_{\text{fixed}}$에 의해 반지름 $R$이 이미 결정되어 있으므로**, 마우스의 X좌표만 읽어 원의 방정식 $(x - cx)^2 + (y - cy)^2 = R^2$으로부터 $Y$좌표를 수학적으로 엄밀하게 계산하여 그릴 것.
+
+---
+
+### 2. 기술적 해결 조치 (Technical Implementation)
+
+#### ① 용어 개편 ("원의 중심" → "호의 중심")
+- [js/tools.js](file:///E:/Git/PicEditor/js/tools.js) 기즈모 텍스트 라벨:
+  `label.textContent = "호의 중심 (R=${r}px)";`
+- [index.html](file:///E:/Git/PicEditor/index.html) 및 [PicEditor.html](file:///E:/Git/PicEditor/PicEditor.html) 사이드바 안내 문구:
+  "드래그하여 호를 그린 뒤, 나타나는 **🔴 호의 중심**이나 **🔵 파란 끝점**을 드래그하면 호의 중심과 길이, 곡률을 자유롭게 조절할 수 있습니다."
+
+#### ② 파란색 양 끝점(P1, P2) 조작 핸들 인터랙션 구축
+- 기존의 정적 점(`arc-p1-anchor`, `arc-p2-anchor`)을 드래그 가능한 인터랙티브 그룹(`arc-p1-handle-wrap`, `arc-p2-handle-wrap`)으로 개편.
+- 터치 감지 반경 22px 투명 히트 서클, 6.5px 블루 코어 링, 드롭 섀도우 및 "시점", "종점" 라벨 추가.
+- `mousedown`, `touchstart` 이벤트를 바인딩하여 `state.isDraggingArcP1`, `state.isDraggingArcP2` 상태 제어.
+
+#### ③ 원의 방정식 기반 단일 자유도(X→Y) 구속 드래그 수학 공식 적용
+- 파란색 종점 $P_2$를 드래그할 때:
+  1. 고정점 $P_1(x_1, y_1)$과 호의 중심 $C(cx, cy)$으로부터 불변의 반지름 $R = \sqrt{(x_1 - cx)^2 + (y_1 - cy)^2}$ 산출.
+  2. 마우스의 화면 좌표를 아크의 로컬 좌표계로 역변환하여 $X = \text{localX}$ 취득.
+  3. $dx = X - cx$ 계산 (원 범위를 벗어나지 않도록 $|dx| \le 0.999R$ 클램핑).
+  4. 원의 방정식에 의해 $dy = \sqrt{\max(0, R^2 - dx^2)}$ 산출.
+  5. 마우스 커서의 수직 위치에 따라 부호 결정:
+     $$y_{\text{new}} = \begin{cases} cy + dy & (\text{localY} \ge cy) \\ cy - dy & (\text{localY} < cy) \end{cases}$$
+  6. 산출된 $(x_{\text{new}}, y_{\text{new}})$는 중심 $C$로부터의 거리가 정확히 $R$인 원주 위의 점이 되며, 이를 새로운 $P_2$ 좌표로 하여 호 경로(`updateArcPath`)를 실시간 갱신.
+- 파란색 시점 $P_1$을 드래그할 때도 종점 $P_2$와 중심 $C$를 고정하여 동일한 수식으로 대칭 적용.
+
+---
+
+### 3. 변경된 파일 목록 (Files Modified)
+
+| 파일 경로 | 주요 변경 내용 |
+| :--- | :--- |
+| [js/state.js](file:///E:/Git/PicEditor/js/state.js) | `isDraggingArcP1`, `isDraggingArcP2` 전역 상태 플래그 추가 |
+| [js/tools.js](file:///E:/Git/PicEditor/js/tools.js) | "호의 중심" 라벨 개편, 파란색 점 P1/P2 조작 핸들 및 이벤트 바인딩 |
+| [js/interaction.js](file:///E:/Git/PicEditor/js/interaction.js) | 마우스 X좌표 기반 원의 방정식 Y좌표 자동 산출 및 호 경로 실시간 연동 드래그 구현 |
+| [index.html](file:///E:/Git/PicEditor/index.html) | 호 작도 안내 문구 개편, 캐시 버스터 `v=20261029_5` 갱신 |
+| [PicEditor.html](file:///E:/Git/PicEditor/PicEditor.html) | `index.html`과 완전 동기화 |
+| [physics_diagram_studio_patch_report.md](file:///E:/Git/PicEditor/physics_diagram_studio_patch_report.md) | `PATCH-009` 상세 수식 및 구현 내역 문서화 |
+
+---
+
+### 4. 테스트 및 검증 결과
+
+1. **자동화 검증 스위트 ([scratch/verify_blue_dot_drag.py](file:///E:/Git/PicEditor/scratch/verify_blue_dot_drag.py)):**
+   - **라벨 변경 확인 (`centerLabel`):** `"호의 중심 (R=194px)"` (✅ 합격)
+   - **파란 점 P1/P2 핸들 생성 확인:** `p1HandleExists: true`, `p2HandleExists: true` (✅ 합격)
+   - **P2 드래그 시 마우스 X 기반 Y 산출 및 원주 일치 (`p2OnCircle`):** `dist == R` 오차 0.0px (✅ 합격)
+   - **P1 드래그 시 마우스 X 기반 Y 산출 및 원주 일치 (`p1OnCircle`):** `dist == R` 오차 0.0px (✅ 합격)
+   - **내보내기 순수성 보장 (`cleanSvgExcludesGizmo`):** `true` (✅ 합격)
+2. **실제 UI 캡처 스크린샷 ([scratch/arc_ho_crop.png](file:///E:/Git/PicEditor/scratch/arc_ho_crop.png)):**
+   - 붉은 점에 `호의 중심 (R=194px)` 표시, 양 끝점에 파란색 `시점`, `종점` 핸들이 선명하게 배치됨을 확인 완료.

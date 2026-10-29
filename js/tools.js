@@ -165,7 +165,7 @@ window.PicEditor.tools = {
   },
 
   /**
-   * SVG 캔버스 내 붉은 중심점 핸들(Gizmo) 요소 보장 및 이벤트 바인딩
+   * SVG 캔버스 내 호의 중심(붉은 점) 및 양 끝점(파란 점) 조작 핸들(Gizmo) 요소 보장 및 이벤트 바인딩
    */
   ensureArcCenterGizmo(svg) {
     let gizmo = svg.querySelector('#arc-center-handle-group');
@@ -179,36 +179,78 @@ window.PicEditor.tools = {
         <line id="arc-axis-guide" stroke="#ef4444" stroke-dasharray="2,2" stroke-width="1" style="pointer-events:none;" />
         <line id="arc-radius-guide-1" stroke="#fca5a5" stroke-dasharray="3,3" stroke-width="1" style="pointer-events:none;" />
         <line id="arc-radius-guide-2" stroke="#fca5a5" stroke-dasharray="3,3" stroke-width="1" style="pointer-events:none;" />
-        <circle id="arc-p1-anchor" r="4" fill="#3b82f6" style="pointer-events:none;" />
-        <circle id="arc-p2-anchor" r="4" fill="#3b82f6" style="pointer-events:none;" />
+        
+        <!-- 파란색 시점 P1 조작 핸들 -->
+        <g id="arc-p1-handle-wrap" style="cursor:grab; pointer-events:all;">
+          <circle id="arc-p1-hit" r="22" fill="#000000" opacity="0.001" style="cursor:grab; pointer-events:all;" />
+          <circle id="arc-p1-anchor" r="6.5" fill="#3b82f6" stroke="#ffffff" stroke-width="2.5" style="filter:drop-shadow(0 2px 4px rgba(0,0,0,0.35)); pointer-events:none;" />
+          <circle id="arc-p1-inner" r="2" fill="#ffffff" style="pointer-events:none;" />
+          <text id="arc-p1-label" font-size="10" font-weight="700" fill="#2563eb" x="-26" y="-10" style="user-select:none; pointer-events:none; text-shadow:0 1px 2px #ffffff;">시점</text>
+        </g>
+
+        <!-- 파란색 종점 P2 조작 핸들 -->
+        <g id="arc-p2-handle-wrap" style="cursor:grab; pointer-events:all;">
+          <circle id="arc-p2-hit" r="22" fill="#000000" opacity="0.001" style="cursor:grab; pointer-events:all;" />
+          <circle id="arc-p2-anchor" r="6.5" fill="#3b82f6" stroke="#ffffff" stroke-width="2.5" style="filter:drop-shadow(0 2px 4px rgba(0,0,0,0.35)); pointer-events:none;" />
+          <circle id="arc-p2-inner" r="2" fill="#ffffff" style="pointer-events:none;" />
+          <text id="arc-p2-label" font-size="10" font-weight="700" fill="#2563eb" x="12" y="-10" style="user-select:none; pointer-events:none; text-shadow:0 1px 2px #ffffff;">종점</text>
+        </g>
+
+        <!-- 붉은색 호의 중심 조작 핸들 -->
         <g id="arc-center-handle-wrap" style="cursor:grab; pointer-events:all;">
           <circle id="arc-center-hit" r="24" fill="#000000" opacity="0.001" style="cursor:grab; pointer-events:all;" />
           <circle id="arc-center-outer" r="9" fill="#ef4444" stroke="#ffffff" stroke-width="2.5" style="filter:drop-shadow(0 2px 5px rgba(0,0,0,0.4)); pointer-events:none;" />
           <circle id="arc-center-inner" r="3.5" fill="#ffffff" style="pointer-events:none;" />
-          <text id="arc-center-label" font-size="11" font-weight="700" fill="#dc2626" x="14" y="4" style="user-select:none; pointer-events:none; text-shadow:0 1px 2px #ffffff;">원의 중심</text>
+          <text id="arc-center-label" font-size="11" font-weight="700" fill="#dc2626" x="14" y="4" style="user-select:none; pointer-events:none; text-shadow:0 1px 2px #ffffff;">호의 중심</text>
         </g>
       `;
 
       svg.appendChild(gizmo);
 
-      const handleWrap = gizmo.querySelector('#arc-center-handle-wrap');
+      // 호의 중심 드래그 이벤트
+      const handleCenterWrap = gizmo.querySelector('#arc-center-handle-wrap');
       const startDragCenter = (e) => {
         e.stopPropagation();
         if (e.cancelable && e.type === 'touchstart') e.preventDefault();
         const state = window.PicEditor.state;
         state.isDraggingArcCenter = true;
         state.hasDragged = false;
-        handleWrap.style.cursor = 'grabbing';
+        handleCenterWrap.style.cursor = 'grabbing';
       };
+      handleCenterWrap.addEventListener('mousedown', startDragCenter);
+      handleCenterWrap.addEventListener('touchstart', startDragCenter, { passive: false });
 
-      handleWrap.addEventListener('mousedown', startDragCenter);
-      handleWrap.addEventListener('touchstart', startDragCenter, { passive: false });
+      // 파란색 시점(P1) 드래그 이벤트
+      const handleP1Wrap = gizmo.querySelector('#arc-p1-handle-wrap');
+      const startDragP1 = (e) => {
+        e.stopPropagation();
+        if (e.cancelable && e.type === 'touchstart') e.preventDefault();
+        const state = window.PicEditor.state;
+        state.isDraggingArcP1 = true;
+        state.hasDragged = false;
+        handleP1Wrap.style.cursor = 'grabbing';
+      };
+      handleP1Wrap.addEventListener('mousedown', startDragP1);
+      handleP1Wrap.addEventListener('touchstart', startDragP1, { passive: false });
+
+      // 파란색 종점(P2) 드래그 이벤트
+      const handleP2Wrap = gizmo.querySelector('#arc-p2-handle-wrap');
+      const startDragP2 = (e) => {
+        e.stopPropagation();
+        if (e.cancelable && e.type === 'touchstart') e.preventDefault();
+        const state = window.PicEditor.state;
+        state.isDraggingArcP2 = true;
+        state.hasDragged = false;
+        handleP2Wrap.style.cursor = 'grabbing';
+      };
+      handleP2Wrap.addEventListener('mousedown', startDragP2);
+      handleP2Wrap.addEventListener('touchstart', startDragP2, { passive: false });
     }
     return gizmo;
   },
 
   /**
-   * 선택된 호 요소에 붉은 중심점 핸들 표시
+   * 선택된 호 요소에 호의 중심 및 양 끝점 조작 핸들 표시
    */
   showArcCenterHandle(arcEl) {
     if (!arcEl) return;
@@ -229,7 +271,7 @@ window.PicEditor.tools = {
     // 아크의 transform(위치/회전)과 동일하게 동기화
     gizmo.setAttribute('transform', arcEl.getAttribute('transform') || 'translate(0,0) scale(1,1) rotate(0)');
 
-    // 가이드 라인 및 앵커 좌표 갱신
+    // 가이드 라인 좌표 갱신
     const chord = gizmo.querySelector('#arc-chord-guide');
     chord.setAttribute('x1', p1.x);
     chord.setAttribute('y1', p1.y);
@@ -254,27 +296,26 @@ window.PicEditor.tools = {
     rad2.setAttribute('x2', p2.x);
     rad2.setAttribute('y2', p2.y);
 
-    const ap1 = gizmo.querySelector('#arc-p1-anchor');
-    ap1.setAttribute('cx', p1.x);
-    ap1.setAttribute('cy', p1.y);
+    // 파란색 시점(P1) 및 종점(P2) 핸들 위치 동기화
+    const p1Wrap = gizmo.querySelector('#arc-p1-handle-wrap');
+    if (p1Wrap) p1Wrap.setAttribute('transform', `translate(${p1.x}, ${p1.y})`);
 
-    const ap2 = gizmo.querySelector('#arc-p2-anchor');
-    ap2.setAttribute('cx', p2.x);
-    ap2.setAttribute('cy', p2.y);
+    const p2Wrap = gizmo.querySelector('#arc-p2-handle-wrap');
+    if (p2Wrap) p2Wrap.setAttribute('transform', `translate(${p2.x}, ${p2.y})`);
 
-    // 붉은 원의 중심점 위치 이동
-    const wrap = gizmo.querySelector('#arc-center-handle-wrap');
-    wrap.setAttribute('transform', `translate(${c.x}, ${c.y})`);
+    // 붉은색 호의 중심 핸들 위치 동기화
+    const centerWrap = gizmo.querySelector('#arc-center-handle-wrap');
+    centerWrap.setAttribute('transform', `translate(${c.x}, ${c.y})`);
 
     const r = Math.round((Math.hypot(p1.x - c.x, p1.y - c.y) + Math.hypot(p2.x - c.x, p2.y - c.y)) / 2);
     const label = gizmo.querySelector('#arc-center-label');
-    if (label) label.textContent = `원의 중심 (R=${r}px)`;
+    if (label) label.textContent = `호의 중심 (R=${r}px)`;
 
     gizmo.style.display = 'block';
   },
 
   /**
-   * 붉은 중심점 핸들 숨기기
+   * 호의 중심 및 양 끝점 조작 핸들 숨기기
    */
   hideArcCenterHandle() {
     const svg = window.PicEditor.utils.getActiveSvg();

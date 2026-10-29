@@ -14,6 +14,8 @@ window.PicEditor.state = {
   drawStart: { x: 0, y: 0 },
   tempShape: null,
   isDraggingArcCenter: false,
+  isDraggingArcP1: false,
+  isDraggingArcP2: false,
   // 현재 캔버스에 로드된 도면 정보 추적
   currentDiagramName: '',
   currentDiagramSha: null,

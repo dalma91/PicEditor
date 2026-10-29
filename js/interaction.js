@@ -225,8 +225,8 @@ window.PicEditor.interaction = {
       if (!svg) return;
       const pt = window.PicEditor.utils.getSvgPoint(e, svg);
 
-      // 1. 호의 붉은 중심점(Arc Center Gizmo) 드래그 조작
-      if (state.isDraggingArcCenter && state.selectedElement) {
+      // 1. 호의 중심(붉은 점) 또는 양 끝점(파란 점 P1, P2) 드래그 조작
+      if ((state.isDraggingArcCenter || state.isDraggingArcP1 || state.isDraggingArcP2) && state.selectedElement) {
         state.hasDragged = true;
         if (e.cancelable) e.preventDefault();
         const arcEl = state.selectedElement;
@@ -242,7 +242,44 @@ window.PicEditor.interaction = {
 
         const data = window.PicEditor.tools.getArcData(arcEl);
         if (data) {
-          window.PicEditor.tools.updateArcPath(arcEl, data.p1, data.p2, { x: localX, y: localY });
+          if (state.isDraggingArcCenter) {
+            // 호의 중심 이동 (반지름 및 곡률 갱신)
+            window.PicEditor.tools.updateArcPath(arcEl, data.p1, data.p2, { x: localX, y: localY });
+          } else if (state.isDraggingArcP1) {
+            // 파란색 시점 P1 이동: 호의 중심(c)과 종점(p2)이 고정되어 있으므로
+            // 마우스의 X좌표만을 읽어 원의 방정식에서 Y좌표 산출
+            const c = data.c;
+            const fixedP = data.p2;
+            const r = Math.hypot(fixedP.x - c.x, fixedP.y - c.y);
+            let dx = localX - c.x;
+            if (Math.abs(dx) > r * 0.999) {
+              dx = Math.sign(dx) * r * 0.999;
+            }
+            const xNew = c.x + dx;
+            const dy = Math.sqrt(Math.max(0, r * r - dx * dx));
+            const yNew = (localY >= c.y) ? (c.y + dy) : (c.y - dy);
+
+            if (Math.hypot(xNew - fixedP.x, yNew - fixedP.y) >= 4) {
+              window.PicEditor.tools.updateArcPath(arcEl, { x: xNew, y: yNew }, data.p2, data.c);
+            }
+          } else if (state.isDraggingArcP2) {
+            // 파란색 종점 P2 이동: 호의 중심(c)과 시점(p1)이 고정되어 있으므로
+            // 마우스의 X좌표만을 읽어 원의 방정식에서 Y좌표 산출
+            const c = data.c;
+            const fixedP = data.p1;
+            const r = Math.hypot(fixedP.x - c.x, fixedP.y - c.y);
+            let dx = localX - c.x;
+            if (Math.abs(dx) > r * 0.999) {
+              dx = Math.sign(dx) * r * 0.999;
+            }
+            const xNew = c.x + dx;
+            const dy = Math.sqrt(Math.max(0, r * r - dx * dx));
+            const yNew = (localY >= c.y) ? (c.y + dy) : (c.y - dy);
+
+            if (Math.hypot(xNew - fixedP.x, yNew - fixedP.y) >= 4) {
+              window.PicEditor.tools.updateArcPath(arcEl, data.p1, { x: xNew, y: yNew }, data.c);
+            }
+          }
           window.PicEditor.tools.showArcCenterHandle(arcEl);
         }
         return;
@@ -296,12 +333,18 @@ window.PicEditor.interaction = {
     const handlePointerUp = () => {
       const svg = window.PicEditor.utils.getActiveSvg();
 
-      // 붉은 중심점 드래그 종료
-      if (state.isDraggingArcCenter) {
+      // 호의 중심 또는 양 끝점 드래그 종료
+      if (state.isDraggingArcCenter || state.isDraggingArcP1 || state.isDraggingArcP2) {
         state.isDraggingArcCenter = false;
+        state.isDraggingArcP1 = false;
+        state.isDraggingArcP2 = false;
         if (svg) {
-          const handle = svg.querySelector('#arc-center-handle-wrap');
-          if (handle) handle.style.cursor = 'grab';
+          const centerH = svg.querySelector('#arc-center-handle-wrap');
+          if (centerH) centerH.style.cursor = 'grab';
+          const p1H = svg.querySelector('#arc-p1-handle-wrap');
+          if (p1H) p1H.style.cursor = 'grab';
+          const p2H = svg.querySelector('#arc-p2-handle-wrap');
+          if (p2H) p2H.style.cursor = 'grab';
         }
         if (state.hasDragged && window.PicEditor.sync) {
           window.PicEditor.sync.markModified();
