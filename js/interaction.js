@@ -46,14 +46,22 @@ window.PicEditor.interaction = {
       const selectAndStartDrag = (e) => {
         if (state.isDrawMode) return;
         if (e.touches && e.touches.length > 1) return;
+
+        const wrap = el.closest('.text-wrap') || el.closest('.mid-arrow') || el;
+        const textEl = wrap.querySelector('.text-el') || el;
+
+        // 선택해제를 누르지 않으면 다른 객체가 선택되지 않도록 차단
+        if (state.selectedElement && state.selectedElement !== textEl && state.selectedElement !== wrap) {
+          e.stopPropagation();
+          return;
+        }
+
         e.stopPropagation();
 
-        const wrap = el.closest('.text-wrap') || el;
-        const textEl = wrap.querySelector('.text-el') || el;
         state.selectedElement = textEl;
 
         svg.querySelectorAll('.movable').forEach(elem => {
-          const w = elem.closest('.text-wrap') || elem;
+          const w = elem.closest('.text-wrap') || elem.closest('.mid-arrow') || elem;
           w.classList.remove('selected');
         });
         wrap.classList.add('selected');
@@ -62,8 +70,13 @@ window.PicEditor.interaction = {
 
         if (window.PicEditor.tools.isArcElement(el)) {
           window.PicEditor.tools.showArcCenterHandle(el);
+          window.PicEditor.tools.hideLineHandles();
+        } else if (window.PicEditor.tools.isLineElement(el)) {
+          window.PicEditor.tools.showLineHandles(el);
+          window.PicEditor.tools.hideArcCenterHandle();
         } else {
           window.PicEditor.tools.hideArcCenterHandle();
+          window.PicEditor.tools.hideLineHandles();
         }
 
         state.isDragging = true;
@@ -94,14 +107,13 @@ window.PicEditor.interaction = {
     svgs.forEach(svg => {
       const handleCanvasStart = (e) => {
         if (!state.isDrawMode) {
-          // 아크 기즈모 클릭/터치 시 선택 해제 방지
-          if (e.target.closest && e.target.closest('#arc-center-handle-group')) {
+          // 아크 또는 라인 기즈모 클릭/터치 시 선택 해제 방지
+          if (e.target.closest && (e.target.closest('#arc-center-handle-group') || e.target.closest('#line-handle-group'))) {
             return;
           }
 
-          // 호(Arc)가 선택되어 붉은 중심점이 표시 중인 경우, 빈 캔버스를 터치해도 사라지지 않음
-          // (사용자가 [선택 해제] 버튼을 누르거나 다른 객체를 선택할 때까지 영구 유지)
-          if (state.selectedElement && window.PicEditor.tools.isArcElement(state.selectedElement)) {
+          // 선택된 객체가 있을 경우, 사용자가 명시적으로 [선택 해제] 버튼을 누르기 전까지 선택 유지
+          if (state.selectedElement) {
             return;
           }
 
@@ -285,6 +297,35 @@ window.PicEditor.interaction = {
         return;
       }
 
+      // 1-1. 직선 및 화살표 양 끝점(파란 점 P1, P2) 드래그 조작
+      if ((state.isDraggingLineP1 || state.isDraggingLineP2) && state.selectedElement) {
+        state.hasDragged = true;
+        if (e.cancelable) e.preventDefault();
+        const lineEl = window.PicEditor.tools.getLineElement(state.selectedElement);
+        if (lineEl) {
+          const t = window.PicEditor.utils.parseTransform(lineEl);
+          const rad = (t.r || 0) * Math.PI / 180;
+          const cos = Math.cos(-rad);
+          const sin = Math.sin(-rad);
+          const lx = (pt.x - t.x) / (t.sx || 1);
+          const ly = (pt.y - t.y) / (t.sy || 1);
+          const localX = lx * cos - ly * sin;
+          const localY = lx * sin + ly * cos;
+
+          if (state.isDraggingLineP1) {
+            lineEl.setAttribute('x1', localX.toFixed(1));
+            lineEl.setAttribute('y1', localY.toFixed(1));
+          } else if (state.isDraggingLineP2) {
+            lineEl.setAttribute('x2', localX.toFixed(1));
+            lineEl.setAttribute('y2', localY.toFixed(1));
+          }
+
+          window.PicEditor.tools.updateMidArrowPosition(lineEl);
+          window.PicEditor.tools.showLineHandles(lineEl);
+        }
+        return;
+      }
+
       // 2. 작도 모드 드로잉
       if (state.isDrawMode && state.isDrawing && state.tempShape) {
         if (e.cancelable) e.preventDefault();
@@ -322,6 +363,17 @@ window.PicEditor.interaction = {
 
         if (window.PicEditor.tools.isArcElement(target)) {
           window.PicEditor.tools.updateArcGizmoTransform(target);
+        } else if (window.PicEditor.tools.isLineElement(target)) {
+          window.PicEditor.tools.updateLineGizmoTransform(target);
+          if (target.id) {
+            const midG = svg.querySelector(`g.mid-arrow[data-for="${target.id}"]`);
+            if (midG) {
+              const mt = window.PicEditor.utils.parseTransform(midG);
+              mt.x += dx;
+              mt.y += dy;
+              window.PicEditor.utils.setTransform(midG, mt);
+            }
+          }
         }
       }
     };
@@ -344,6 +396,22 @@ window.PicEditor.interaction = {
           const p1H = svg.querySelector('#arc-p1-handle-wrap');
           if (p1H) p1H.style.cursor = 'grab';
           const p2H = svg.querySelector('#arc-p2-handle-wrap');
+          if (p2H) p2H.style.cursor = 'grab';
+        }
+        if (state.hasDragged && window.PicEditor.sync) {
+          window.PicEditor.sync.markModified();
+        }
+        return;
+      }
+
+      // 직선 및 화살표 양 끝점 드래그 종료
+      if (state.isDraggingLineP1 || state.isDraggingLineP2) {
+        state.isDraggingLineP1 = false;
+        state.isDraggingLineP2 = false;
+        if (svg) {
+          const p1H = svg.querySelector('#line-p1-handle-wrap');
+          if (p1H) p1H.style.cursor = 'grab';
+          const p2H = svg.querySelector('#line-p2-handle-wrap');
           if (p2H) p2H.style.cursor = 'grab';
         }
         if (state.hasDragged && window.PicEditor.sync) {

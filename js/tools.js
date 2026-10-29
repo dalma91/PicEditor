@@ -337,6 +337,172 @@ window.PicEditor.tools = {
   },
 
   /**
+   * 요소가 직선 또는 화살표 선 관련 요소인지 확인
+   */
+  isLineElement(el) {
+    if (!el) return false;
+    const tag = (el.tagName || '').toLowerCase();
+    if (tag === 'line') return true;
+    if (el.classList && el.classList.contains('mid-arrow')) return true;
+    if (el.getAttribute && el.getAttribute('data-for')) return true;
+    return false;
+  },
+
+  /**
+   * 선 관련 요소에서 실제 <line> SVGElement 추출
+   */
+  getLineElement(el) {
+    if (!el) return null;
+    const tag = (el.tagName || '').toLowerCase();
+    if (tag === 'line') return el;
+    if (el.getAttribute && el.getAttribute('data-for')) {
+      const root = el.ownerSVGElement || document;
+      return root.getElementById(el.getAttribute('data-for'));
+    }
+    const mid = el.closest ? el.closest('.mid-arrow') : null;
+    if (mid && mid.getAttribute('data-for')) {
+      const root = mid.ownerSVGElement || document;
+      return root.getElementById(mid.getAttribute('data-for'));
+    }
+    return null;
+  },
+
+  /**
+   * SVG 캔버스 내 직선 및 화살표 양 끝점(파란 점) 조작 핸들(Gizmo) 요소 보장 및 이벤트 바인딩
+   */
+  ensureLineGizmo(svg) {
+    let gizmo = svg.querySelector('#line-handle-group');
+    if (!gizmo) {
+      gizmo = document.createElementNS("http://www.w3.org/2000/svg", "g");
+      gizmo.setAttribute('id', 'line-handle-group');
+      gizmo.setAttribute('style', 'display:none; pointer-events:none;');
+
+      gizmo.innerHTML = `
+        <!-- 파란색 시점 P1 조작 핸들 -->
+        <g id="line-p1-handle-wrap" style="cursor:grab; pointer-events:all;">
+          <circle id="line-p1-hit" r="22" fill="#000000" opacity="0.001" style="cursor:grab; pointer-events:all;" />
+          <circle id="line-p1-anchor" r="6.5" fill="#3b82f6" stroke="#ffffff" stroke-width="2.5" style="filter:drop-shadow(0 2px 4px rgba(0,0,0,0.35)); pointer-events:none;" />
+          <circle id="line-p1-inner" r="2" fill="#ffffff" style="pointer-events:none;" />
+          <text id="line-p1-label" font-size="10" font-weight="700" fill="#2563eb" x="-26" y="-10" style="user-select:none; pointer-events:none; text-shadow:0 1px 2px #ffffff;">시점</text>
+        </g>
+
+        <!-- 파란색 종점 P2 조작 핸들 -->
+        <g id="line-p2-handle-wrap" style="cursor:grab; pointer-events:all;">
+          <circle id="line-p2-hit" r="22" fill="#000000" opacity="0.001" style="cursor:grab; pointer-events:all;" />
+          <circle id="line-p2-anchor" r="6.5" fill="#3b82f6" stroke="#ffffff" stroke-width="2.5" style="filter:drop-shadow(0 2px 4px rgba(0,0,0,0.35)); pointer-events:none;" />
+          <circle id="line-p2-inner" r="2" fill="#ffffff" style="pointer-events:none;" />
+          <text id="line-p2-label" font-size="10" font-weight="700" fill="#2563eb" x="12" y="-10" style="user-select:none; pointer-events:none; text-shadow:0 1px 2px #ffffff;">종점</text>
+        </g>
+      `;
+
+      svg.appendChild(gizmo);
+
+      // 파란색 시점(P1) 드래그 이벤트
+      const handleP1Wrap = gizmo.querySelector('#line-p1-handle-wrap');
+      const startDragP1 = (e) => {
+        e.stopPropagation();
+        if (e.cancelable && e.type === 'touchstart') e.preventDefault();
+        const state = window.PicEditor.state;
+        state.isDraggingLineP1 = true;
+        state.hasDragged = false;
+        handleP1Wrap.style.cursor = 'grabbing';
+      };
+      handleP1Wrap.addEventListener('mousedown', startDragP1);
+      handleP1Wrap.addEventListener('touchstart', startDragP1, { passive: false });
+
+      // 파란색 종점(P2) 드래그 이벤트
+      const handleP2Wrap = gizmo.querySelector('#line-p2-handle-wrap');
+      const startDragP2 = (e) => {
+        e.stopPropagation();
+        if (e.cancelable && e.type === 'touchstart') e.preventDefault();
+        const state = window.PicEditor.state;
+        state.isDraggingLineP2 = true;
+        state.hasDragged = false;
+        handleP2Wrap.style.cursor = 'grabbing';
+      };
+      handleP2Wrap.addEventListener('mousedown', startDragP2);
+      handleP2Wrap.addEventListener('touchstart', startDragP2, { passive: false });
+    }
+    return gizmo;
+  },
+
+  /**
+   * 선택된 직선/화살표 요소에 양 끝점(시점/종점) 파란색 조작 핸들 표시
+   */
+  showLineHandles(el) {
+    const lineEl = this.getLineElement(el);
+    if (!lineEl) return;
+    const svg = window.PicEditor.utils.getActiveSvg();
+    if (!svg) return;
+
+    const gizmo = this.ensureLineGizmo(svg);
+    const x1 = parseFloat(lineEl.getAttribute('x1')) || 0;
+    const y1 = parseFloat(lineEl.getAttribute('y1')) || 0;
+    const x2 = parseFloat(lineEl.getAttribute('x2')) || 0;
+    const y2 = parseFloat(lineEl.getAttribute('y2')) || 0;
+
+    // 선 요소의 transform(위치/회전)과 동일하게 동기화
+    gizmo.setAttribute('transform', lineEl.getAttribute('transform') || 'translate(0,0) scale(1,1) rotate(0)');
+
+    const p1Wrap = gizmo.querySelector('#line-p1-handle-wrap');
+    if (p1Wrap) p1Wrap.setAttribute('transform', `translate(${x1}, ${y1})`);
+
+    const p2Wrap = gizmo.querySelector('#line-p2-handle-wrap');
+    if (p2Wrap) p2Wrap.setAttribute('transform', `translate(${x2}, ${y2})`);
+
+    const len = Math.round(Math.hypot(x2 - x1, y2 - y1));
+    const p2Label = gizmo.querySelector('#line-p2-label');
+    if (p2Label) p2Label.textContent = `종점 (${len}px)`;
+
+    gizmo.style.display = 'block';
+  },
+
+  /**
+   * 직선/화살표 양 끝점 조작 핸들 숨기기
+   */
+  hideLineHandles() {
+    const svg = window.PicEditor.utils.getActiveSvg();
+    if (!svg) return;
+    const gizmo = svg.querySelector('#line-handle-group');
+    if (gizmo) gizmo.style.display = 'none';
+  },
+
+  /**
+   * 직선/화살표가 드래그 이동 또는 변환될 때 기즈모의 transform 동기화
+   */
+  updateLineGizmoTransform(lineEl) {
+    const svg = window.PicEditor.utils.getActiveSvg();
+    if (!svg) return;
+    const gizmo = svg.querySelector('#line-handle-group');
+    if (gizmo && gizmo.style.display !== 'none') {
+      gizmo.setAttribute('transform', lineEl.getAttribute('transform') || 'translate(0,0) scale(1,1) rotate(0)');
+    }
+  },
+
+  /**
+   * 중간 화살표(mid-arrow) 위치 및 각도 갱신
+   */
+  updateMidArrowPosition(lineEl) {
+    if (!lineEl || !lineEl.id) return;
+    const parent = lineEl.parentNode;
+    if (!parent) return;
+    const midArrow = parent.querySelector(`g.mid-arrow[data-for="${lineEl.id}"]`);
+    if (!midArrow) return;
+
+    const x1 = parseFloat(lineEl.getAttribute('x1')) || 0;
+    const y1 = parseFloat(lineEl.getAttribute('y1')) || 0;
+    const x2 = parseFloat(lineEl.getAttribute('x2')) || 0;
+    const y2 = parseFloat(lineEl.getAttribute('y2')) || 0;
+
+    const mx = (x1 + x2) / 2;
+    const my = (y1 + y2) / 2;
+    let angle = Math.atan2(y2 - y1, x2 - x1) * (180 / Math.PI);
+    if (midArrow.getAttribute('data-dir') === 'mid-left') angle += 180;
+
+    midArrow.setAttribute("transform", `translate(${mx}, ${my}) rotate(${angle})`);
+  },
+
+  /**
    * 선 요소에 화살표 마커 적용
    */
   applyArrowMarkers(el, dir, num) {
@@ -382,6 +548,7 @@ window.PicEditor.tools = {
     const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
     g.setAttribute("class", "movable mid-arrow");
     g.setAttribute("data-for", lineEl.id);
+    g.setAttribute("data-dir", dir);
     g.setAttribute("transform", `translate(${mx}, ${my}) rotate(${angle})`);
 
     const polygon = document.createElementNS("http://www.w3.org/2000/svg", "polygon");

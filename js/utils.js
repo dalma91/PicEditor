@@ -64,8 +64,9 @@ window.PicEditor.utils = {
     if (inspector) {
       inspector.classList.remove('active');
     }
-    if (window.PicEditor.tools && window.PicEditor.tools.hideArcCenterHandle) {
-      window.PicEditor.tools.hideArcCenterHandle();
+    if (window.PicEditor.tools) {
+      if (window.PicEditor.tools.hideArcCenterHandle) window.PicEditor.tools.hideArcCenterHandle();
+      if (window.PicEditor.tools.hideLineHandles) window.PicEditor.tools.hideLineHandles();
     }
   },
 
@@ -75,8 +76,10 @@ window.PicEditor.utils = {
   getCleanSvgString(svg) {
     if (!svg) return '';
     const clone = svg.cloneNode(true);
-    const gizmo = clone.querySelector('#arc-center-handle-group');
-    if (gizmo) gizmo.remove();
+    const arcGizmo = clone.querySelector('#arc-center-handle-group');
+    if (arcGizmo) arcGizmo.remove();
+    const lineGizmo = clone.querySelector('#line-handle-group');
+    if (lineGizmo) lineGizmo.remove();
     clone.querySelectorAll('.selected').forEach(el => el.classList.remove('selected'));
     return new XMLSerializer().serializeToString(clone);
   }

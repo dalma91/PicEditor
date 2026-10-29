@@ -18,7 +18,8 @@
 
 | 패치 ID | 날짜 | 커밋 SHA | 주요 수정 내역 | 상태 |
 | :--- | :--- | :--- | :--- | :---: |
-| **PATCH-009** | 2026-10-29 | `TBD` | **[호의 중심] 용어 개편 및 파란색 양 끝점(P1, P2) 원의 방정식 연동 드래그 이동 구현**<br>- 붉은 점 라벨 및 도구 안내 문구를 "원의 중심"에서 **"호의 중심"**으로 직관적 개편<br>- 호의 양 끝점(시점 P1, 종점 P2)을 직접 잡고 늘리거나 줄일 수 있는 파란색 조작 핸들 탑재<br>- 호의 중심과 한 점이 고정된 상태에서 **마우스의 X좌표만을 읽어 원의 방정식으로부터 Y좌표를 자동 산출($y = cy \pm \sqrt{R^2 - (x-cx)^2}$)**하여 항상 완벽한 원호 궤적을 유지하는 구속 드래그 구현 | ✅ 완료 |
+| **PATCH-010** | 2026-10-29 | `TBD` | **[직선/화살표] 양 끝점 파란색 조작 핸들 표시, 단일 끝점 드래그 위치 수정 및 [선택 해제] 전 타 객체 선택 차단(Selection Lock) 구현**<br>- 직선 및 화살표 요소 선택 시 시점과 종점에 파란색 원형 조작 핸들(`🔵 시점`, `🔵 종점`) 실시간 노출<br>- 시점 또는 종점을 개별 드래그하여 반대쪽 고정점을 유지한 채 위치, 길이, 각도를 자유롭게 수정<br>- **[선택 해제] 버튼을 명시적으로 누르기 전까지 다른 객체가 선택되지 않도록 엄격한 선택 차단(Selection Lock)** 적용<br>- 빈 캔버스 클릭 시 선택 해제 방지 및 ESC/선택 해제 버튼으로만 안전하게 해제<br>- 요소 이동, 회전, 반전 시 양 끝점 핸들 및 중간 화살표(`mid-arrow`) transform 완벽 동기화<br>- SVG 내보내기, GitHub 저장, 썸네일 생성 시 `#line-handle-group` 기즈모 100% 격리 및 배제 | ✅ 완료 |
+| **PATCH-009** | 2026-10-29 | `67e0b8c` | **[호의 중심] 용어 개편 및 파란색 양 끝점(P1, P2) 원의 방정식 연동 드래그 이동 구현**<br>- 붉은 점 라벨 및 도구 안내 문구를 "원의 중심"에서 **"호의 중심"**으로 직관적 개편<br>- 호의 양 끝점(시점 P1, 종점 P2)을 직접 잡고 늘리거나 줄일 수 있는 파란색 조작 핸들 탑재<br>- 호의 중심과 한 점이 고정된 상태에서 **마우스의 X좌표만을 읽어 원의 방정식으로부터 Y좌표를 자동 산출($y = cy \pm \sqrt{R^2 - (x-cx)^2}$)**하여 항상 완벽한 원호 궤적을 유지하는 구속 드래그 구현 | ✅ 완료 |
 | **PATCH-008** | 2026-10-29 | `ccbc2b3` | **호(Arc) 곡률 방향 및 원의 중심 기하학적 오류(sweep-flag 반전) 완전 해결**<br>- 호가 중심(붉은 점) 쪽으로 역방향으로 솟아오르던 SVG sweep-flag 반전 결함 완전 정상화<br>- 원의 중심(붉은 점)은 항상 호의 오목한 안쪽에 위치하고, 호는 중심을 축으로 자연스럽게 회전하도록 기하학적 정의 확립<br>- W3C 표준 endpoint-to-center 수식 기반 `getSvgArcCenter` 알고리즘 탑재<br>- 기본 단진자 도면의 호 경로를 천장 피벗(400, 120) 중심 물리적 원호로 동기화 | ✅ 완료 |
 | **PATCH-007** | 2026-10-29 | `c0d8ed0` | **호(Arc) 클릭 시 붉은 중심점 영구 유지 및 손가락/마우스 뗌 직후 소멸 버그 해결, 드래그 위치 수정 보장**<br>- 손가락이나 마우스를 뗄 때 붉은 점이 사라지던 버그(자동 백업 `getCleanSvgString` 내 `deselectAll()` 호출) 원천 제거<br>- 사용자가 `[선택 해제]` 버튼을 누르거나 다른 객체를 선택하기 전까지 붉은 중심점 영구 노출 유지<br>- 빈 캔버스 클릭/터치 시 호 선택 풀림 방지 보호 로직 구현<br>- 모바일/태블릿 터치(`touchstart`/`touchmove`/`touchend`) 및 포인터 이벤트 완벽 지원<br>- 붉은 중심점 터치 반경 24px 확대 및 드래그를 통한 원의 중심 위치/곡률 360° 자유 조정 보장 | ✅ 완료 |
 | **PATCH-006** | 2026-10-29 | `45e90ce` | **호(Arc) 작도 방식 전면 개편: 시점-종점 중점 원의 중심(붉은 점) 표시, 드래그 곡률 제어 및 조건부 노출 핸들 구현**<br>- 호 시점($P_1$)-종점($P_2$)의 중점을 원의 중심($C$)으로 초기화하고 붉은색 조작 핸들(`🔴`) 표시<br>- 붉은 중심점을 마우스로 실시간 드래그하여 원의 중심 위치 및 반지름($R$), 볼록 방향을 360° 자유롭게 조정<br>- 선택 해제(`deselectAll`) 및 다른 객체(선, 글자, 그림) 선택 시 붉은 중심점 자동 은닉<br>- 호 재선택 시 저장된 원의 중심 좌표로 붉은 점 즉시 재노출<br>- 내보내기/저장/다운로드(GitHub, HTML, PNG) 시 에디터 조작용 기즈모 100% 완전 분리 및 배제 | ✅ 완료 |
@@ -643,3 +644,107 @@ if (apiRes.ok) {
    - **내보내기 순수성 보장 (`cleanSvgExcludesGizmo`):** `true` (✅ 합격)
 2. **실제 UI 캡처 스크린샷 ([scratch/arc_ho_crop.png](file:///E:/Git/PicEditor/scratch/arc_ho_crop.png)):**
    - 붉은 점에 `호의 중심 (R=194px)` 표시, 양 끝점에 파란색 `시점`, `종점` 핸들이 선명하게 배치됨을 확인 완료.
+
+
+---
+
+## 🔍 [PATCH-010] 직선/화살표 양 끝점 파란색 조작 핸들 표시, 단일 끝점 드래그 수정 및 선택 고정(Selection Lock) 구현
+
+### 1. 이슈 개요 및 사용자 보고
+- **보고 일시:** 2026-10-29 11:10 KST
+- **사용자 보고 내용:**
+  > *"객체를 선택하면 두 점이 파란색으로 표시되도록 수정해. 직선이나 화살표. 한 점을 클릭해서 위치를 수정할 수 있도록 만들어. 선택해제를 누르지 않으면 다른 객체가 선택되지 않도록 코드 수정해."*
+- **핵심 요구사항:**
+  1. **직선이나 화살표(`<line>`, 마커, 중간 화살표) 객체 선택 시 양 끝점에 파란색 점 표시:**
+     - 선택 즉시 시점 $P_1(x_1, y_1)$과 종점 $P_2(x_2, y_2)$에 눈에 띄는 파란색 조작 핸들(`🔵 시점`, `🔵 종점 (L=...px)`)을 렌더링.
+  2. **한 점을 클릭/드래그하여 위치 및 길이/각도 수정:**
+     - 시점 $P_1$을 드래그하면 종점 $P_2$는 고정된 채 $P_1$의 좌표가 마우스 위치로 갱신.
+     - 종점 $P_2$를 드래그하면 시점 $P_1$은 고정된 채 $P_2$의 좌표가 마우스 위치로 갱신.
+     - 중간 화살표(`mid-arrow`)가 있는 경우에도 선의 중간 위치와 각도가 실시간으로 동기화되어 회전/이동.
+  3. **엄격한 선택 고정(Selection Lock):**
+     - 객체가 선택된 상태에서는 사용자가 상단 메뉴의 **`[선택 해제]`** 버튼(또는 ESC)을 누르기 전까지 **다른 객체를 클릭해도 선택이 변경되지 않고 현재 선택이 강력하게 유지**되어야 함.
+     - 빈 캔버스나 배경을 클릭해도 선택이 풀리지 않도록 보호.
+
+---
+
+### 2. 기술적 해결 조치 (Technical Implementation)
+
+#### ① 직선 및 화살표 조작 핸들 기즈모(`#line-handle-group`) 구축
+- **[js/tools.js](file:///E:/Git/PicEditor/js/tools.js):**
+  - `isLineElement(el)` & `getLineElement(el)`:
+    - SVG `<line>` 요소뿐만 아니라 관련 중간 화살표(`g.mid-arrow[data-for]`)까지 통합 인식하여 기저 선 요소를 정확히 역추적.
+  - `ensureLineGizmo(svg)`:
+    - 22px 투명 터치 감지 원(`circle[opacity="0.001"]`), 6.5px 파란색 앵커(`circle[fill="#3b82f6" stroke="#ffffff"]`), 2px 내부 흰색 점, 드롭 섀도우, 명확한 라벨(`시점`, `종점 (L=px)`) 탑재.
+    - `mousedown` 및 `touchstart` 이벤트에 `e.stopPropagation()`을 적용하여 `state.isDraggingLineP1`, `state.isDraggingLineP2` 독립 제어.
+  - `showLineHandles(el)` & `hideLineHandles()`:
+    - 대상 선 요소의 `transform`(위치, 회전, 스케일)과 완벽히 일치하도록 기즈모에 동일한 transform을 주입하고, $(x_1, y_1)$과 $(x_2, y_2)$에 각각 배치.
+  - `updateMidArrowPosition(lineEl)`:
+    - 끝점 드래그 시 선의 중심 $(mx, my)$ 및 기울기 각도 $	heta = 	ext{atan2}(y_2 - y_1, x_2 - x_1)$를 재계산하여 중간 화살표 transform 갱신.
+
+#### ② 엄격한 선택 차단(Selection Lock) 로직 수립
+- **[js/interaction.js](file:///E:/Git/PicEditor/js/interaction.js):**
+  - `initMovableEvents()`:
+    ```javascript
+    // 선택해제를 누르지 않으면 다른 객체가 선택되지 않도록 차단
+    if (state.selectedElement && state.selectedElement !== textEl && state.selectedElement !== wrap) {
+      e.stopPropagation();
+      return;
+    }
+    ```
+    - 이미 객체가 선택되어 있다면 캔버스 상의 다른 어떤 `.movable` 요소를 클릭/터치해도 이벤트가 차단되어 선택 전환이 원천 차단됩니다.
+  - `handleCanvasStart`:
+    ```javascript
+    // 선택된 객체가 있을 경우, 사용자가 명시적으로 [선택 해제] 버튼을 누르기 전까지 선택 유지
+    if (state.selectedElement) {
+      return;
+    }
+    ```
+    - 캔버스 빈 곳을 클릭하거나 실수로 드래그해도 선택이 해제되지 않습니다.
+  - 오직 상단 툴바의 **`[선택 해제]`** 버튼(`deselectAll()`), `ESC` 키, 또는 선택 요소 삭제(`deleteSelected()`) 시에만 선택이 해제되어 다른 객체를 선택할 수 있는 상태로 전환됩니다.
+
+#### ③ 양 끝점(P1, P2) 독립 드래그 및 역변환 좌표계 보정
+- `handlePointerMove`:
+  - 선 요소가 `translate`, `rotate` 등의 transform을 포함하고 있더라도, 커서의 절대 SVG 좌표를 선 요소의 로컬 좌표계로 역변환($lx \cos(-\theta) - ly \sin(-\theta)$)하여 오차 없이 정확한 $(x_1, y_1)$ 또는 $(x_2, y_2)$를 설정합니다.
+  - 드래그 중인 끝점의 위치에 맞춰 기즈모 핸들과 길이 라벨(`종점 (L=...px)`), 중간 화살표가 실시간으로 매끄럽게 동기화됩니다.
+
+#### ④ 전체 이동 및 인스펙터(회전/반전) 완벽 동기화
+- **[js/interaction.js](file:///E:/Git/PicEditor/js/interaction.js) & [js/inspector.js](file:///E:/Git/PicEditor/js/inspector.js):**
+  - 선 전체를 드래그하여 이동할 때 `updateLineGizmoTransform(target)` 및 중간 화살표 동반 이동(`mt.x += dx; mt.y += dy;`) 처리.
+  - 인스펙터에서 회전 각도 슬라이더 조작(`applyRotate`) 또는 가로/세로 반전(`flipElement`) 시에도 기즈모의 transform이 1:1로 동기화.
+
+#### ⑤ 순수 SVG 내보내기/저장/썸네일 격리 보장
+- **[js/utils.js](file:///E:/Git/PicEditor/js/utils.js) & [js/github.js](file:///E:/Git/PicEditor/js/github.js):**
+  - `getCleanSvgString()` 및 `generateThumbnailBase64()`에서 `#arc-center-handle-group`뿐만 아니라 `#line-handle-group`도 클론 단계에서 100% 제거 직렬화.
+
+---
+
+### 3. 변경된 파일 목록 (Files Modified)
+
+| 파일 경로 | 주요 변경 내용 |
+| :--- | :--- |
+| [js/state.js](file:///E:/Git/PicEditor/js/state.js) | `isDraggingLineP1`, `isDraggingLineP2` 끝점 드래그 상태 플래그 추가 |
+| [js/tools.js](file:///E:/Git/PicEditor/js/tools.js) | `isLineElement`, `getLineElement`, `ensureLineGizmo`, `showLineHandles`, `hideLineHandles`, `updateLineGizmoTransform`, `updateMidArrowPosition` 구현 |
+| [js/interaction.js](file:///E:/Git/PicEditor/js/interaction.js) | 타 객체 선택 차단(Selection Lock), 캔버스 클릭 해제 방지, 끝점 개별 드래그 및 중간 화살표 동기화 |
+| [js/inspector.js](file:///E:/Git/PicEditor/js/inspector.js) | 회전/반전 시 `updateLineGizmoTransform` 호출로 핸들 기하학적 정렬 동기화 |
+| [js/utils.js](file:///E:/Git/PicEditor/js/utils.js) | `deselectAll` 시 `hideLineHandles` 호출, `getCleanSvgString`에서 `#line-handle-group` 제거 |
+| [js/github.js](file:///E:/Git/PicEditor/js/github.js) | `generateThumbnailBase64`에서 `#line-handle-group` 제거하여 깨끗한 썸네일 보장 |
+| [index.html](file:///E:/Git/PicEditor/index.html) | 스크립트 모듈 캐시 버스터 `v=20261029_6` 일괄 갱신 |
+| [PicEditor.html](file:///E:/Git/PicEditor/PicEditor.html) | `index.html`과 100% 동일 동기화 |
+| [physics_diagram_studio_patch_report.md](file:///E:/Git/PicEditor/physics_diagram_studio_patch_report.md) | `PATCH-010` 전체 구현 상세 내역 및 9개 자동화 테스트 검증 보고서 작성 |
+
+---
+
+### 4. 테스트 및 검증 결과
+
+1. **자동화 검증 스위트 ([scratch/test_runner.html](file:///E:/Git/PicEditor/scratch/test_runner.html)):**
+   - **Test 1 (직선 선택 시 기즈모 표시):** `line1` 클릭 시 `#line-handle-group` `display: block` 및 P1 `(100, 150)`, P2 `(300, 150)` 안착 (✅ PASS)
+   - **Test 2 (P1 드래그 수정):** P1을 `(120, 180)`으로 드래그 시 `x1=120`, `y1=180` 갱신, P2 `(300, 150)` 고정 유지 (✅ PASS)
+   - **Test 3 (P2 드래그 수정):** P2를 `(350, 170)`으로 드래그 시 `x2=350`, `y2=170` 갱신, P1 `(120, 180)` 고정 유지 (✅ PASS)
+   - **Test 4 (선택 차단 Selection Lock):** 직선이 선택된 상태에서 원(`circle1`) 클릭 시 선택 전환 차단 및 `line1` 선택 유지 (✅ PASS)
+   - **Test 5 (캔버스 클릭 보호):** 빈 캔버스 클릭 시 선택 해제 방지 및 `line1` 선택 유지 (✅ PASS)
+   - **Test 6 (선택 해제 버튼):** `deselectAll()` 호출 시 선택 해제 및 `#line-handle-group` `display: none` 은닉 (✅ PASS)
+   - **Test 7 (선택 해제 후 타 객체 선택):** 선택 해제 후 원(`circle1`) 클릭 시 정상 선택 활성화 (✅ PASS)
+   - **Test 8 (화살표 선택 시 기즈모 표시):** 화살표(`arrow1`) 클릭 시 양 끝점 파란 핸들 노출 및 정확한 좌표 배치 (✅ PASS)
+   - **Test 9 (내보내기 순수성):** `getCleanSvgString()` 결과물에 `#line-handle-group` 기즈모 100% 미포함 확인 (✅ PASS)
+2. **실제 UI 캡처 스크린샷 ([line_handles_screenshot.png](file:///C:/Users/ADMIN/.gemini/antigravity/brain/b6156b08-8313-4c7a-a614-3c5d57cf47b8/line_handles_screenshot.png)):**
+   - 파란색 시점/종점 핸들과 "시점" 라벨, 종점 길이 라벨이 캔버스에 선명하게 표시되고 안정적으로 조작됨을 헤드리스 크롬을 통해 시각적으로 최종 검증 완료.

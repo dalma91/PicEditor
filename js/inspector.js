@@ -296,6 +296,8 @@ window.PicEditor.inspector = {
     window.PicEditor.utils.setTransform(target, t);
     if (window.PicEditor.tools && window.PicEditor.tools.isArcElement(target)) {
       window.PicEditor.tools.updateArcGizmoTransform(target);
+    } else if (window.PicEditor.tools && window.PicEditor.tools.isLineElement(target)) {
+      window.PicEditor.tools.updateLineGizmoTransform(target);
     }
     if (window.PicEditor.sync) window.PicEditor.sync.markModified();
   },
@@ -316,6 +318,8 @@ window.PicEditor.inspector = {
     window.PicEditor.utils.setTransform(target, t);
     if (window.PicEditor.tools && window.PicEditor.tools.isArcElement(target)) {
       window.PicEditor.tools.updateArcGizmoTransform(target);
+    } else if (window.PicEditor.tools && window.PicEditor.tools.isLineElement(target)) {
+      window.PicEditor.tools.updateLineGizmoTransform(target);
     }
     if (window.PicEditor.sync) window.PicEditor.sync.markModified();
   },
