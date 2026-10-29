@@ -914,7 +914,36 @@ window.PicEditor.tools = {
   },
 
   /**
-   * 포물선 곡선 데이터 (타입, 꼭짓점 V, 양 끝점 P1, P2) 추출
+   * 포물선 y = a*(x - vx)^2 + vy 위의 점 중 (px, py)에 가장 가까운 점(투영점) 계산
+   */
+  projectOntoParabola(px, py, vx, vy, a) {
+    if (Math.abs(a) < 1e-9) {
+      return { x: px, y: vy };
+    }
+    const xd = px - vx;
+    const yd = py - vy;
+    let u = xd;
+    // 뉴턴-랩슨 반복 (최대 6회)으로 최적 u 찾기
+    for (let iter = 0; iter < 6; iter++) {
+      const f = 2 * a * a * u * u * u + (1 - 2 * a * yd) * u - xd;
+      const df = 6 * a * a * u * u + (1 - 2 * a * yd);
+      if (Math.abs(df) < 1e-7) break;
+      const nextU = u - f / df;
+      if (!isFinite(nextU) || Math.abs(nextU) > 20000) break;
+      if (Math.abs(nextU - u) < 1e-4) {
+        u = nextU;
+        break;
+      }
+      u = nextU;
+    }
+    if (!isFinite(u) || Math.abs(u) > 20000) u = xd;
+    const projX = vx + u;
+    const projY = vy + a * u * u;
+    return { x: projX, y: projY };
+  },
+
+  /**
+   * 포물선 곡선 데이터 (타입, 꼭짓점 V, 양 끝점 P1, P2, 곡률 a) 추출
    */
   getParabolaData(el) {
     if (!el) return null;
@@ -933,15 +962,38 @@ window.PicEditor.tools = {
     }
 
     if (type === 'parabola3') {
-      // parabola3: x0,y0 (좌측 시점), x1,y0 (우측 끝점), cx (꼭짓점 X), cy (조절점 Y)
-      // 꼭짓점 V의 Y = (cy + y0) / 2
-      const vx = cx;
-      const vy = (cy + y0) / 2;
+      let vx, vy, a;
+      const attrVx = el.getAttribute('data-vx');
+      const attrVy = el.getAttribute('data-vy');
+      const attrA = el.getAttribute('data-a');
+      if (attrVx !== null && attrVy !== null && attrA !== null) {
+        vx = parseFloat(attrVx);
+        vy = parseFloat(attrVy);
+        a = parseFloat(attrA);
+      } else {
+        const dx = x1 - x0;
+        if (Math.abs(dx) > 1e-4) {
+          a = (y0 + y1 - 2 * cy) / (dx * dx);
+          if (Math.abs(a) > 1e-8) {
+            vx = (x0 + x1) / 2 - (y1 - y0) / (2 * a * dx);
+            vy = y0 - a * Math.pow(x0 - vx, 2);
+          } else {
+            vx = (x0 + x1) / 2;
+            vy = (cy + y0) / 2;
+            a = (y0 - vy) / Math.max(1, Math.pow(x0 - vx, 2));
+          }
+        } else {
+          vx = cx;
+          vy = (cy + y0) / 2;
+          a = 0;
+        }
+      }
       return {
         type: 'parabola3',
         v: { x: vx, y: vy },
         p1: { x: x0, y: y0 },
-        p2: { x: x1, y: y1 }
+        p2: { x: x1, y: y1 },
+        a: a
       };
     } else {
       // parabola2: x0,y0 (꼭짓점 V), x1,y1 (끝점 P1)

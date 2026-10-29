@@ -615,19 +615,54 @@ window.PicEditor.interaction = {
               data.p2.x += dx;
               data.v.x = localX;
               data.v.y = localY;
+              const a = (data.p1.y - data.v.y) / Math.max(1, Math.pow(data.p1.x - data.v.x, 2));
+              data.a = a;
+              const cx = (data.p1.x + data.p2.x) / 2;
+              const cy = a * (data.p1.x - data.v.x) * (data.p2.x - data.v.x) + data.v.y;
+              const d = `M ${data.p1.x.toFixed(1)},${data.p1.y.toFixed(1)} Q ${cx.toFixed(1)},${cy.toFixed(1)} ${data.p2.x.toFixed(1)},${data.p2.y.toFixed(1)}`;
+              parabolaEl.setAttribute('d', d);
+              parabolaEl.setAttribute('data-vx', data.v.x.toFixed(1));
+              parabolaEl.setAttribute('data-vy', data.v.y.toFixed(1));
+              parabolaEl.setAttribute('data-a', a.toString());
             } else if (state.isDraggingParabolaP1) {
-              data.p1.x = localX;
-              data.p1.y = localY;
-              data.p2.y = localY;
+              // 시작점(P1): 기존 포물선의 궤적 y = a*(x - vx)^2 + vy 상에서만 이동
+              const proj = window.PicEditor.tools.projectOntoParabola(localX, localY, data.v.x, data.v.y, data.a);
+              const isP1Left = data.p1.x <= data.v.x;
+              if (isP1Left) {
+                if (proj.x > data.v.x - 2) proj.x = data.v.x - 2;
+              } else {
+                if (proj.x < data.v.x + 2) proj.x = data.v.x + 2;
+              }
+              proj.y = data.v.y + data.a * Math.pow(proj.x - data.v.x, 2);
+              data.p1.x = proj.x;
+              data.p1.y = proj.y;
+              const cx = (data.p1.x + data.p2.x) / 2;
+              const cy = data.a * (data.p1.x - data.v.x) * (data.p2.x - data.v.x) + data.v.y;
+              const d = `M ${data.p1.x.toFixed(1)},${data.p1.y.toFixed(1)} Q ${cx.toFixed(1)},${cy.toFixed(1)} ${data.p2.x.toFixed(1)},${data.p2.y.toFixed(1)}`;
+              parabolaEl.setAttribute('d', d);
+              parabolaEl.setAttribute('data-vx', data.v.x.toFixed(1));
+              parabolaEl.setAttribute('data-vy', data.v.y.toFixed(1));
+              parabolaEl.setAttribute('data-a', data.a.toString());
             } else if (state.isDraggingParabolaP2) {
-              data.p2.x = localX;
-              data.p2.y = localY;
-              data.p1.y = localY;
+              // 종점(P2): 기존 포물선의 궤적 y = a*(x - vx)^2 + vy 상에서만 이동
+              const proj = window.PicEditor.tools.projectOntoParabola(localX, localY, data.v.x, data.v.y, data.a);
+              const isP2Right = data.p2.x >= data.v.x;
+              if (isP2Right) {
+                if (proj.x < data.v.x + 2) proj.x = data.v.x + 2;
+              } else {
+                if (proj.x > data.v.x - 2) proj.x = data.v.x - 2;
+              }
+              proj.y = data.v.y + data.a * Math.pow(proj.x - data.v.x, 2);
+              data.p2.x = proj.x;
+              data.p2.y = proj.y;
+              const cx = (data.p1.x + data.p2.x) / 2;
+              const cy = data.a * (data.p1.x - data.v.x) * (data.p2.x - data.v.x) + data.v.y;
+              const d = `M ${data.p1.x.toFixed(1)},${data.p1.y.toFixed(1)} Q ${cx.toFixed(1)},${cy.toFixed(1)} ${data.p2.x.toFixed(1)},${data.p2.y.toFixed(1)}`;
+              parabolaEl.setAttribute('d', d);
+              parabolaEl.setAttribute('data-vx', data.v.x.toFixed(1));
+              parabolaEl.setAttribute('data-vy', data.v.y.toFixed(1));
+              parabolaEl.setAttribute('data-a', data.a.toString());
             }
-            const xv = ((data.p1.x + data.p2.x) / 2).toFixed(1);
-            const yc = (2 * data.v.y - data.p1.y).toFixed(1);
-            const d = `M ${data.p1.x.toFixed(1)},${data.p1.y.toFixed(1)} Q ${xv},${yc} ${data.p2.x.toFixed(1)},${data.p1.y.toFixed(1)}`;
-            parabolaEl.setAttribute('d', d);
           } else {
             if (state.isDraggingParabolaV) {
               data.v.x = localX;
@@ -697,12 +732,18 @@ window.PicEditor.interaction = {
           state.tempShape.setAttribute("d", d);
         } else if (tool === 'parabola3') {
           // 좌측 시점 = drawStart, 우측 낙하지점 = (pt.x, drawStart.y), 최고점 높이 = pt.y
-          const x1 = state.drawStart.x, y1 = state.drawStart.y;
-          const x2 = pt.x, y2 = pt.y;
-          const xv = ((x1 + x2) / 2).toFixed(1);
-          const yc = (2 * y2 - y1).toFixed(1);
-          const d = `M ${x1.toFixed(1)},${y1.toFixed(1)} Q ${xv},${yc} ${x2.toFixed(1)},${y1.toFixed(1)}`;
+          const x1 = Math.min(state.drawStart.x, pt.x);
+          const x2 = Math.max(state.drawStart.x, pt.x);
+          const y1 = state.drawStart.y;
+          const y2 = pt.y;
+          const xv = (x1 + x2) / 2;
+          const yc = 2 * y2 - y1;
+          const d = `M ${x1.toFixed(1)},${y1.toFixed(1)} Q ${xv.toFixed(1)},${yc.toFixed(1)} ${x2.toFixed(1)},${y1.toFixed(1)}`;
           state.tempShape.setAttribute("d", d);
+          const a = (y1 - y2) / Math.max(1, Math.pow(x1 - xv, 2));
+          state.tempShape.setAttribute("data-vx", xv.toFixed(1));
+          state.tempShape.setAttribute("data-vy", y2.toFixed(1));
+          state.tempShape.setAttribute("data-a", a.toString());
         } else if (tool === 'hyperbola') {
           // 반비례 곡선 y=k/x: 바운딩 영역 내 매끄러운 쌍곡선
           const x1 = Math.min(state.drawStart.x, pt.x);
