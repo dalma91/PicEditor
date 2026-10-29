@@ -294,6 +294,7 @@ window.PicEditor.interaction = {
           lineX.setAttribute('stroke', '#000000');
           lineX.setAttribute('stroke-width', '2');
           lineX.setAttribute('marker-end', 'url(#arrow)');
+          if (strokeStyle === 'dashed') lineX.setAttribute('stroke-dasharray', '6,4');
 
           const lineY = document.createElementNS("http://www.w3.org/2000/svg", "line");
           lineY.setAttribute('class', 'axis-line axis-y');
@@ -304,6 +305,7 @@ window.PicEditor.interaction = {
           lineY.setAttribute('stroke', '#000000');
           lineY.setAttribute('stroke-width', '2');
           lineY.setAttribute('marker-end', 'url(#arrow)');
+          if (strokeStyle === 'dashed') lineY.setAttribute('stroke-dasharray', '6,4');
 
           const originDot = document.createElementNS("http://www.w3.org/2000/svg", "circle");
           originDot.setAttribute('class', 'axis-origin-dot');

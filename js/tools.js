@@ -96,15 +96,112 @@ window.PicEditor.tools = {
   },
 
   /**
-   * 실선/점선 토글
+   * 실선/점선 토글 및 선택된 객체에 변환 적용
    */
   setStrokeStyle(style) {
     const sel = document.getElementById('strokeStyleSelect');
     if (sel) sel.value = style;
+
+    // 상단 툴바 토글 버튼 상태 동기화
     const btnSolid = document.getElementById('btnStrokeSolid');
     const btnDashed = document.getElementById('btnStrokeDashed');
     if (btnSolid) btnSolid.classList.toggle('active', style === 'solid');
     if (btnDashed) btnDashed.classList.toggle('active', style === 'dashed');
+
+    // 인스펙터 토글 버튼 상태 동기화
+    const inspSolid = document.getElementById('inspStrokeSolid');
+    const inspDashed = document.getElementById('inspStrokeDashed');
+    if (inspSolid) inspSolid.classList.toggle('active', style === 'solid');
+    if (inspDashed) inspDashed.classList.toggle('active', style === 'dashed');
+
+    // 선택된 객체가 있을 경우, 해당 객체(모든 종류의 객체)에 실선/점선 변환 즉시 적용
+    const state = window.PicEditor.state;
+    if (state && state.selectedElement) {
+      const target = state.selectedElement.closest('.axes-wrap') || 
+                     state.selectedElement.closest('.text-wrap') || 
+                     state.selectedElement.closest('.mid-arrow') || 
+                     state.selectedElement;
+      
+      this.applyStrokeStyleToElement(target, style);
+      if (window.PicEditor.sync) window.PicEditor.sync.markModified();
+    }
+  },
+
+  /**
+   * 임의의 SVG 요소(직선, 화살표, 호, 원, 사각형, 삼각형, 포물선, 곡선, 좌표계, 글자박스 등 모든 객체)에 실선/점선 적용
+   */
+  applyStrokeStyleToElement(target, style) {
+    if (!target) return;
+    const isDashed = (style === 'dashed');
+    const dashVal = '6,4';
+
+    // 1. 좌표계 (axes-wrap): X축 및 Y축 라인에 적용
+    if (target.classList.contains('axes-wrap')) {
+      target.querySelectorAll('.axis-line').forEach(line => {
+        if (isDashed) line.setAttribute('stroke-dasharray', dashVal);
+        else line.removeAttribute('stroke-dasharray');
+      });
+      return;
+    }
+
+    // 2. 글자 래퍼 (text-wrap): 배경 박스 테두리에 적용
+    if (target.classList.contains('text-wrap')) {
+      const bg = target.querySelector('.text-bg-rect');
+      if (bg) {
+        if (isDashed) bg.setAttribute('stroke-dasharray', '4,3');
+        else bg.removeAttribute('stroke-dasharray');
+      }
+      return;
+    }
+
+    // 3. 중간 화살표 래퍼 (mid-arrow)
+    if (target.classList.contains('mid-arrow')) {
+      const forId = target.getAttribute('data-for');
+      if (forId) {
+        const svg = target.closest('svg');
+        const parentLine = svg ? svg.querySelector('#' + forId) : null;
+        if (parentLine) {
+          if (isDashed) parentLine.setAttribute('stroke-dasharray', dashVal);
+          else parentLine.removeAttribute('stroke-dasharray');
+        }
+      }
+    }
+
+    // 4. 일반 단일 도형 (line, path, rect, circle, polygon 등)
+    if (isDashed) {
+      target.setAttribute('stroke-dasharray', dashVal);
+    } else {
+      target.removeAttribute('stroke-dasharray');
+    }
+
+    // 5. 그룹(g) 요소인 경우 내부 모든 스트로크 도형에 일괄 적용
+    if (target.tagName && target.tagName.toLowerCase() === 'g') {
+      target.querySelectorAll('line, path, rect, circle, polygon').forEach(child => {
+        if (child.classList.contains('text-bg-rect')) return;
+        if (isDashed) child.setAttribute('stroke-dasharray', dashVal);
+        else child.removeAttribute('stroke-dasharray');
+      });
+    }
+  },
+
+  /**
+   * 요소의 현재 실선/점선 상태 확인 ('dashed' 또는 'solid')
+   */
+  getStrokeStyleOfElement(el) {
+    if (!el) return 'solid';
+    const target = el.closest('.axes-wrap') || el.closest('.text-wrap') || el.closest('.mid-arrow') || el;
+    let strokeEl = target;
+    if (target.classList.contains('axes-wrap')) {
+      strokeEl = target.querySelector('.axis-line') || target;
+    } else if (target.classList.contains('text-wrap')) {
+      strokeEl = target.querySelector('.text-bg-rect') || target;
+    } else if (target.classList.contains('mid-arrow')) {
+      const forId = target.getAttribute('data-for');
+      const svg = target.closest('svg');
+      strokeEl = (svg && forId) ? (svg.querySelector('#' + forId) || target) : target;
+    }
+    const da = strokeEl.getAttribute('stroke-dasharray');
+    return (da && da !== 'none' && da.trim() !== '') ? 'dashed' : 'solid';
   },
 
   /**

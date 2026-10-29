@@ -29,6 +29,23 @@ window.PicEditor.inspector = {
     if (rRange) rRange.value = parseFloat(t.r.toFixed(1));
     if (rNum) rNum.value = parseFloat(t.r.toFixed(1));
 
+    // 선택된 객체의 실선/점선 상태를 UI 버튼에 동기화
+    if (window.PicEditor.tools && window.PicEditor.tools.getStrokeStyleOfElement) {
+      const curStyle = window.PicEditor.tools.getStrokeStyleOfElement(target);
+      const sel = document.getElementById('strokeStyleSelect');
+      if (sel) sel.value = curStyle;
+
+      const btnSolid = document.getElementById('btnStrokeSolid');
+      const btnDashed = document.getElementById('btnStrokeDashed');
+      if (btnSolid) btnSolid.classList.toggle('active', curStyle === 'solid');
+      if (btnDashed) btnDashed.classList.toggle('active', curStyle === 'dashed');
+
+      const inspSolid = document.getElementById('inspStrokeSolid');
+      const inspDashed = document.getElementById('inspStrokeDashed');
+      if (inspSolid) inspSolid.classList.toggle('active', curStyle === 'solid');
+      if (inspDashed) inspDashed.classList.toggle('active', curStyle === 'dashed');
+    }
+
     const textInspector = document.getElementById('textInspector');
     const imageInspector = document.getElementById('imageInspector');
 

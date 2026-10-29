@@ -306,6 +306,14 @@
         </div>
 
         <div class="control-group">
+          <label>선 종류:</label>
+          <div class="style-toggle-group">
+            <button type="button" class="style-toggle-btn active" id="inspStrokeSolid" onclick="setStrokeStyle('solid')">실선</button>
+            <button type="button" class="style-toggle-btn" id="inspStrokeDashed" onclick="setStrokeStyle('dashed')">점선</button>
+          </div>
+        </div>
+
+        <div class="control-group">
           <label for="rotateRange">회전:</label>
           <div class="inputs-wrap">
             <input type="range" id="rotateRange" min="-180" max="180" step="0.1" value="0" oninput="onRotateSlider(this.value)">
