@@ -47,21 +47,21 @@ window.PicEditor.interaction = {
         if (state.isDrawMode) return;
         if (e.touches && e.touches.length > 1) return;
 
-        const wrap = el.closest('.text-wrap') || el.closest('.mid-arrow') || el;
-        const textEl = wrap.querySelector('.text-el') || el;
+        const wrap = el.closest('.axes-wrap') || el.closest('.text-wrap') || el.closest('.mid-arrow') || el;
+        const targetEl = wrap.classList.contains('axes-wrap') ? wrap : (wrap.querySelector('.text-el') || el);
 
         // 선택해제를 누르지 않으면 다른 객체가 선택되지 않도록 차단
-        if (state.selectedElement && state.selectedElement !== textEl && state.selectedElement !== wrap) {
+        if (state.selectedElement && state.selectedElement !== targetEl && state.selectedElement !== wrap) {
           e.stopPropagation();
           return;
         }
 
         e.stopPropagation();
 
-        state.selectedElement = textEl;
+        state.selectedElement = targetEl;
 
         svg.querySelectorAll('.movable').forEach(elem => {
-          const w = elem.closest('.text-wrap') || elem.closest('.mid-arrow') || elem;
+          const w = elem.closest('.axes-wrap') || elem.closest('.text-wrap') || elem.closest('.mid-arrow') || elem;
           w.classList.remove('selected');
         });
         wrap.classList.add('selected');
@@ -97,7 +97,7 @@ window.PicEditor.interaction = {
       el.ondblclick = (e) => {
         if (state.isDrawMode) return;
         e.stopPropagation();
-        const wrap = el.closest('.text-wrap') || el.closest('.mid-arrow') || el;
+        const wrap = el.closest('.axes-wrap') || el.closest('.text-wrap') || el.closest('.mid-arrow') || el;
         const textEl = wrap.querySelector ? (wrap.querySelector('.text-el') || (el.classList.contains('text-el') ? el : null)) : null;
         if (textEl) {
           state.selectedElement = textEl;
@@ -254,6 +254,76 @@ window.PicEditor.interaction = {
           state.tempShape.setAttribute("stroke-width", "2");
           if (strokeStyle === 'dashed') state.tempShape.setAttribute("stroke-dasharray", "6,4");
           state.tempShape.setAttribute("d", `M ${pt.x},${pt.y} L ${pt.x},${pt.y}`);
+        } else if (tool === 'axes') {
+          const group = document.createElementNS("http://www.w3.org/2000/svg", "g");
+          group.setAttribute('class', 'movable axes-wrap');
+          group.setAttribute('transform', `translate(${pt.x}, ${pt.y}) scale(1,1) rotate(0)`);
+          
+          const lineX = document.createElementNS("http://www.w3.org/2000/svg", "line");
+          lineX.setAttribute('class', 'axis-line axis-x');
+          lineX.setAttribute('x1', '0');
+          lineX.setAttribute('y1', '0');
+          lineX.setAttribute('x2', '0');
+          lineX.setAttribute('y2', '0');
+          lineX.setAttribute('stroke', '#000000');
+          lineX.setAttribute('stroke-width', '2');
+          lineX.setAttribute('marker-end', 'url(#arrow)');
+
+          const lineY = document.createElementNS("http://www.w3.org/2000/svg", "line");
+          lineY.setAttribute('class', 'axis-line axis-y');
+          lineY.setAttribute('x1', '0');
+          lineY.setAttribute('y1', '0');
+          lineY.setAttribute('x2', '0');
+          lineY.setAttribute('y2', '0');
+          lineY.setAttribute('stroke', '#000000');
+          lineY.setAttribute('stroke-width', '2');
+          lineY.setAttribute('marker-end', 'url(#arrow)');
+
+          const originDot = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+          originDot.setAttribute('class', 'axis-origin-dot');
+          originDot.setAttribute('cx', '0');
+          originDot.setAttribute('cy', '0');
+          originDot.setAttribute('r', '2.5');
+          originDot.setAttribute('fill', '#000000');
+
+          const labelX = document.createElementNS("http://www.w3.org/2000/svg", "text");
+          labelX.setAttribute('class', 'axis-label axis-label-x');
+          labelX.setAttribute('x', '0');
+          labelX.setAttribute('y', '0');
+          labelX.setAttribute('font-family', "'Times New Roman', serif");
+          labelX.setAttribute('font-size', '16');
+          labelX.setAttribute('font-style', 'italic');
+          labelX.setAttribute('fill', '#000000');
+          labelX.textContent = 'x';
+
+          const labelY = document.createElementNS("http://www.w3.org/2000/svg", "text");
+          labelY.setAttribute('class', 'axis-label axis-label-y');
+          labelY.setAttribute('x', '0');
+          labelY.setAttribute('y', '0');
+          labelY.setAttribute('font-family', "'Times New Roman', serif");
+          labelY.setAttribute('font-size', '16');
+          labelY.setAttribute('font-style', 'italic');
+          labelY.setAttribute('fill', '#000000');
+          labelY.textContent = 'y';
+
+          const labelO = document.createElementNS("http://www.w3.org/2000/svg", "text");
+          labelO.setAttribute('class', 'axis-label axis-label-o');
+          labelO.setAttribute('x', '-12');
+          labelO.setAttribute('y', '14');
+          labelO.setAttribute('font-family', "'Times New Roman', serif");
+          labelO.setAttribute('font-size', '14');
+          labelO.setAttribute('font-style', 'italic');
+          labelO.setAttribute('fill', '#000000');
+          labelO.textContent = 'O';
+
+          group.appendChild(lineX);
+          group.appendChild(lineY);
+          group.appendChild(originDot);
+          group.appendChild(labelX);
+          group.appendChild(labelY);
+          group.appendChild(labelO);
+
+          state.tempShape = group;
         }
 
         if (state.tempShape) {
@@ -488,6 +558,37 @@ window.PicEditor.interaction = {
           const dx = x2 - x1, dy = y2 - y1;
           const d = `M ${x1.toFixed(1)},${y1.toFixed(1)} C ${(x1 + 0.30 * dx).toFixed(1)},${(y1 + 0.65 * dy).toFixed(1)} ${(x1 + 0.60 * dx).toFixed(1)},${y2.toFixed(1)} ${x2.toFixed(1)},${y2.toFixed(1)}`;
           state.tempShape.setAttribute("d", d);
+        } else if (tool === 'axes') {
+          const dx = pt.x - state.drawStart.x;
+          const dy = pt.y - state.drawStart.y;
+          const lineX = state.tempShape.querySelector('.axis-x');
+          const lineY = state.tempShape.querySelector('.axis-y');
+          const lblX = state.tempShape.querySelector('.axis-label-x');
+          const lblY = state.tempShape.querySelector('.axis-label-y');
+          const lblO = state.tempShape.querySelector('.axis-label-o');
+
+          if (lineX) {
+            lineX.setAttribute('x2', dx.toFixed(1));
+            lineX.setAttribute('y2', '0');
+          }
+          if (lineY) {
+            lineY.setAttribute('x2', '0');
+            lineY.setAttribute('y2', dy.toFixed(1));
+          }
+          if (lblX) {
+            lblX.setAttribute('x', (dx >= 0 ? dx + 6 : dx - 14).toFixed(1));
+            lblX.setAttribute('y', '5');
+          }
+          if (lblY) {
+            lblY.setAttribute('x', '-5');
+            lblY.setAttribute('y', (dy <= 0 ? dy - 6 : dy + 15).toFixed(1));
+          }
+          if (lblO) {
+            const ox = dx >= 0 ? -12 : 6;
+            const oy = dy <= 0 ? 14 : -6;
+            lblO.setAttribute('x', ox.toString());
+            lblO.setAttribute('y', oy.toString());
+          }
         }
         return;
       }
@@ -503,7 +604,7 @@ window.PicEditor.interaction = {
         state.startX = pt.x;
         state.startY = pt.y;
 
-        const target = state.selectedElement.closest('.text-wrap') || state.selectedElement;
+        const target = state.selectedElement.closest('.axes-wrap') || state.selectedElement.closest('.text-wrap') || state.selectedElement;
         const t = window.PicEditor.utils.parseTransform(target);
         t.x += dx;
         t.y += dy;
@@ -586,6 +687,24 @@ window.PicEditor.interaction = {
             state.selectedElement = created;
             created.classList.add('selected');
             window.PicEditor.tools.showArcCenterHandle(created);
+          } else if (tool === 'axes') {
+            const lineX = created.querySelector('.axis-x');
+            const lineY = created.querySelector('.axis-y');
+            const x2 = parseFloat(lineX ? lineX.getAttribute('x2') : 0) || 0;
+            const y2 = parseFloat(lineY ? lineY.getAttribute('y2') : 0) || 0;
+            if (Math.abs(x2) < 5 && Math.abs(y2) < 5) {
+              if (lineX) lineX.setAttribute('x2', '120');
+              if (lineY) lineY.setAttribute('y2', '-120');
+              const lblX = created.querySelector('.axis-label-x');
+              const lblY = created.querySelector('.axis-label-y');
+              if (lblX) { lblX.setAttribute('x', '126'); lblX.setAttribute('y', '5'); }
+              if (lblY) { lblY.setAttribute('x', '-5'); lblY.setAttribute('y', '-126'); }
+            }
+            window.PicEditor.interaction.toggleMode();
+            window.PicEditor.utils.deselectAll();
+            state.selectedElement = created;
+            created.classList.add('selected');
+            window.PicEditor.inspector.syncUItoSelected();
           }
 
           if (window.PicEditor.sync) window.PicEditor.sync.markModified();
@@ -645,7 +764,7 @@ window.PicEditor.interaction = {
           else if (e.key === 'ArrowLeft') dx = -step;
           else if (e.key === 'ArrowRight') dx = step;
 
-          const target = state.selectedElement.closest('.text-wrap') || state.selectedElement;
+          const target = state.selectedElement.closest('.axes-wrap') || state.selectedElement.closest('.text-wrap') || state.selectedElement;
           const t = window.PicEditor.utils.parseTransform(target);
           t.x += dx;
           t.y += dy;

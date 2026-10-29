@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>물리 마스터 에디터 스튜디오 v15</title>
-  <link rel="stylesheet" href="css/style.css?v=20261029_10">
+  <link rel="stylesheet" href="css/style.css?v=20261029_11">
   <style>
     /* 브라우저 100vh 고정 뷰포트 및 2열 그리드 레이아웃 */
     html, body {
@@ -162,6 +162,7 @@
 
         <!-- 하위 호환용 hidden select -->
         <select id="toolSelect" style="display:none;" onchange="onToolChange()">
+          <option value="axes">좌표계</option>
           <option value="line">직선</option>
           <option value="arrow">화살표</option>
           <option value="rect">사각형</option>
@@ -218,6 +219,10 @@
         <!-- 2. 물리 및 함수 곡선 팔레트 (5개) -->
         <div class="tool-grid-label">물리 / 수학 곡선</div>
         <div class="tool-icon-grid curves-grid">
+          <button type="button" class="tool-btn" data-tool="axes" onclick="setTool('axes')" title="직교 좌표계 (x, y축, 원점 기준 회전)">
+            <svg viewBox="0 0 24 24"><line x1="5" y1="20" x2="5" y2="4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><polygon points="2,6 5,2 8,6" fill="currentColor" stroke="none"/><line x1="5" y1="20" x2="21" y2="20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><polygon points="19,17 23,20 19,23" fill="currentColor" stroke="none"/><circle cx="5" cy="20" r="2" fill="#dc2626" stroke="none"/></svg>
+            <span class="btn-sublabel">좌표계</span>
+          </button>
           <button type="button" class="tool-btn" data-tool="parabola2" onclick="setTool('parabola2')" title="포물선 2점 (꼭짓점-끝점)">
             <svg viewBox="0 0 24 24"><path d="M 4,6 Q 19,6 20,20" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"/><circle cx="4" cy="6" r="2.2" fill="#dc2626" stroke="none"/></svg>
             <span class="btn-sublabel">포물선2</span>
@@ -298,8 +303,8 @@
         <div class="control-group">
           <label for="rotateRange">회전:</label>
           <div class="inputs-wrap">
-            <input type="range" id="rotateRange" min="-180" max="180" step="1" value="0" oninput="onRotateSlider(this.value)">
-            <input type="number" id="rotateNum" min="-360" max="360" step="1" value="0" oninput="onRotateNumber(this.value)">
+            <input type="range" id="rotateRange" min="-180" max="180" step="0.1" value="0" oninput="onRotateSlider(this.value)">
+            <input type="number" id="rotateNum" min="-360" max="360" step="0.1" value="0" oninput="onRotateNumber(this.value)">
           </div>
         </div>
 
@@ -633,14 +638,14 @@
   </div>
 
   <!-- 자바스크립트 모듈 로드 (강제 캐시 갱신 파라미터 적용) -->
-  <script src="js/state.js?v=20261029_10"></script>
-  <script src="js/utils.js?v=20261029_10"></script>
-  <script src="js/canvas.js?v=20261029_10"></script>
-  <script src="js/tools.js?v=20261029_10"></script>
-  <script src="js/inspector.js?v=20261029_10"></script>
-  <script src="js/interaction.js?v=20261029_10"></script>
-  <script src="js/export-import.js?v=20261029_10"></script>
-  <script src="js/github.js?v=20261029_10"></script>
-  <script src="js/app.js?v=20261029_10"></script>
+  <script src="js/state.js?v=20261029_11"></script>
+  <script src="js/utils.js?v=20261029_11"></script>
+  <script src="js/canvas.js?v=20261029_11"></script>
+  <script src="js/tools.js?v=20261029_11"></script>
+  <script src="js/inspector.js?v=20261029_11"></script>
+  <script src="js/interaction.js?v=20261029_11"></script>
+  <script src="js/export-import.js?v=20261029_11"></script>
+  <script src="js/github.js?v=20261029_11"></script>
+  <script src="js/app.js?v=20261029_11"></script>
 </body>
 </html>

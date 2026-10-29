@@ -29,6 +29,7 @@ window.PicEditor.tools = {
     // 상단 뱃지 갱신
     const badge = document.getElementById('currentToolBadge');
     const toolNames = {
+      axes: '좌표계',
       line: '직선',
       arrow: '화살표',
       rect: '사각형',
@@ -55,6 +56,7 @@ window.PicEditor.tools = {
     // 안내 박스 텍스트 갱신
     const tipBox = document.getElementById('toolTipBox');
     const tips = {
+      axes: '💡 <b>직교 좌표계</b>: 마우스로 드래그하여 직사각형 크기에 맞는 직교 좌표계(x, y축)를 생성합니다. (원점 기준 회전 가능)',
       line: '💡 <b>직선</b>: 마우스로 드래그하여 시점부터 종점까지 직선을 그립니다.',
       arrow: '💡 <b>화살표</b>: 드래그하여 벡터 화살표를 작도합니다. (하단에서 방향 선택 가능)',
       rect: '💡 <b>사각형</b>: 드래그하여 사각형(물체/블록/경사면)을 작도합니다.',
@@ -74,7 +76,11 @@ window.PicEditor.tools = {
     // 선택 모드인 경우 자동으로 작도 모드로 전환
     const state = window.PicEditor.state;
     if (state && !state.isDrawMode) {
-      window.PicEditor.interaction.toggleMode();
+      if (window.PicEditor.interaction && window.PicEditor.interaction.toggleMode) {
+        window.PicEditor.interaction.toggleMode();
+      } else if (typeof window.toggleMode === 'function') {
+        window.toggleMode();
+      }
     }
   },
 

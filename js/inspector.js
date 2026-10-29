@@ -11,7 +11,7 @@ window.PicEditor.inspector = {
     const state = window.PicEditor.state;
     if (!state.selectedElement) return;
 
-    const target = state.selectedElement.closest('.text-wrap') || state.selectedElement;
+    const target = state.selectedElement.closest('.axes-wrap') || state.selectedElement.closest('.text-wrap') || state.selectedElement;
     const tag = target.tagName.toLowerCase();
     const bbox = target.getBBox();
     const t = window.PicEditor.utils.parseTransform(target);
@@ -26,8 +26,8 @@ window.PicEditor.inspector = {
 
     if (wNum) wNum.value = realW > 0 ? realW : 10;
     if (hNum) hNum.value = realH > 0 ? realH : 10;
-    if (rRange) rRange.value = t.r;
-    if (rNum) rNum.value = Math.round(t.r);
+    if (rRange) rRange.value = parseFloat(t.r.toFixed(1));
+    if (rNum) rNum.value = parseFloat(t.r.toFixed(1));
 
     const textInspector = document.getElementById('textInspector');
     const imageInspector = document.getElementById('imageInspector');
@@ -93,7 +93,7 @@ window.PicEditor.inspector = {
   bringToFront() {
     const state = window.PicEditor.state;
     if (!state.selectedElement) return;
-    const target = state.selectedElement.closest('.text-wrap') || state.selectedElement;
+    const target = state.selectedElement.closest('.axes-wrap') || state.selectedElement.closest('.text-wrap') || state.selectedElement;
     const parent = target.parentNode;
     if (parent) {
       parent.appendChild(target);
@@ -104,7 +104,7 @@ window.PicEditor.inspector = {
   sendToBack() {
     const state = window.PicEditor.state;
     if (!state.selectedElement) return;
-    const target = state.selectedElement.closest('.text-wrap') || state.selectedElement;
+    const target = state.selectedElement.closest('.axes-wrap') || state.selectedElement.closest('.text-wrap') || state.selectedElement;
     const parent = target.parentNode;
     if (parent) {
       parent.insertBefore(target, parent.firstChild);
@@ -511,7 +511,7 @@ window.PicEditor.inspector = {
     if (!state.selectedElement || val === '') return;
 
     const targetW = parseFloat(val);
-    const target = state.selectedElement.closest('.text-wrap') || state.selectedElement;
+    const target = state.selectedElement.closest('.axes-wrap') || state.selectedElement.closest('.text-wrap') || state.selectedElement;
     const bbox = target.getBBox();
     if (bbox.width === 0) return;
     
@@ -527,7 +527,7 @@ window.PicEditor.inspector = {
     if (!state.selectedElement || val === '') return;
 
     const targetH = parseFloat(val);
-    const target = state.selectedElement.closest('.text-wrap') || state.selectedElement;
+    const target = state.selectedElement.closest('.axes-wrap') || state.selectedElement.closest('.text-wrap') || state.selectedElement;
     const bbox = target.getBBox();
     if (bbox.height === 0) return;
     
@@ -543,14 +543,17 @@ window.PicEditor.inspector = {
    */
   onRotateSlider(val) {
     const numEl = document.getElementById('rotateNum');
-    if (numEl) numEl.value = val;
-    this.applyRotate(val);
+    const parsed = parseFloat(parseFloat(val).toFixed(1));
+    if (numEl) numEl.value = parsed;
+    this.applyRotate(parsed);
   },
 
   onRotateNumber(val) {
     if (val === '') return;
-    const num = parseFloat(val);
+    const num = parseFloat(parseFloat(val).toFixed(1));
+    const numEl = document.getElementById('rotateNum');
     const rangeEl = document.getElementById('rotateRange');
+    if (numEl) numEl.value = num;
     if (rangeEl) rangeEl.value = num;
     this.applyRotate(num);
   },
@@ -569,7 +572,7 @@ window.PicEditor.inspector = {
       if (numEl) numEl.value = angle;
     }
 
-    const target = state.selectedElement.closest('.text-wrap') || state.selectedElement;
+    const target = state.selectedElement.closest('.axes-wrap') || state.selectedElement.closest('.text-wrap') || state.selectedElement;
     const t = window.PicEditor.utils.parseTransform(target);
     t.r = angle;
     window.PicEditor.utils.setTransform(target, t);
@@ -590,7 +593,7 @@ window.PicEditor.inspector = {
       alert('반전할 요소를 먼저 선택해 주세요.');
       return;
     }
-    const target = state.selectedElement.closest('.text-wrap') || state.selectedElement;
+    const target = state.selectedElement.closest('.axes-wrap') || state.selectedElement.closest('.text-wrap') || state.selectedElement;
     const t = window.PicEditor.utils.parseTransform(target);
     if (direction === 'H') t.sx *= -1;
     if (direction === 'V') t.sy *= -1;
@@ -609,7 +612,7 @@ window.PicEditor.inspector = {
   deleteSelected() {
     const state = window.PicEditor.state;
     if (state.selectedElement) {
-      const target = state.selectedElement.closest('.text-wrap') || state.selectedElement;
+      const target = state.selectedElement.closest('.axes-wrap') || state.selectedElement.closest('.text-wrap') || state.selectedElement;
       if (state.selectedElement.id) {
         const svg = window.PicEditor.utils.getActiveSvg();
         const midG = svg ? svg.querySelector(`g.mid-arrow[data-for="${state.selectedElement.id}"]`) : null;

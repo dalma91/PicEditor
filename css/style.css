@@ -911,7 +911,7 @@ button.github-accent-btn:hover {
 }
 
 .tool-icon-grid.curves-grid {
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(6, 1fr);
 }
 
 .tool-btn {

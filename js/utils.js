@@ -25,20 +25,22 @@ window.PicEditor.utils = {
     const sm = tr.match(/scale\(([^,\s]+)[,\s]+([^\)]+)\)/);
     const rm = tr.match(/rotate\(([^,\s\)]+)/);
     
+    const rVal = rm ? parseFloat(rm[1]) : 0;
     return {
       x: tm ? parseFloat(tm[1]) : 0,
       y: tm ? parseFloat(tm[2]) : 0,
       sx: sm ? parseFloat(sm[1]) : 1,
       sy: sm ? parseFloat(sm[2]) : 1,
-      r: rm ? parseFloat(rm[1]) : 0
+      r: parseFloat(rVal.toFixed(1))
     };
   },
 
   /**
-   * SVG 요소에 transform 속성 적용
+   * SVG 요소에 transform 속성 적용 (회전 각도는 소수점 첫째자리 정밀도 보장)
    */
   setTransform(el, t) {
-    el.setAttribute('transform', `translate(${t.x}, ${t.y}) scale(${t.sx}, ${t.sy}) rotate(${t.r})`);
+    const r = (typeof t.r === 'number') ? parseFloat(t.r.toFixed(1)) : (parseFloat(t.r) || 0);
+    el.setAttribute('transform', `translate(${t.x}, ${t.y}) scale(${t.sx}, ${t.sy}) rotate(${r})`);
   },
 
   /**
@@ -56,7 +58,7 @@ window.PicEditor.utils = {
   deselectAll() {
     const state = window.PicEditor.state;
     if (state.selectedElement) {
-      const wrap = state.selectedElement.closest('.text-wrap') || state.selectedElement;
+      const wrap = state.selectedElement.closest('.axes-wrap') || state.selectedElement.closest('.text-wrap') || state.selectedElement;
       wrap.classList.remove('selected');
       state.selectedElement = null;
     }
