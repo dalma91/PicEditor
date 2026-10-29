@@ -63,6 +63,21 @@ window.PicEditor.utils = {
     if (inspector) {
       inspector.classList.remove('active');
     }
+    if (window.PicEditor.tools && window.PicEditor.tools.hideArcCenterHandle) {
+      window.PicEditor.tools.hideArcCenterHandle();
+    }
+  },
+
+  /**
+   * 에디터 전용 기즈모 및 임시 UI 요소를 제외한 순수 SVG 문자열 반환
+   */
+  getCleanSvgString(svg) {
+    if (!svg) return '';
+    this.deselectAll();
+    const clone = svg.cloneNode(true);
+    const gizmo = clone.querySelector('#arc-center-handle-group');
+    if (gizmo) gizmo.remove();
+    return new XMLSerializer().serializeToString(clone);
   }
 };
 

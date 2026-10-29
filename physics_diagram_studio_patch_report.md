@@ -18,7 +18,8 @@
 
 | 패치 ID | 날짜 | 커밋 SHA | 주요 수정 내역 | 상태 |
 | :--- | :--- | :--- | :--- | :---: |
-| **PATCH-005** | 2026-10-29 | `fbf54d7` | **우측 브라우저 버튼 높이 비정상 확장 버그 긴급 해결 및 100vh 뷰포트 고정 레이아웃 개편**<br>- 전역 `svg` 선택자의 버튼 아이콘 침범 결함 분리 (`#svg-editor` 전용화 및 `.btn-icon` 14px 고정 격리)<br>- 사이드바 버튼 높이 30px 규격 고정 (`height: 30px; line-height: 1;`)<br>- 데스크톱 뷰포트 100vh 고정(`overflow: hidden`) 및 메인 캔버스 가변 높이 자동 피팅<br>- 사이드바 독립 스크롤 분리로 이중 스크롤 완벽 제거 | ✅ 완료 |
+| **PATCH-006** | 2026-10-29 | `진행 중` | **호(Arc) 작도 방식 전면 개편: 시점-종점 중점 원의 중심(붉은 점) 표시, 드래그 곡률 제어 및 조건부 노출 핸들 구현**<br>- 호 시점($P_1$)-종점($P_2$)의 중점을 원의 중심($C$)으로 초기화하고 붉은색 조작 핸들(`🔴`) 표시<br>- 붉은 중심점을 마우스로 실시간 드래그하여 원의 중심 위치 및 반지름($R$), 볼록 방향을 360° 자유롭게 조정<br>- 선택 해제(`deselectAll`) 및 다른 객체(선, 글자, 그림) 선택 시 붉은 중심점 자동 은닉<br>- 호 재선택 시 저장된 원의 중심 좌표로 붉은 점 즉시 재노출<br>- 내보내기/저장/다운로드(GitHub, HTML, PNG) 시 에디터 조작용 기즈모 100% 완전 분리 및 배제 | ✅ 완료 |
+| **PATCH-005** | 2026-10-29 | `83ea488` | **우측 브라우저 버튼 높이 비정상 확장 버그 긴급 해결 및 100vh 뷰포트 고정 레이아웃 개편**<br>- 전역 `svg` 선택자의 버튼 아이콘 침범 결함 분리 (`#svg-editor` 전용화 및 `.btn-icon` 14px 고정 격리)<br>- 사이드바 버튼 높이 30px 규격 고정 (`height: 30px; line-height: 1;`)<br>- 데스크톱 뷰포트 100vh 고정(`overflow: hidden`) 및 메인 캔버스 가변 높이 자동 피팅<br>- 사이드바 독립 스크롤 분리로 이중 스크롤 완벽 제거 | ✅ 완료 |
 | **PATCH-004** | 2026-10-28 | `d62c3eb` | **실시간 동기화 상태 표시등, 로컬 자동백업, 콤팩트 SVG 아이콘 UI, 100% 슬라이더 중앙 정렬**<br>- 캔버스 상단 동기화 상태 뱃지(저장됨/수정됨/동기화중/오류) 탑재<br>- 미저장 작업 로컬 자동백업(Auto-Save) 및 원클릭 복구 지원<br>- 버튼 크기 슬림화 및 직관적인 인라인 SVG 벡터 아이콘 적용 (2열 그리드 배치)<br>- 글자 크기 슬라이더 100% 정중앙 위치 및 시각 눈금 틱 라벨 구현<br>- 원클릭 로컬 HTML 파일 즉시 다운로드 기능 추가 | ✅ 완료 |
 | **PATCH-003** | 2026-10-28 | `9376987` | **깃허브 저장 후 재로딩 시 이전 파일 반환 및 썸네일 불변 버그 해결**<br>- Fastly CDN 300초 캐시 우회 (GitHub Contents API 0초 직접 수신)<br>- 썸네일 Git SHA 캐시 버스터 적용 및 57개 전수 고해상도 벡터 PNG 갱신<br>- 한글 파일명 URL 인코딩 (`encodeApiPath`) 및 기존 도면 덮어쓰기 상태 추적 | ✅ 완료 |
 | **PATCH-002** | 2026-10-28 | `dc1cb5b` | **성균관대 물리 심층면접 모의 문항 57종 100% 완전 벡터화**<br>- 비트맵(`<image>`) 잔재 전면 제거 및 순수 SVG 구조화<br>- 50여 종 일본어 물리 용어 표준 한국어 물리 용어로 전수 번역 치환 | ✅ 완료 |
@@ -310,6 +311,102 @@ if (apiRes.ok) {
    - 버튼 계산 높이(`btnComputedHeight`): `30px` 정상 고정.
    - 아이콘 크기(`iconComputedWidth/Height`): `14px x 14px` 정상 고정.
    - 브라우저 외부 스크롤바 발생 여부: `overflow: hidden`으로 제거 완료.
+
+---
+
+## 🔍 [PATCH-006] 호(Arc) 작도 방식 전면 개편: 시점-종점 중점 원의 중심(붉은 점) 표시, 드래그 곡률 제어 및 조건부 노출 핸들 구현
+
+### 1. 이슈 개요 및 사용자 요구사항
+- **보고 일시:** 2026-10-29 10:05 KST
+- **사용자 요구사항:**
+  > *"호를 그리는 방법을 수정하자. 호의 시작점과 끝점을 연결하는 직선의 중점에 점을 하나표시해. 이 점이 원의 중심이야. 이 점을 붉은 색으로 표시하고 이동시킬수 있도록 해. 선택해제를 누르거나 다른 객체를 선택하면 이 붉은 점은 사라지도록 해. 호가 다시 선택되면 보이도록 만들어. 가능해?"*
+- **핵심 목표:**
+  1. 호를 작도할 때 시작점($P_1$)과 끝점($P_2$)을 잇는 선분의 중점을 초기 **원의 중심($C$)**으로 설정.
+  2. 원의 중심을 시각적으로 선명한 **🔴 붉은색 조작 점(Handle)**으로 표시하고, 마우스로 직접 잡고 드래그하여 원의 중심 위치 및 반지름($R$), 곡률을 자유자재로 변경 가능하도록 구현.
+  3. **조건부 노출:** 호가 선택되었을 때만 붉은 중심점이 표시되며, 선택 해제하거나 다른 객체(선, 텍스트, 이미지 등)를 선택하면 즉시 사라짐.
+  4. **재선택 복원:** 해당 호를 나중에 다시 클릭하여 선택하면 저장된 원의 중심 좌표로 붉은 점이 즉시 다시 나타남.
+  5. **내보내기 오염 방지:** GitHub 저장, HTML 다운로드, 클립보드 복사, PNG 내보내기 시 에디터 조작용 붉은 점 및 가이드라인이 절대 결과물에 포함되지 않도록 완전 분리.
+
+---
+
+### 2. 수학적 기하학 모델 및 설계 (Geometric Architecture)
+
+#### ① 원의 중심($C$) 기반 SVG 원호(`A`) 방정식
+- 시점 $P_1(x_1, y_1)$, 종점 $P_2(x_2, y_2)$, 원의 중심 $C(cx, cy)$가 주어졌을 때:
+  - $R_1 = \sqrt{(x_1 - cx)^2 + (y_1 - cy)^2}$
+  - $R_2 = \sqrt{(x_2 - cx)^2 + (y_2 - cy)^2}$
+  - 평균 반지름 $R = \frac{R_1 + R_2}{2}$ (단, 현의 절반 $\frac{\text{chord}}{2}$ 이상으로 보정)
+- 시점 $\to$ 종점 벡터 $\vec{v} = (x_2 - x_1, y_2 - y_1)$과 시점 $\to$ 중심 벡터 $\vec{u} = (cx - x_1, cy - y_1)$의 외적:
+  $$\text{cross} = (x_2 - x_1)(cy - y_1) - (y_2 - y_1)(cx - x_1)$$
+- 화면 좌표계($Y$축 아래 방향) 기준:
+  - $\text{cross} \le 0$: 중심 $C$가 선분의 위쪽에 위치 $\to$ 호는 중심 $C$를 감싸며 **아래쪽으로 볼록** ($\text{sweep} = 1$)
+  - $\text{cross} > 0$: 중심 $C$가 선분의 아래쪽에 위치 $\to$ 호는 중심 $C$를 감싸며 **위쪽으로 볼록** ($\text{sweep} = 0$)
+- 결과 SVG Path 명령:
+  $$d = \text{M } x_1, y_1 \text{ A } R \text{ } R \text{ 0 0 } \text{sweep } x_2, y_2$$
+
+#### ② 초기 상태 (중점 = 반원)
+- 호를 처음 드래그하여 그릴 때 중심 $C$는 시점과 종점의 정확한 중점 $M = (\frac{x_1 + x_2}{2}, \frac{y_1 + y_2}{2})$에 위치하여 완벽한 반원(Semicircle)으로 시작합니다.
+- 사용자가 붉은 중심점을 드래그하여 현에서 멀어지면 곡률이 완만해지며(진자 궤적, 각도 호 등), 가까워지거나 반대편으로 넘어가면 360° 부드럽게 형태가 변화합니다.
+
+---
+
+### 3. 기술적 해결 조치 (Technical Implementation)
+
+1. **[js/tools.js](file:///E:/Git/PicEditor/js/tools.js) 모듈 전면 개편:**
+   - `calculateArcD(p1, p2, c)`: 시점, 종점, 중심점으로부터 정확한 SVG Arc Path 및 반지름($R$), 스윕 플래그 산출.
+   - `getArcData(pathEl)`: 요소의 `data-x1`, `data-y1`, `data-x2`, `data-y2`, `data-cx`, `data-cy` 속성 또는 기존 `d` 속성 파싱.
+   - `isArcElement(el)`: 요소가 호(Arc)인지 신뢰성 있게 판별.
+   - `ensureArcCenterGizmo(svg)`: 캔버스 내 독립 기즈모 그룹(`<g id="arc-center-handle-group">`) 동적 생성.
+     - 가이드 점선 (시점-종점 현 가이드선, 중심 축선, 2개의 반지름 안내선)
+     - 시점 및 종점 블루 앵커 포인트
+     - **🔴 붉은 원의 중심점 조작 핸들:** 반경 18px의 투명 히트 박스 + 반경 8.5px 붉은 원 + 흰색 포인트 + 실시간 반지름 라벨(`원의 중심 (R=...px)`)
+   - `showArcCenterHandle(arcEl)`: 선택된 호의 위치/회전/반전 `transform`과 100% 동기화하여 붉은 중심점 및 가이드라인 노출.
+   - `hideArcCenterHandle()`: 호 선택 해제 시 기즈모 완전 숨김 처리.
+
+2. **[js/interaction.js](file:///E:/Git/PicEditor/js/interaction.js) 인터랙션 바인딩:**
+   - **호 작도 완료 시:** 호를 그린 직후 자동으로 선택 모드로 전환되어 새로 그려진 호에 붉은 중심점이 즉시 나타나 바로 곡률 조절 가능.
+   - **붉은 점 드래그 조작:** `state.isDraggingArcCenter` 상태를 통해 마우스 이동 시 아크의 로컬 좌표계로 역변환하여 중심 $C$를 실시간 갱신하고 패스 곡률을 실시간 변형.
+   - **호 자체 이동 시:** 아크를 드래그하여 이동할 때 기즈모도 함께 매끄럽게 추종.
+   - **선택 변경 및 해제 감지:** 다른 요소(선, 텍스트, 이미지)를 클릭하거나 빈 캔버스를 클릭하면 붉은 점 즉시 소멸. 호를 다시 클릭하면 즉시 재노출.
+
+3. **[js/utils.js](file:///E:/Git/PicEditor/js/utils.js), [js/export-import.js](file:///E:/Git/PicEditor/js/export-import.js), [js/github.js](file:///E:/Git/PicEditor/js/github.js) 내보내기 무결성:**
+   - `getCleanSvgString(svg)` 공통 직렬화 파이프라인 구축.
+   - 모든 저장(GitHub 원클릭 커밋, 로컬 HTML 다운로드, 클립보드 복사, PNG 내보내기, 로컬 자동백업) 시 `#arc-center-handle-group` 기즈모를 원천 분리 및 제거하여 순수한 물리 도면 SVG만 저장되도록 보장.
+
+4. **[index.html](file:///E:/Git/PicEditor/index.html) 및 [PicEditor.html](file:///E:/Git/PicEditor/PicEditor.html):**
+   - 호 도구 선택 시 붉은 중심점 활용 가이드 배너 안내 표시.
+   - 모든 스크립트 캐시 버스터 `v=20261029_2`로 일괄 갱신.
+
+---
+
+### 4. 변경된 파일 목록 (Files Modified)
+
+| 파일 경로 | 주요 변경 내용 |
+| :--- | :--- |
+| [js/tools.js](file:///E:/Git/PicEditor/js/tools.js) | 원의 중심 기반 `calculateArcD`, `getArcData`, `ensureArcCenterGizmo`, `showArcCenterHandle`, `hideArcCenterHandle` 구현 |
+| [js/interaction.js](file:///E:/Git/PicEditor/js/interaction.js) | 붉은 중심점 드래그 실시간 곡률 연동, 호 작도 후 자동 선택, 요소 선택/해제 연동 |
+| [js/state.js](file:///E:/Git/PicEditor/js/state.js) | `isDraggingArcCenter` 중심점 드래그 상태 필드 추가 |
+| [js/utils.js](file:///E:/Git/PicEditor/js/utils.js) | `deselectAll()` 내 기즈모 숨김 연동, 에디터 전용 기즈모 배제 `getCleanSvgString()` 구현 |
+| [js/inspector.js](file:///E:/Git/PicEditor/js/inspector.js) | 요소 회전(`applyRotate`) 및 반전(`flipElement`) 시 아크 기즈모 위치 동기화 |
+| [js/export-import.js](file:///E:/Git/PicEditor/js/export-import.js) | 클립보드 복사, PNG 다운로드, HTML 파일 다운로드 시 기즈모 배제 적용 |
+| [js/github.js](file:///E:/Git/PicEditor/js/github.js) | GitHub 커밋, 썸네일 생성, 로컬 자동백업 시 기즈모 배제 적용 |
+| [index.html](file:///E:/Git/PicEditor/index.html) | 호 작도 팁 배너 적용, 스크립트 버전(`v=20261029_2`) 갱신 |
+| [PicEditor.html](file:///E:/Git/PicEditor/PicEditor.html) | `index.html`과 100% 동일한 마크업 및 스크립트 버전 동기화 |
+| [physics_diagram_studio_patch_report.md](file:///E:/Git/PicEditor/physics_diagram_studio_patch_report.md) | `PATCH-006` 설계 원리 및 구현 내역 상세 문서화 |
+
+---
+
+### 5. 테스트 및 검증 결과
+
+1. **자동화 수명주기 테스트 ([scratch/test_arc_lifecycle.py](file:///E:/Git/PicEditor/scratch/test_arc_lifecycle.py)):**
+   - 호 초기 작도 시 중점 기반 반원 생성 (`M 150,350 A 200 200 0 0 1 550,350`): ✅ 성공
+   - 호 선택 시 붉은 중심점 기즈모 자동 노출 (`gizmoVisibleOnSelect: true`): ✅ 성공
+   - 붉은 중심점 드래그 이동 시 원호 실시간 곡률 갱신 (`A 262.5 262.5`): ✅ 성공
+   - 선택 해제 시 붉은 중심점 자동 은닉 (`gizmoHiddenOnDeselect: true`): ✅ 성공
+   - 호 재선택 시 붉은 중심점 재노출 (`gizmoVisibleOnReselect: true`): ✅ 성공
+   - SVG 코드 내보내기 시 기즈모 미포함 및 도면 순수성 유지 (`exportExcludesGizmo: true`): ✅ 성공
+2. **실제 에디터 UI 렌더링 검증 ([scratch/live_arc_selected.png](file:///E:/Git/PicEditor/scratch/live_arc_selected.png)):**
+   - 캔버스 상에서 선택된 호에 파란색 경계 박스와 붉은 중심점("원의 중심 (R=219px)"), 방사형 가이드선이 깔끔하게 표시됨을 헤드리스 크롬 스크린샷으로 확인 완료.
 
 ---
 

@@ -114,6 +114,8 @@ window.PicEditor.github = {
 
     // SVG 복제 및 네임스페이스 보장
     const cloneSvg = svg.cloneNode(true);
+    const gizmo = cloneSvg.querySelector('#arc-center-handle-group');
+    if (gizmo) gizmo.remove();
     cloneSvg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
     cloneSvg.setAttribute('xmlns:xlink', 'http://www.w3.org/1999/xlink');
 
@@ -298,8 +300,7 @@ window.PicEditor.github = {
       const activeSvg = window.PicEditor.utils.getActiveSvg();
       if (!activeSvg) throw new Error('SVG 캔버스를 찾을 수 없습니다.');
 
-      window.PicEditor.utils.deselectAll();
-      const svgStr = new XMLSerializer().serializeToString(activeSvg);
+      const svgStr = window.PicEditor.utils.getCleanSvgString(activeSvg);
 
       const vb = activeSvg.viewBox.baseVal;
       const origW = (vb && vb.width > 0) ? vb.width : (parseFloat(activeSvg.getAttribute('width')) || 800);
@@ -821,7 +822,7 @@ window.PicEditor.sync = {
     try {
       const activeSvg = window.PicEditor.utils.getActiveSvg();
       if (!activeSvg) return;
-      const svgStr = new XMLSerializer().serializeToString(activeSvg);
+      const svgStr = window.PicEditor.utils.getCleanSvgString(activeSvg);
       localStorage.setItem('pic_autosave_svg', svgStr);
       localStorage.setItem('pic_autosave_time', String(Date.now()));
       localStorage.setItem('pic_autosave_name', window.PicEditor.state.currentDiagramName || '');

@@ -58,6 +58,12 @@ window.PicEditor.interaction = {
         wrap.classList.add('selected');
         
         window.PicEditor.inspector.syncUItoSelected();
+
+        if (window.PicEditor.tools.isArcElement(el)) {
+          window.PicEditor.tools.showArcCenterHandle(el);
+        } else {
+          window.PicEditor.tools.hideArcCenterHandle();
+        }
       };
 
       el.onmousedown = (e) => {
@@ -73,6 +79,12 @@ window.PicEditor.interaction = {
         wrap.classList.add('selected');
         
         window.PicEditor.inspector.syncUItoSelected();
+
+        if (window.PicEditor.tools.isArcElement(el)) {
+          window.PicEditor.tools.showArcCenterHandle(el);
+        } else {
+          window.PicEditor.tools.hideArcCenterHandle();
+        }
 
         state.isDragging = true;
         const pt = window.PicEditor.utils.getSvgPoint(e, svg);
@@ -92,7 +104,12 @@ window.PicEditor.interaction = {
     const svgs = document.querySelectorAll('svg');
     svgs.forEach(svg => {
       svg.addEventListener('mousedown', (e) => {
-        if (!state.isDrawMode) return;
+        if (!state.isDrawMode) {
+          if (e.target === svg || (e.target.tagName && e.target.tagName.toLowerCase() === 'rect' && !e.target.classList.contains('text-bg-rect'))) {
+            window.PicEditor.utils.deselectAll();
+          }
+          return;
+        }
         state.isDrawing = true;
         
         const pt = window.PicEditor.utils.getSvgPoint(e, svg);
@@ -133,7 +150,8 @@ window.PicEditor.interaction = {
           if (strokeStyle === 'dashed') {
             state.tempShape.setAttribute("stroke-dasharray", "6,4");
           }
-          window.PicEditor.tools.updateArcPath(state.tempShape, state.drawStart, pt);
+          const mid = { x: (pt.x + pt.x) / 2, y: (pt.y + pt.y) / 2 };
+          window.PicEditor.tools.updateArcPath(state.tempShape, state.drawStart, pt, mid);
         }
 
         if (state.tempShape) {
@@ -204,7 +222,28 @@ window.PicEditor.interaction = {
       if (!svg) return;
       const pt = window.PicEditor.utils.getSvgPoint(e, svg);
 
-      // 작도 모드 드로잉
+      // 1. 호의 붉은 중심점(Arc Center Gizmo) 드래그 조작
+      if (state.isDraggingArcCenter && state.selectedElement) {
+        const arcEl = state.selectedElement;
+        const t = window.PicEditor.utils.parseTransform(arcEl);
+
+        const rad = (t.r || 0) * Math.PI / 180;
+        const cos = Math.cos(-rad);
+        const sin = Math.sin(-rad);
+        const lx = (pt.x - t.x) / (t.sx || 1);
+        const ly = (pt.y - t.y) / (t.sy || 1);
+        const localX = lx * cos - ly * sin;
+        const localY = lx * sin + ly * cos;
+
+        const data = window.PicEditor.tools.getArcData(arcEl);
+        if (data) {
+          window.PicEditor.tools.updateArcPath(arcEl, data.p1, data.p2, { x: localX, y: localY });
+          window.PicEditor.tools.showArcCenterHandle(arcEl);
+        }
+        return;
+      }
+
+      // 2. 작도 모드 드로잉
       if (state.isDrawMode && state.isDrawing && state.tempShape) {
         const tool = document.getElementById('toolSelect').value;
         if (tool === 'line' || tool === 'arrow') {
@@ -215,12 +254,13 @@ window.PicEditor.interaction = {
             window.PicEditor.tools.applyArrowMarkers(state.tempShape, arrowDir, 1);
           }
         } else if (tool === 'arc') {
-          window.PicEditor.tools.updateArcPath(state.tempShape, state.drawStart, pt);
+          const mid = { x: (state.drawStart.x + pt.x) / 2, y: (state.drawStart.y + pt.y) / 2 };
+          window.PicEditor.tools.updateArcPath(state.tempShape, state.drawStart, pt, mid);
         }
         return;
       }
 
-      // 선택 모드 요소 드래그 이동
+      // 3. 선택 모드 요소 드래그 이동
       if (!state.isDrawMode && state.isDragging && state.selectedElement) {
         const dx = pt.x - state.startX;
         const dy = pt.y - state.startY;
@@ -232,16 +272,46 @@ window.PicEditor.interaction = {
         t.x += dx;
         t.y += dy;
         window.PicEditor.utils.setTransform(target, t);
+
+        if (window.PicEditor.tools.isArcElement(target)) {
+          window.PicEditor.tools.updateArcGizmoTransform(target);
+        }
       }
     });
 
     // 마우스 뗌 (mouseup)
     window.addEventListener('mouseup', () => {
+      const svg = window.PicEditor.utils.getActiveSvg();
+
+      // 붉은 중심점 드래그 종료
+      if (state.isDraggingArcCenter) {
+        state.isDraggingArcCenter = false;
+        if (svg) {
+          const handle = svg.querySelector('#arc-center-handle-wrap');
+          if (handle) handle.style.cursor = 'grab';
+        }
+        if (window.PicEditor.sync) window.PicEditor.sync.markModified();
+        return;
+      }
+
+      // 작도 완료
       if (state.isDrawMode && state.isDrawing) {
         state.isDrawing = false;
         if (state.tempShape) {
+          const created = state.tempShape;
           window.PicEditor.interaction.initMovableEvents();
           state.tempShape = null;
+
+          const tool = document.getElementById('toolSelect').value;
+          if (tool === 'arc') {
+            // 호(arc) 작도 완료 즉시 선택 모드로 전환하고 붉은 중심점 핸들 노출
+            window.PicEditor.interaction.toggleMode();
+            window.PicEditor.utils.deselectAll();
+            state.selectedElement = created;
+            created.classList.add('selected');
+            window.PicEditor.tools.showArcCenterHandle(created);
+          }
+
           if (window.PicEditor.sync) window.PicEditor.sync.markModified();
         }
       }

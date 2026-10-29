@@ -344,8 +344,7 @@ window.PicEditor.storage = {
     const activeSvg = window.PicEditor.utils.getActiveSvg();
     if (!activeSvg) return;
 
-    window.PicEditor.utils.deselectAll();
-    const svgStr = new XMLSerializer().serializeToString(activeSvg);
+    const svgStr = window.PicEditor.utils.getCleanSvgString(activeSvg);
 
     navigator.clipboard.writeText(svgStr).then(() => {
       alert('현재 편집된 캔버스의 HTML(SVG) 코드가 클립보드에 복사되었습니다!\n원하는 곳에 바로 붙여넣기(Ctrl+V)하여 사용하세요.');
@@ -366,9 +365,7 @@ window.PicEditor.storage = {
     const svg = window.PicEditor.utils.getActiveSvg();
     if (!svg) return;
 
-    window.PicEditor.utils.deselectAll();
-
-    const svgStr = new XMLSerializer().serializeToString(svg);
+    const svgStr = window.PicEditor.utils.getCleanSvgString(svg);
     const canvas = document.createElement('canvas');
     const vb = svg.viewBox.baseVal;
     const width = vb.width || 800;
@@ -406,8 +403,7 @@ window.PicEditor.storage = {
       return;
     }
 
-    window.PicEditor.utils.deselectAll();
-    const svgStr = new XMLSerializer().serializeToString(activeSvg);
+    const svgStr = window.PicEditor.utils.getCleanSvgString(activeSvg);
     const fileName = window.PicEditor.state.currentDiagramName || `diagram_${new Date().toISOString().replace(/[-:T]/g, '').slice(0, 14)}`;
 
     const htmlContent = `<!DOCTYPE html>
