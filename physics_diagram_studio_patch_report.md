@@ -417,3 +417,94 @@ if (apiRes.ok) {
 1. **패치 ID 부여:** 상단 요약 표에 `PATCH-005`, `PATCH-006` 순으로 일련번호를 추가하고 날짜, 커밋 SHA, 핵심 내용을 기록합니다.
 2. **상세 섹션 추가:** 이슈 개요, 근본 원인 분석, 기술적 해결 내역, 변경 파일, 테스트 결과를 체계적으로 기술합니다.
 3. **코드 및 문서 동기화:** README.md 및 개발 보고서(`physics_diagram_studio_development_report.md`)와의 버전 및 링크 일관성을 유지합니다.
+
+
+---
+
+## 🔍 [PATCH-007] 호(Arc) 클릭 시 붉은 중심점 영구 유지 및 드래그 위치 수정 보장
+
+### 1. 이슈 개요 및 사용자 보고
+- **보고 일시:** 2026-10-29 KST
+- **사용자 보고 내용:**
+  > *"호를 클릭하면 누른 상태에서는 점이 보이는데 손가락을 떼면 사라져. 선택 해제를 누르기 전까지는 점이 보이도록 수정해. 점을 선택해서 위치를 수정하게 할꺼야."*
+- **핵심 요구사항:**
+  1. 호(Arc)를 클릭하거나 터치했을 때 마우스 버튼이나 손가락을 떼어도 붉은 중심점이 절대 사라지지 않고 계속 화면에 유지되어야 함.
+  2. 사용자가 상단 메뉴의 **`[선택 해제]`** 버튼을 명시적으로 클릭하거나 다른 도면 요소를 선택할 때까지 붉은 원의 중심점이 영구 유지되어야 함.
+  3. 사용자가 노출된 붉은 점을 선택(마우스/터치 드래그)하여 원의 중심 위치를 자유롭게 이동하고 호의 곡률 및 반경을 직관적으로 변경할 수 있어야 함.
+
+---
+
+### 2. 근본 원인 분석 (Root Cause Analysis)
+
+#### 원인 ① : 로컬 자동 백업(Auto-Save) 시 라이브 DOM 선택 해제 결함
+- `js/interaction.js`의 `mouseup` 이벤트 핸들러에서 사용자가 드래그를 마치거나 요소를 클릭하면 `window.PicEditor.sync.markModified()`가 호출되었습니다.
+- `markModified()`는 600ms 디바운스 타이머 후 `executeAutoSave()`를 실행하는데, 이때 호출되는 `js/utils.js`의 `getCleanSvgString(svg)` 내부 첫 줄에 `this.deselectAll()`이 포함되어 있었습니다.
+- 이로 인해 **사용자가 손가락이나 마우스를 뗀 후 약 600ms가 지나면 백그라운드 자동 저장이 돌면서 라이브 캔버스의 모든 선택 상태와 붉은 중심점 기즈모(`hideArcCenterHandle()`)를 강제로 은닉**시켰습니다.
+
+#### 원인 ② : 캔버스 배경 클릭 및 미세 터치 시 무조건 선택 해제
+- `js/interaction.js`의 SVG 캔버스 `mousedown` 핸들러가 호가 선택된 상태인지 확인하지 않고 빈 캔버스나 배경 `<rect>` 클릭 시 무조건 `deselectAll()`을 호출했습니다.
+- 터치스크린이나 마우스로 붉은 점을 클릭하려다 몇 픽셀 빗나가거나 손가락을 떼는 과정에서 미세한 캔버스 터치가 감지되면 즉시 선택이 해제되었습니다.
+
+#### 원인 ③ : 모바일/터치스크린 터치 이벤트(`touchstart`/`touchmove`/`touchend`) 미지원 및 버블링
+- `initMovableEvents()`와 중심점 핸들에 오직 마우스 이벤트(`mousedown`, `mousemove`, `mouseup`)만 등록되어 있어, 태블릿이나 터치 노트북에서 제스처 충돌 및 스크롤 간섭이 일어났습니다.
+- 또한 `onmousedown`에 `e.stopPropagation()`이 누락되어 이벤트가 상위 캔버스로 버블링되어 원치 않는 선택 해제가 유발되었습니다.
+
+#### 원인 ④ : 기즈모 내부 가이드 점선들의 포인터 이벤트 간섭
+- 기즈모 내부의 점선 안내선(`arc-chord-guide`, `arc-radius-guide`)들이 포인터 이벤트를 수신하여, 중심점을 클릭하려 할 때 안내선이 클릭을 흡수해버리는 문제가 있었습니다.
+
+---
+
+### 3. 기술적 해결 조치 (Technical Implementation)
+
+1. **[js/utils.js](file:///E:/Git/PicEditor/js/utils.js) 순수 복제 기반 직렬화로 개편:**
+   - `getCleanSvgString(svg)`에서 라이브 DOM을 변경하던 `this.deselectAll()` 호출을 완전히 제거하였습니다.
+   - 원본 SVG를 `svg.cloneNode(true)`로 복제한 후, **클론(Clone) 내부에서만** `.selected` 클래스와 `#arc-center-handle-group` 기즈모를 제거하고 직렬화하도록 수정하여 활성 화면의 선택 상태를 100% 보존합니다.
+   - `getSvgPoint(e, svgEl)` 함수를 확장하여 마우스 이벤트뿐만 아니라 `e.touches`, `e.changedTouches`를 지원하도록 개편하여 모바일/태블릿 터치 좌표를 정밀 변환합니다.
+
+2. **[js/github.js](file:///E:/Git/PicEditor/js/github.js) 썸네일 생성 시 활성 선택 상태 보존:**
+   - `generateThumbnailBase64()`에서도 라이브 `deselectAll()`을 제거하고 복제본 내부에서만 정리하도록 일원화하였습니다.
+
+3. **[js/interaction.js](file:///E:/Git/PicEditor/js/interaction.js) 호 선택 보호 및 터치 제어 통합:**
+   - `initMovableEvents()`: `onmousedown` 및 `ontouchstart` 양쪽에 `e.stopPropagation()`을 적용하고 선택 상태를 활성화.
+   - `handleCanvasStart`: 호(Arc)가 선택되어 붉은 중심점이 노출 중일 때는 빈 캔버스 배경을 클릭/터치하더라도 선택이 절대 해제되지 않도록 방어 로직을 수립하였습니다. 오직 **`[선택 해제]` 버튼을 누르거나, 다른 객체를 선택하거나, ESC 키를 누를 때만** 중심점이 닫힙니다.
+   - `mousemove`와 `touchmove`를 통합한 `handlePointerMove`: 붉은 점 드래그 조작 시 화면 스크롤 간섭을 방지(`e.preventDefault()`)하고 실시간으로 중심 좌표 $C(cx, cy)$를 역변환하여 호의 곡률을 실시간 렌더링.
+   - `mouseup`과 `touchend`를 통합한 `handlePointerUp`: 조작 완료 후에도 붉은 점이 화면에 그대로 유지되도록 처리.
+
+4. **[js/tools.js](file:///E:/Git/PicEditor/js/tools.js) 기즈모 포인터 격리 및 터치 영역 확대:**
+   - 기즈모 컨테이너 및 가이드 점선에 `pointer-events: none;`을 적용하여 클릭 가로챔 방지.
+   - 붉은 중심점 조작 핸들(`#arc-center-hit`)의 감지 반경을 기존 18px에서 **24px**로 확대하고, 투명 히트 서클에 `fill="#000000" opacity="0.001"`을 부여하여 모든 브라우저 및 터치 기기에서 손가락으로 손쉽게 잡고 이동할 수 있도록 개선.
+
+5. **캐시 버스터 갱신:**
+   - [index.html](file:///E:/Git/PicEditor/index.html) 및 [PicEditor.html](file:///E:/Git/PicEditor/PicEditor.html) 스크립트 태그를 `?v=20261029_3`으로 일괄 갱신.
+
+---
+
+### 4. 변경된 파일 목록 (Files Modified)
+
+| 파일 경로 | 주요 변경 내용 |
+| :--- | :--- |
+| [js/utils.js](file:///E:/Git/PicEditor/js/utils.js) | `getCleanSvgString()` 라이브 DOM 불변 보장, `getSvgPoint()` 터치 좌표 완벽 지원 |
+| [js/github.js](file:///E:/Git/PicEditor/js/github.js) | `generateThumbnailBase64()` 라이브 `deselectAll()` 호출 제거 및 클론 내 정리 |
+| [js/tools.js](file:///E:/Git/PicEditor/js/tools.js) | 붉은 중심점 터치 반경 24px 확대, 가이드선 포인터 이벤트 차단, 터치 이벤트 등록 |
+| [js/interaction.js](file:///E:/Git/PicEditor/js/interaction.js) | 캔버스 클릭 시 아크 선택 유지, 터치/마우스 통합 포인터 이벤트 및 버블링 차단 |
+| [index.html](file:///E:/Git/PicEditor/index.html) | 스크립트 모듈 캐시 버스터 `v=20261029_3` 일괄 적용 |
+| [PicEditor.html](file:///E:/Git/PicEditor/PicEditor.html) | `index.html`과 완전 동기화 |
+| [physics_diagram_studio_patch_report.md](file:///E:/Git/PicEditor/physics_diagram_studio_patch_report.md) | `PATCH-007` 상세 기술 분석 및 검증 결과 문서화 |
+
+---
+
+### 5. 테스트 및 검증 결과
+
+1. **자동화 검증 스위트 ([scratch/verify_arc_fix.py](file:///E:/Git/PicEditor/scratch/verify_arc_fix.py)):**
+   - **호 클릭 직후 중심점 표시 (`immediateDisplay`):** `block` (✅ 합격)
+   - **손가락/마우스 뗌 및 1,000ms 자동저장 경과 후 유지 (`afterAutosaveDisplay`):** `block` (✅ 합격)
+   - **중심점 드래그 시 아크 곡률 및 패스 'd' 실시간 변형 (`dragModifiedD`):** `true` (✅ 합격)
+   - **드래그 완료 후 손가락/마우스를 떼었을 때 중심점 유지 (`afterDragDisplay`):** `block` (✅ 합격)
+   - **빈 캔버스 배경 클릭/터치 시 중심점 유지 (`afterBgClickDisplay`):** `block` (✅ 합격)
+   - **[선택 해제] 버튼 클릭 시 중심점 소멸 (`afterDeselectAllDisplay`):** `none` (✅ 합격)
+   - **호 재선택 시 중심점 재표시 (`reselectedDisplay`):** `block` (✅ 합격)
+   - **다른 객체(직선 등) 선택 시 호 중심점 자동 소멸 (`afterSelectOtherDisplay`):** `none` (✅ 합격)
+2. **모바일/터치스크린 검증:**
+   - `ontouchstart` 이벤트 디스패치 시 즉각적인 기즈모 활성화 확인 완료.
+3. **실제 시각 렌더링 캡처 확인 ([scratch/arc_selection_crop.png](file:///E:/Git/PicEditor/scratch/arc_selection_crop.png)):**
+   - 손가락을 뗀 뒤에도 호와 붉은 원의 중심점(`🔴 원의 중심 (R=89px)`), 엔드포인트 앵커가 온전히 캔버스 상에 고정 노출되어 있음을 시각적으로 검증 완료.

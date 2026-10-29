@@ -5,12 +5,13 @@ window.PicEditor = window.PicEditor || {};
 
 window.PicEditor.utils = {
   /**
-   * 마우스 이벤트의 화면 좌표를 SVG 내부 좌표계로 변환
+   * 마우스/터치 이벤트의 화면 좌표를 SVG 내부 좌표계로 변환 (모바일 및 터치 디바이스 호환)
    */
   getSvgPoint(e, svgEl) {
     const pt = svgEl.createSVGPoint();
-    pt.x = e.clientX;
-    pt.y = e.clientY;
+    const evt = (e.touches && e.touches[0]) || (e.changedTouches && e.changedTouches[0]) || e;
+    pt.x = (evt.clientX !== undefined) ? evt.clientX : (e.clientX || 0);
+    pt.y = (evt.clientY !== undefined) ? evt.clientY : (e.clientY || 0);
     const svgP = pt.matrixTransform(svgEl.getScreenCTM().inverse());
     return { x: svgP.x, y: svgP.y };
   },
@@ -69,14 +70,14 @@ window.PicEditor.utils = {
   },
 
   /**
-   * 에디터 전용 기즈모 및 임시 UI 요소를 제외한 순수 SVG 문자열 반환
+   * 에디터 전용 기즈모 및 임시 UI 요소를 제외한 순수 SVG 문자열 반환 (활성 DOM 선택 상태 보존)
    */
   getCleanSvgString(svg) {
     if (!svg) return '';
-    this.deselectAll();
     const clone = svg.cloneNode(true);
     const gizmo = clone.querySelector('#arc-center-handle-group');
     if (gizmo) gizmo.remove();
+    clone.querySelectorAll('.selected').forEach(el => el.classList.remove('selected'));
     return new XMLSerializer().serializeToString(clone);
   }
 };

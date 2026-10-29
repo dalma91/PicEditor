@@ -110,12 +110,11 @@ window.PicEditor.github = {
     const svg = window.PicEditor.utils.getActiveSvg();
     if (!svg) return null;
 
-    window.PicEditor.utils.deselectAll();
-
-    // SVG 복제 및 네임스페이스 보장
+    // SVG 복제 및 네임스페이스 보장 (활성 캔버스의 선택 상태를 파괴하지 않고 클론에서만 정리)
     const cloneSvg = svg.cloneNode(true);
     const gizmo = cloneSvg.querySelector('#arc-center-handle-group');
     if (gizmo) gizmo.remove();
+    cloneSvg.querySelectorAll('.selected').forEach(el => el.classList.remove('selected'));
     cloneSvg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
     cloneSvg.setAttribute('xmlns:xlink', 'http://www.w3.org/1999/xlink');
 

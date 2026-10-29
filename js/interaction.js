@@ -43,31 +43,11 @@ window.PicEditor.interaction = {
         el.setAttribute('transform', 'translate(0,0) scale(1,1) rotate(0)');
       }
 
-      el.onclick = (e) => {
+      const selectAndStartDrag = (e) => {
         if (state.isDrawMode) return;
+        if (e.touches && e.touches.length > 1) return;
         e.stopPropagation();
 
-        if (state.selectedElement) {
-          const prevWrap = state.selectedElement.closest('.text-wrap') || state.selectedElement;
-          prevWrap.classList.remove('selected');
-        }
-
-        const wrap = el.closest('.text-wrap') || el;
-        const textEl = wrap.querySelector('.text-el') || el;
-        state.selectedElement = textEl;
-        wrap.classList.add('selected');
-        
-        window.PicEditor.inspector.syncUItoSelected();
-
-        if (window.PicEditor.tools.isArcElement(el)) {
-          window.PicEditor.tools.showArcCenterHandle(el);
-        } else {
-          window.PicEditor.tools.hideArcCenterHandle();
-        }
-      };
-
-      el.onmousedown = (e) => {
-        if (state.isDrawMode) return;
         const wrap = el.closest('.text-wrap') || el;
         const textEl = wrap.querySelector('.text-el') || el;
         state.selectedElement = textEl;
@@ -87,24 +67,44 @@ window.PicEditor.interaction = {
         }
 
         state.isDragging = true;
+        state.hasDragged = false;
         const pt = window.PicEditor.utils.getSvgPoint(e, svg);
         state.startX = pt.x;
         state.startY = pt.y;
+      };
+
+      el.onmousedown = selectAndStartDrag;
+      el.ontouchstart = selectAndStartDrag;
+
+      el.onclick = (e) => {
+        if (state.isDrawMode) return;
+        e.stopPropagation();
       };
     });
   },
 
   /**
-   * 전역 마우스 이벤트 및 SVG 캔버스 작도/드래그앤드롭/클립보드 이벤트 초기화
+   * 전역 마우스/터치 이벤트 및 SVG 캔버스 작도/드래그앤드롭/클립보드 이벤트 초기화
    */
   initGlobalEvents() {
     const state = window.PicEditor.state;
 
-    // SVG 캔버스 작도 시작 (mousedown)
+    // SVG 캔버스 작도 시작 (mousedown 및 touchstart)
     const svgs = document.querySelectorAll('svg');
     svgs.forEach(svg => {
-      svg.addEventListener('mousedown', (e) => {
+      const handleCanvasStart = (e) => {
         if (!state.isDrawMode) {
+          // 아크 기즈모 클릭/터치 시 선택 해제 방지
+          if (e.target.closest && e.target.closest('#arc-center-handle-group')) {
+            return;
+          }
+
+          // 호(Arc)가 선택되어 붉은 중심점이 표시 중인 경우, 빈 캔버스를 터치해도 사라지지 않음
+          // (사용자가 [선택 해제] 버튼을 누르거나 다른 객체를 선택할 때까지 영구 유지)
+          if (state.selectedElement && window.PicEditor.tools.isArcElement(state.selectedElement)) {
+            return;
+          }
+
           if (e.target === svg || (e.target.tagName && e.target.tagName.toLowerCase() === 'rect' && !e.target.classList.contains('text-bg-rect'))) {
             window.PicEditor.utils.deselectAll();
           }
@@ -158,7 +158,10 @@ window.PicEditor.interaction = {
           state.tempShape.classList.add('movable');
           mainGrp.appendChild(state.tempShape);
         }
-      });
+      };
+
+      svg.addEventListener('mousedown', handleCanvasStart);
+      svg.addEventListener('touchstart', handleCanvasStart, { passive: true });
     });
 
     // 드래그앤드롭 파일 업로드 (그림 이미지 및 HTML 파일 모두 지원)
@@ -216,14 +219,16 @@ window.PicEditor.interaction = {
       }
     });
 
-    // 마우스 이동 (mousemove)
-    window.addEventListener('mousemove', (e) => {
+    // 마우스/터치 이동 (mousemove 및 touchmove)
+    const handlePointerMove = (e) => {
       const svg = window.PicEditor.utils.getActiveSvg();
       if (!svg) return;
       const pt = window.PicEditor.utils.getSvgPoint(e, svg);
 
       // 1. 호의 붉은 중심점(Arc Center Gizmo) 드래그 조작
       if (state.isDraggingArcCenter && state.selectedElement) {
+        state.hasDragged = true;
+        if (e.cancelable) e.preventDefault();
         const arcEl = state.selectedElement;
         const t = window.PicEditor.utils.parseTransform(arcEl);
 
@@ -245,6 +250,7 @@ window.PicEditor.interaction = {
 
       // 2. 작도 모드 드로잉
       if (state.isDrawMode && state.isDrawing && state.tempShape) {
+        if (e.cancelable) e.preventDefault();
         const tool = document.getElementById('toolSelect').value;
         if (tool === 'line' || tool === 'arrow') {
           state.tempShape.setAttribute("x2", pt.x);
@@ -264,6 +270,10 @@ window.PicEditor.interaction = {
       if (!state.isDrawMode && state.isDragging && state.selectedElement) {
         const dx = pt.x - state.startX;
         const dy = pt.y - state.startY;
+        if (Math.hypot(dx, dy) > 2) {
+          state.hasDragged = true;
+        }
+        if (e.cancelable) e.preventDefault();
         state.startX = pt.x;
         state.startY = pt.y;
 
@@ -277,10 +287,13 @@ window.PicEditor.interaction = {
           window.PicEditor.tools.updateArcGizmoTransform(target);
         }
       }
-    });
+    };
 
-    // 마우스 뗌 (mouseup)
-    window.addEventListener('mouseup', () => {
+    window.addEventListener('mousemove', handlePointerMove);
+    window.addEventListener('touchmove', handlePointerMove, { passive: false });
+
+    // 마우스/터치 뗌 (mouseup 및 touchend)
+    const handlePointerUp = () => {
       const svg = window.PicEditor.utils.getActiveSvg();
 
       // 붉은 중심점 드래그 종료
@@ -290,7 +303,9 @@ window.PicEditor.interaction = {
           const handle = svg.querySelector('#arc-center-handle-wrap');
           if (handle) handle.style.cursor = 'grab';
         }
-        if (window.PicEditor.sync) window.PicEditor.sync.markModified();
+        if (state.hasDragged && window.PicEditor.sync) {
+          window.PicEditor.sync.markModified();
+        }
         return;
       }
 
@@ -317,9 +332,14 @@ window.PicEditor.interaction = {
       }
       if (state.isDragging) {
         state.isDragging = false;
-        if (window.PicEditor.sync) window.PicEditor.sync.markModified();
+        if (state.hasDragged && window.PicEditor.sync) {
+          window.PicEditor.sync.markModified();
+        }
       }
-    });
+    };
+
+    window.addEventListener('mouseup', handlePointerUp);
+    window.addEventListener('touchend', handlePointerUp);
 
     // ESC 키 및 삭제 키
     window.addEventListener('keydown', (e) => {

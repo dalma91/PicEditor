@@ -132,32 +132,37 @@ window.PicEditor.tools = {
     if (!gizmo) {
       gizmo = document.createElementNS("http://www.w3.org/2000/svg", "g");
       gizmo.setAttribute('id', 'arc-center-handle-group');
-      gizmo.setAttribute('style', 'display:none; pointer-events:all;');
+      gizmo.setAttribute('style', 'display:none; pointer-events:none;');
 
       gizmo.innerHTML = `
-        <line id="arc-chord-guide" stroke="#94a3b8" stroke-dasharray="4,4" stroke-width="1.2" />
-        <line id="arc-axis-guide" stroke="#ef4444" stroke-dasharray="2,2" stroke-width="1" />
-        <line id="arc-radius-guide-1" stroke="#fca5a5" stroke-dasharray="3,3" stroke-width="1" />
-        <line id="arc-radius-guide-2" stroke="#fca5a5" stroke-dasharray="3,3" stroke-width="1" />
-        <circle id="arc-p1-anchor" r="4" fill="#3b82f6" />
-        <circle id="arc-p2-anchor" r="4" fill="#3b82f6" />
-        <g id="arc-center-handle-wrap" style="cursor:grab;">
-          <circle id="arc-center-hit" r="18" fill="transparent" />
-          <circle id="arc-center-outer" r="8.5" fill="#ef4444" stroke="#ffffff" stroke-width="2.5" style="filter:drop-shadow(0 2px 4px rgba(0,0,0,0.35));" />
-          <circle id="arc-center-inner" r="3" fill="#ffffff" />
-          <text id="arc-center-label" font-size="11" font-weight="700" fill="#dc2626" x="12" y="4" style="user-select:none; pointer-events:none; text-shadow:0 1px 2px #ffffff;">원의 중심</text>
+        <line id="arc-chord-guide" stroke="#94a3b8" stroke-dasharray="4,4" stroke-width="1.2" style="pointer-events:none;" />
+        <line id="arc-axis-guide" stroke="#ef4444" stroke-dasharray="2,2" stroke-width="1" style="pointer-events:none;" />
+        <line id="arc-radius-guide-1" stroke="#fca5a5" stroke-dasharray="3,3" stroke-width="1" style="pointer-events:none;" />
+        <line id="arc-radius-guide-2" stroke="#fca5a5" stroke-dasharray="3,3" stroke-width="1" style="pointer-events:none;" />
+        <circle id="arc-p1-anchor" r="4" fill="#3b82f6" style="pointer-events:none;" />
+        <circle id="arc-p2-anchor" r="4" fill="#3b82f6" style="pointer-events:none;" />
+        <g id="arc-center-handle-wrap" style="cursor:grab; pointer-events:all;">
+          <circle id="arc-center-hit" r="24" fill="#000000" opacity="0.001" style="cursor:grab; pointer-events:all;" />
+          <circle id="arc-center-outer" r="9" fill="#ef4444" stroke="#ffffff" stroke-width="2.5" style="filter:drop-shadow(0 2px 5px rgba(0,0,0,0.4)); pointer-events:none;" />
+          <circle id="arc-center-inner" r="3.5" fill="#ffffff" style="pointer-events:none;" />
+          <text id="arc-center-label" font-size="11" font-weight="700" fill="#dc2626" x="14" y="4" style="user-select:none; pointer-events:none; text-shadow:0 1px 2px #ffffff;">원의 중심</text>
         </g>
       `;
 
       svg.appendChild(gizmo);
 
       const handleWrap = gizmo.querySelector('#arc-center-handle-wrap');
-      handleWrap.addEventListener('mousedown', (e) => {
+      const startDragCenter = (e) => {
         e.stopPropagation();
+        if (e.cancelable && e.type === 'touchstart') e.preventDefault();
         const state = window.PicEditor.state;
         state.isDraggingArcCenter = true;
+        state.hasDragged = false;
         handleWrap.style.cursor = 'grabbing';
-      });
+      };
+
+      handleWrap.addEventListener('mousedown', startDragCenter);
+      handleWrap.addEventListener('touchstart', startDragCenter, { passive: false });
     }
     return gizmo;
   },
