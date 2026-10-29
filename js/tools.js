@@ -19,6 +19,36 @@ window.PicEditor.tools = {
   },
 
   /**
+   * W3C 표준 SVG 타원 호(Arc) 엔드포인트 파라미터로부터 실제 원의 중심 좌표(cx, cy) 산출
+   */
+  getSvgArcCenter(x1, y1, rx, ry, phi, largeArc, sweep, x2, y2) {
+    const cosPhi = Math.cos(phi * Math.PI / 180);
+    const sinPhi = Math.sin(phi * Math.PI / 180);
+    const dx2 = (x1 - x2) / 2.0;
+    const dy2 = (y1 - y2) / 2.0;
+    const x1p = cosPhi * dx2 + sinPhi * dy2;
+    const y1p = -sinPhi * dx2 + cosPhi * dy2;
+
+    let rxSq = rx * rx;
+    let rySq = ry * ry;
+    const x1pSq = x1p * x1p;
+    const y1pSq = y1p * y1p;
+
+    const radicand = Math.max(0, (rxSq * rySq - rxSq * y1pSq - rySq * x1pSq) / (rxSq * y1pSq + rySq * x1pSq));
+    let coef = Math.sqrt(radicand);
+    if (largeArc === sweep) {
+      coef = -coef;
+    }
+
+    const cxp = coef * (rx * y1p / ry);
+    const cyp = coef * -(ry * x1p / rx);
+
+    const cx = cosPhi * cxp - sinPhi * cyp + (x1 + x2) / 2.0;
+    const cy = sinPhi * cxp + cosPhi * cyp + (y1 + y2) / 2.0;
+    return { x: cx, y: cy };
+  },
+
+  /**
    * 호의 시점(p1), 종점(p2), 원의 중심(c)을 기반으로 SVG path 'd' 및 반지름 r 계산
    */
   calculateArcD(p1, p2, c) {
@@ -39,10 +69,12 @@ window.PicEditor.tools = {
       r = chord / 2.0;
     }
 
-    // 외적으로 중심 C가 시점->종점 벡터의 어느 쪽에 위치하는지 판정
-    // Y축이 아래로 향하는 화면 좌표계 기준
+    // 외적 판정: 중심 C가 시점->종점 벡터(P1->P2)의 어느 쪽에 위치하는지 정밀 판정 (화면 Y축 아래 방향 기준)
+    // cross > 0 이면 중심 C가 벡터의 우측에 위치 -> sweep = 1 (시계방향 회전)
+    // cross <= 0 이면 중심 C가 벡터의 좌측에 위치 -> sweep = 0 (반시계방향 회전)
+    // 이를 통해 호는 항상 중심 C를 감싸며 반대편으로 자연스럽게 휘어짐 (원의 중심 정의 일치)
     const cross = (x2 - x1) * (cy - y1) - (y2 - y1) * (cx - x1);
-    const sweep = (cross <= 0) ? 1 : 0;
+    const sweep = (cross > 0) ? 1 : 0;
 
     const d = `M ${x1.toFixed(1)},${y1.toFixed(1)} A ${r.toFixed(1)} ${r.toFixed(1)} 0 0 ${sweep} ${x2.toFixed(1)},${y2.toFixed(1)}`;
     return { d, r, sweep };
@@ -74,20 +106,28 @@ window.PicEditor.tools = {
 
     const aMatch = d.match(/A\s*([\d\.-]+)[,\s]+([\d\.-]+)[,\s]+([\d\.-]+)[,\s]+([01])[,\s]+([01])[,\s]+([\d\.-]+)[,\s]+([\d\.-]+)/i);
     if (aMatch) {
+      const rx = parseFloat(aMatch[1]);
+      const ry = parseFloat(aMatch[2]);
+      const phi = parseFloat(aMatch[3]);
+      const largeArc = parseInt(aMatch[4], 10);
+      const sweep = parseInt(aMatch[5], 10);
       x2 = parseFloat(aMatch[6]);
       y2 = parseFloat(aMatch[7]);
-      cx = (x1 + x2) / 2;
-      cy = (y1 + y2) / 2;
-      return { p1: { x: x1, y: y1 }, p2: { x: x2, y: y2 }, c: { x: cx, y: cy } };
+      const center = this.getSvgArcCenter(x1, y1, rx, ry, phi, largeArc, sweep, x2, y2);
+      return { p1: { x: x1, y: y1 }, p2: { x: x2, y: y2 }, c: center };
     }
 
     const qMatch = d.match(/Q\s*([\d\.-]+)[,\s]+([\d\.-]+)[,\s]+([\d\.-]+)[,\s]+([\d\.-]+)/i);
     if (qMatch) {
-      cx = parseFloat(qMatch[1]);
-      cy = parseFloat(qMatch[2]);
+      const qx = parseFloat(qMatch[1]);
+      const qy = parseFloat(qMatch[2]);
       x2 = parseFloat(qMatch[3]);
       y2 = parseFloat(qMatch[4]);
-      return { p1: { x: x1, y: y1 }, p2: { x: x2, y: y2 }, c: { x: cx, y: cy } };
+      // 2차 베지어 제어점(볼록 측)을 현의 중점 기준으로 반전하여 원의 중심(오목 측)으로 산출
+      const mx = (x1 + x2) / 2;
+      const my = (y1 + y2) / 2;
+      const center = { x: mx - (qx - mx) * 1.5, y: my - (qy - my) * 1.5 };
+      return { p1: { x: x1, y: y1 }, p2: { x: x2, y: y2 }, c: center };
     }
 
     return null;
