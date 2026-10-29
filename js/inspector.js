@@ -132,31 +132,308 @@ window.PicEditor.inspector = {
   /**
    * 텍스트 전용 인스펙터 동기화
    */
+  /**
+   * 텍스트 요소 추출 (text-el 또는 text-wrap 호환)
+   */
+  getTextElement(el) {
+    if (!el) return null;
+    if (el.classList && el.classList.contains('text-el')) return el;
+    if (el.querySelector) return el.querySelector('.text-el');
+    return null;
+  },
+
+  /**
+   * 텍스트 전용 인스펙터 동기화
+   */
   syncTextInspector() {
     const state = window.PicEditor.state;
-    if (!state.selectedElement || !state.selectedElement.classList.contains('text-el')) return;
+    if (!state.selectedElement) return;
 
-    const wrap = state.selectedElement.closest('.text-wrap');
+    const textEl = this.getTextElement(state.selectedElement);
+    if (!textEl) return;
+    const wrap = textEl.closest('.text-wrap') || textEl;
+
+    // 1. 글자 내용 (Text Content)
+    const contentInput = document.getElementById('textContentInput');
+    if (contentInput) {
+      contentInput.value = textEl.textContent || '';
+    }
+
+    // 2. 글꼴 크기 (Font Size in px)
+    const sizeInput = document.getElementById('textFontSizeNum');
+    if (sizeInput) {
+      let fs = parseInt(textEl.getAttribute('font-size'));
+      if (!fs || isNaN(fs)) {
+        try {
+          fs = parseInt(window.getComputedStyle(textEl).fontSize) || 24;
+        } catch (e) {
+          fs = 24;
+        }
+      }
+      sizeInput.value = fs;
+    }
+
+    // 3. 글꼴 서체 (Font Family)
+    const familySelect = document.getElementById('textFontFamilySelect');
+    if (familySelect) {
+      const ff = (textEl.getAttribute('font-family') || '').toLowerCase();
+      if (ff.includes('batang') || ff.includes('바탕')) {
+        familySelect.value = "'Batang', serif";
+      } else if (ff.includes('malgun') || ff.includes('맑은')) {
+        familySelect.value = "'Malgun Gothic', sans-serif";
+      } else if (ff.includes('times')) {
+        familySelect.value = "'Times New Roman', serif";
+      } else if (ff.includes('sans')) {
+        familySelect.value = "sans-serif";
+      } else {
+        familySelect.value = "'Times New Roman', serif";
+      }
+    }
+
+    // 4. 이탤릭 및 볼드 서식 상태
+    const italicBtn = document.getElementById('textItalicBtn');
+    if (italicBtn) {
+      let isItalic = (textEl.getAttribute('font-style') === 'italic');
+      if (!isItalic) {
+        try {
+          isItalic = (window.getComputedStyle(textEl).fontStyle === 'italic');
+        } catch (e) {}
+      }
+      italicBtn.classList.toggle('active', !!isItalic);
+    }
+
+    const boldBtn = document.getElementById('textBoldBtn');
+    if (boldBtn) {
+      let fw = textEl.getAttribute('font-weight') || '';
+      if (!fw) {
+        try {
+          fw = window.getComputedStyle(textEl).fontWeight || '';
+        } catch (e) {}
+      }
+      const isBold = (fw === 'bold' || fw === '700' || parseInt(fw) >= 600);
+      boldBtn.classList.toggle('active', !!isBold);
+    }
+
+    // 5. 글자 색상 (Color)
+    const colorPicker = document.getElementById('textColorPicker');
+    if (colorPicker) {
+      let fill = textEl.getAttribute('fill') || '#000000';
+      if (fill.startsWith('#') && fill.length === 7) {
+        colorPicker.value = fill;
+      } else {
+        colorPicker.value = '#000000';
+      }
+    }
+
+    // 6. 스케일 배율 (Transform Scale %)
     const t = window.PicEditor.utils.parseTransform(wrap);
     const pct = Math.round(Math.abs(t.sx) * 100);
-    
     const scaleRange = document.getElementById('textScaleRange');
     const scaleNum = document.getElementById('textScaleNum');
-    const bgSelect = document.getElementById('textBgModeSelect');
-
-    // 슬라이더 범위 (0 ~ 200, 중앙 100%)
     if (scaleRange) scaleRange.value = Math.min(200, Math.max(0, pct));
     if (scaleNum) scaleNum.value = pct;
 
+    // 7. 배경 모드 (투명, 흰색 박스, 외곽선 흰색)
+    const bgSelect = document.getElementById('textBgModeSelect');
     let mode = 'transparent';
     if (wrap.classList.contains('bg-box-white')) mode = 'box-white';
-    else if (state.selectedElement.classList.contains('bg-stroke-white')) mode = 'stroke-white';
-    
+    else if (textEl.classList.contains('bg-stroke-white')) mode = 'stroke-white';
     if (bgSelect) bgSelect.value = mode;
   },
 
   /**
-   * 글자 크기 (%) 조절 (0~200% 범위, 100%가 슬라이더 정중앙 위치)
+   * 텍스트 내용 실시간 수정
+   */
+  onTextInput(val) {
+    const state = window.PicEditor.state;
+    if (!state.selectedElement) return;
+    const textEl = this.getTextElement(state.selectedElement);
+    if (!textEl) return;
+
+    textEl.textContent = val;
+    const wrap = textEl.closest('.text-wrap');
+    if (wrap && window.PicEditor.canvas) {
+      window.PicEditor.canvas.updateSingleTextBgBox(wrap);
+    }
+    if (window.PicEditor.sync) window.PicEditor.sync.markModified();
+  },
+
+  /**
+   * 자주 쓰는 물리 특수기호 삽입
+   */
+  insertSymbol(sym) {
+    const input = document.getElementById('textContentInput');
+    if (!input) return;
+    const start = input.selectionStart ?? input.value.length;
+    const end = input.selectionEnd ?? input.value.length;
+    const val = input.value;
+    input.value = val.substring(0, start) + sym + val.substring(end);
+    input.selectionStart = input.selectionEnd = start + sym.length;
+    input.focus();
+    this.onTextInput(input.value);
+  },
+
+  /**
+   * 폰트 크기(px) 변경
+   */
+  onTextFontSize(size) {
+    const state = window.PicEditor.state;
+    if (!state.selectedElement) return;
+    const textEl = this.getTextElement(state.selectedElement);
+    if (!textEl) return;
+
+    const num = Math.max(6, parseInt(size) || 24);
+    textEl.setAttribute('font-size', num);
+    const wrap = textEl.closest('.text-wrap');
+    if (wrap && window.PicEditor.canvas) {
+      window.PicEditor.canvas.updateSingleTextBgBox(wrap);
+    }
+    if (window.PicEditor.sync) window.PicEditor.sync.markModified();
+  },
+
+  /**
+   * 폰트 서체(Font-Family) 변경
+   */
+  onTextFontFamily(family) {
+    const state = window.PicEditor.state;
+    if (!state.selectedElement) return;
+    const textEl = this.getTextElement(state.selectedElement);
+    if (!textEl) return;
+
+    textEl.setAttribute('font-family', family);
+    const wrap = textEl.closest('.text-wrap');
+    if (wrap && window.PicEditor.canvas) {
+      window.PicEditor.canvas.updateSingleTextBgBox(wrap);
+    }
+    if (window.PicEditor.sync) window.PicEditor.sync.markModified();
+  },
+
+  /**
+   * 이탤릭(기울임꼴) 서식 토글
+   */
+  toggleTextItalic() {
+    const state = window.PicEditor.state;
+    if (!state.selectedElement) return;
+    const textEl = this.getTextElement(state.selectedElement);
+    if (!textEl) return;
+
+    const cur = textEl.getAttribute('font-style') || 'normal';
+    const next = (cur === 'italic') ? 'normal' : 'italic';
+    textEl.setAttribute('font-style', next);
+
+    const btn = document.getElementById('textItalicBtn');
+    if (btn) btn.classList.toggle('active', next === 'italic');
+
+    const wrap = textEl.closest('.text-wrap');
+    if (wrap && window.PicEditor.canvas) {
+      window.PicEditor.canvas.updateSingleTextBgBox(wrap);
+    }
+    if (window.PicEditor.sync) window.PicEditor.sync.markModified();
+  },
+
+  /**
+   * 굵게(Bold) 서식 토글
+   */
+  toggleTextBold() {
+    const state = window.PicEditor.state;
+    if (!state.selectedElement) return;
+    const textEl = this.getTextElement(state.selectedElement);
+    if (!textEl) return;
+
+    const cur = textEl.getAttribute('font-weight') || 'normal';
+    const isBold = (cur === 'bold' || cur === '700' || parseInt(cur) >= 600);
+    const next = isBold ? 'normal' : 'bold';
+    textEl.setAttribute('font-weight', next);
+
+    const btn = document.getElementById('textBoldBtn');
+    if (btn) btn.classList.toggle('active', next === 'bold');
+
+    const wrap = textEl.closest('.text-wrap');
+    if (wrap && window.PicEditor.canvas) {
+      window.PicEditor.canvas.updateSingleTextBgBox(wrap);
+    }
+    if (window.PicEditor.sync) window.PicEditor.sync.markModified();
+  },
+
+  /**
+   * 글자 색상 변경
+   */
+  onTextColor(color) {
+    const state = window.PicEditor.state;
+    if (!state.selectedElement) return;
+    const textEl = this.getTextElement(state.selectedElement);
+    if (!textEl) return;
+
+    textEl.setAttribute('fill', color);
+    if (window.PicEditor.sync) window.PicEditor.sync.markModified();
+  },
+
+  /**
+   * 캔버스 위에서 더블클릭 시 인라인 텍스트 편집기 띄우기
+   */
+  startInlineTextEdit(textEl) {
+    if (!textEl) return;
+    let editor = document.getElementById('canvasInlineTextInput');
+    if (!editor) {
+      editor = document.createElement('input');
+      editor.id = 'canvasInlineTextInput';
+      editor.className = 'canvas-inline-editor';
+      editor.type = 'text';
+      document.body.appendChild(editor);
+    }
+
+    const wrap = textEl.closest('.text-wrap') || textEl;
+    const rect = textEl.getBoundingClientRect();
+    let cs;
+    try {
+      cs = window.getComputedStyle(textEl);
+    } catch (e) {
+      cs = {};
+    }
+
+    editor.style.left = `${Math.round(rect.left)}px`;
+    editor.style.top = `${Math.round(rect.top)}px`;
+    editor.style.fontSize = cs.fontSize || '20px';
+    editor.style.fontFamily = cs.fontFamily || "'Times New Roman', serif";
+    editor.style.fontStyle = cs.fontStyle || 'normal';
+    editor.style.fontWeight = cs.fontWeight || 'normal';
+    editor.style.color = textEl.getAttribute('fill') || '#000000';
+    editor.style.display = 'block';
+    editor.value = textEl.textContent.trim();
+
+    editor.oninput = () => {
+      textEl.textContent = editor.value;
+      const inputEl = document.getElementById('textContentInput');
+      if (inputEl) inputEl.value = editor.value;
+      if (wrap && window.PicEditor.canvas) {
+        window.PicEditor.canvas.updateSingleTextBgBox(wrap);
+      }
+    };
+
+    const finish = () => {
+      editor.style.display = 'none';
+      if (wrap && window.PicEditor.canvas) {
+        window.PicEditor.canvas.updateSingleTextBgBox(wrap);
+      }
+      if (window.PicEditor.sync) window.PicEditor.sync.markModified();
+    };
+
+    editor.onkeydown = (e) => {
+      e.stopPropagation();
+      if (e.key === 'Enter') {
+        finish();
+      } else if (e.key === 'Escape') {
+        editor.style.display = 'none';
+      }
+    };
+
+    editor.onblur = finish;
+    editor.focus();
+    editor.select();
+  },
+
+  /**
+   * 글자 크기 (%) 조절 슬라이더
    */
   onTextScaleSlider(val) {
     const numEl = document.getElementById('textScaleNum');
@@ -171,7 +448,6 @@ window.PicEditor.inspector = {
     if (rangeEl) rangeEl.value = Math.min(200, Math.max(0, num));
     this.applyTextScale(num);
   },
-
   applyTextScale(val) {
     const state = window.PicEditor.state;
     if (!state.selectedElement || !state.selectedElement.classList.contains('text-el')) return;
@@ -359,6 +635,14 @@ window.fitCanvasToSelectedImage = () => window.PicEditor.inspector.fitCanvasToSe
 window.onTextScaleSlider = (v) => window.PicEditor.inspector.onTextScaleSlider(v);
 window.onTextScaleNumber = (v) => window.PicEditor.inspector.onTextScaleNumber(v);
 window.onChangeTextBgMode = (m) => window.PicEditor.inspector.onChangeTextBgMode(m);
+window.onTextInput = (v) => window.PicEditor.inspector.onTextInput(v);
+window.insertSymbol = (s) => window.PicEditor.inspector.insertSymbol(s);
+window.onTextFontSize = (s) => window.PicEditor.inspector.onTextFontSize(s);
+window.onTextFontFamily = (f) => window.PicEditor.inspector.onTextFontFamily(f);
+window.toggleTextItalic = () => window.PicEditor.inspector.toggleTextItalic();
+window.toggleTextBold = () => window.PicEditor.inspector.toggleTextBold();
+window.onTextColor = (c) => window.PicEditor.inspector.onTextColor(c);
+window.startInlineTextEdit = (el) => window.PicEditor.inspector.startInlineTextEdit(el);
 window.onObjectWidthInput = (v) => window.PicEditor.inspector.onObjectWidthInput(v);
 window.onObjectHeightInput = (v) => window.PicEditor.inspector.onObjectHeightInput(v);
 window.onRotateSlider = (v) => window.PicEditor.inspector.onRotateSlider(v);

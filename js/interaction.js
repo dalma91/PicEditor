@@ -93,6 +93,19 @@ window.PicEditor.interaction = {
         if (state.isDrawMode) return;
         e.stopPropagation();
       };
+
+      el.ondblclick = (e) => {
+        if (state.isDrawMode) return;
+        e.stopPropagation();
+        const wrap = el.closest('.text-wrap') || el.closest('.mid-arrow') || el;
+        const textEl = wrap.querySelector ? (wrap.querySelector('.text-el') || (el.classList.contains('text-el') ? el : null)) : null;
+        if (textEl) {
+          state.selectedElement = textEl;
+          wrap.classList.add('selected');
+          window.PicEditor.inspector.syncUItoSelected();
+          window.PicEditor.inspector.startInlineTextEdit(textEl);
+        }
+      };
     });
   },
 
@@ -127,9 +140,12 @@ window.PicEditor.interaction = {
         const pt = window.PicEditor.utils.getSvgPoint(e, svg);
         state.drawStart = pt;
 
-        const tool = document.getElementById('toolSelect').value;
-        const strokeStyle = document.getElementById('strokeStyleSelect').value;
-        const arrowDir = document.getElementById('arrowDirSelect').value;
+        const toolEl = document.getElementById('toolSelect');
+        const tool = toolEl ? toolEl.value : 'line';
+        const strokeStyleEl = document.getElementById('strokeStyleSelect');
+        const strokeStyle = strokeStyleEl ? strokeStyleEl.value : 'solid';
+        const arrowDirEl = document.getElementById('arrowDirSelect');
+        const arrowDir = arrowDirEl ? arrowDirEl.value : 'end';
         let mainGrp = svg.querySelector('.main-diagram');
 
         if (!mainGrp) {
@@ -138,7 +154,54 @@ window.PicEditor.interaction = {
           svg.appendChild(mainGrp);
         }
 
-        if (tool === 'line' || tool === 'arrow') {
+        if (tool === 'text') {
+          let textLayer = svg.querySelector('.text-layer');
+          if (!textLayer) {
+            textLayer = document.createElementNS("http://www.w3.org/2000/svg", "g");
+            textLayer.setAttribute('class', 'text-layer');
+            svg.appendChild(textLayer);
+          }
+
+          const wrap = document.createElementNS("http://www.w3.org/2000/svg", "g");
+          wrap.setAttribute('class', 'movable text-wrap');
+          wrap.setAttribute('transform', 'translate(0,0) scale(1,1) rotate(0)');
+
+          const bgRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+          bgRect.setAttribute('class', 'text-bg-rect');
+          bgRect.setAttribute('rx', '2');
+
+          const textEl = document.createElementNS("http://www.w3.org/2000/svg", "text");
+          textEl.setAttribute('class', 'text-el');
+          textEl.setAttribute('x', Math.round(pt.x));
+          textEl.setAttribute('y', Math.round(pt.y));
+          textEl.setAttribute('font-family', "'Times New Roman', serif");
+          textEl.setAttribute('font-size', '28');
+          textEl.setAttribute('font-style', 'normal');
+          textEl.setAttribute('font-weight', 'normal');
+          textEl.setAttribute('fill', '#000000');
+          textEl.textContent = 'Text';
+
+          wrap.appendChild(bgRect);
+          wrap.appendChild(textEl);
+          textLayer.appendChild(wrap);
+
+          window.PicEditor.canvas.updateSingleTextBgBox(wrap);
+          window.PicEditor.interaction.initMovableEvents();
+
+          // 모드를 선택 모드로 자동 전환하고 새로 생성된 텍스트 선택
+          window.PicEditor.interaction.toggleMode();
+          window.PicEditor.utils.deselectAll();
+          state.selectedElement = textEl;
+          wrap.classList.add('selected');
+          window.PicEditor.inspector.syncUItoSelected();
+
+          setTimeout(() => {
+            window.PicEditor.inspector.startInlineTextEdit(textEl);
+          }, 60);
+
+          if (window.PicEditor.sync) window.PicEditor.sync.markModified();
+          return;
+        } else if (tool === 'line' || tool === 'arrow') {
           state.tempShape = document.createElementNS("http://www.w3.org/2000/svg", "line");
           state.tempShape.setAttribute("x1", pt.x);
           state.tempShape.setAttribute("y1", pt.y);
@@ -452,8 +515,22 @@ window.PicEditor.interaction = {
     window.addEventListener('mouseup', handlePointerUp);
     window.addEventListener('touchend', handlePointerUp);
 
-    // ESC 키, 삭제 키 및 방향키(Arrow Keys) 이동
+    // ESC 키, Enter 키, 삭제 키 및 방향키(Arrow Keys) 이동
     window.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        const activeTag = document.activeElement ? document.activeElement.tagName.toLowerCase() : '';
+        if (activeTag !== 'input' && activeTag !== 'textarea') {
+          if (state.selectedElement) {
+            const wrap = state.selectedElement.closest ? state.selectedElement.closest('.text-wrap') : null;
+            const textEl = state.selectedElement.classList.contains('text-el') ? state.selectedElement : (wrap ? wrap.querySelector('.text-el') : null);
+            if (textEl) {
+              e.preventDefault();
+              window.PicEditor.inspector.startInlineTextEdit(textEl);
+              return;
+            }
+          }
+        }
+      }
       if (e.key === 'Escape') {
         window.PicEditor.storage.closeHtmlModal();
         window.PicEditor.utils.deselectAll();

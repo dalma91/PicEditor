@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>물리 마스터 에디터 스튜디오 v15</title>
-  <link rel="stylesheet" href="css/style.css?v=20261029_8">
+  <link rel="stylesheet" href="css/style.css?v=20261029_9">
   <style>
     /* 브라우저 100vh 고정 뷰포트 및 2열 그리드 레이아웃 */
     html, body {
@@ -162,6 +162,7 @@
             <option value="line">직선</option>
             <option value="arrow">화살표</option>
             <option value="arc">호 (드래그)</option>
+            <option value="text">글자 추가 (클릭)</option>
           </select>
         </div>
 
@@ -187,6 +188,11 @@
         <div class="control-group" id="arcOptionGroup" style="display:none; flex-direction:column; align-items:flex-start; gap:4px; background:#eff6ff; border-color:#bfdbfe; font-size:11.5px; color:#1e40af;">
           <span style="font-weight:700;">💡 호(Arc) 작도 안내</span>
           <span style="font-size:11px; line-height:1.4; color:#2563eb;">드래그하여 호를 그린 뒤, 나타나는 <strong>🔴 호의 중심</strong>이나 <strong>🔵 파란 끝점</strong>을 드래그하면 호의 중심과 길이, 곡률을 자유롭게 조절할 수 있습니다.</span>
+        </div>
+
+        <div class="control-group" id="textOptionGroup" style="display:none; flex-direction:column; align-items:flex-start; gap:4px; background:#eff6ff; border-color:#bfdbfe; font-size:11.5px; color:#1e40af;">
+          <span style="font-weight:700;">💡 글자(Text) 추가 안내</span>
+          <span style="font-size:11px; line-height:1.4; color:#2563eb;">캔버스에서 글자를 넣을 위치를 마우스로 클릭하면 새 글자가 생성되며 즉시 편집할 수 있습니다.</span>
         </div>
 
         <button type="button" class="success full-btn" onclick="convertToArrow()">
@@ -261,10 +267,69 @@
 
       <!-- 6. 글자 전용 인스펙터 (선택 시 노출) -->
       <section id="textInspector" class="text-inspector">
-        <span class="text-inspector-title">🔤 글자 옵션</span>
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span class="text-inspector-title">🔤 글자 편집 및 옵션</span>
+          <span style="font-size:10px; color:#1a73e8; background:#dbeafe; padding:2px 5px; border-radius:4px; font-weight:600;">더블클릭/Enter 편집</span>
+        </div>
+
+        <!-- 글자 내용 실시간 입력 -->
+        <div class="control-group" style="flex-direction:column; align-items:stretch; gap:4px;">
+          <label for="textContentInput" style="font-weight:600; font-size:11.5px;">글자 내용:</label>
+          <input type="text" id="textContentInput" placeholder="텍스트 입력" style="width:100%; padding:5px 8px; font-size:13px; font-weight:500; border:1.5px solid #1a73e8; border-radius:4px; box-sizing:border-box;" oninput="onTextInput(this.value)">
+        </div>
+
+        <!-- 자주 쓰는 물리 기호 빠른 삽입 팔레트 -->
+        <div style="display:flex; flex-direction:column; gap:3px;">
+          <span style="font-size:10.5px; color:#475569; font-weight:600;">기호 빠른 입력:</span>
+          <div class="symbol-palette" style="display:flex; flex-wrap:wrap; gap:3px; padding:4px; background:#f8fafc; border:1px solid #cbd5e1; border-radius:5px;">
+            <button type="button" class="sym-btn" onclick="insertSymbol('θ')" title="세타 (각도)">θ</button>
+            <button type="button" class="sym-btn" onclick="insertSymbol('φ')" title="파이 (각도/위상)">φ</button>
+            <button type="button" class="sym-btn" onclick="insertSymbol('ω')" title="오메가 (각속도)">ω</button>
+            <button type="button" class="sym-btn" onclick="insertSymbol('α')" title="알파 (각가속도)">α</button>
+            <button type="button" class="sym-btn" onclick="insertSymbol('β')" title="베타">β</button>
+            <button type="button" class="sym-btn" onclick="insertSymbol('λ')" title="람다 (파장)">λ</button>
+            <button type="button" class="sym-btn" onclick="insertSymbol('μ')" title="뮤 (마찰계수)">μ</button>
+            <button type="button" class="sym-btn" onclick="insertSymbol('π')" title="원주율">π</button>
+            <button type="button" class="sym-btn" onclick="insertSymbol('°')" title="도 (각도 단위)">°</button>
+            <button type="button" class="sym-btn" onclick="insertSymbol('±')" title="플러스마이너스">±</button>
+            <button type="button" class="sym-btn" onclick="insertSymbol('×')" title="곱하기">×</button>
+            <button type="button" class="sym-btn" onclick="insertSymbol('₀')" title="아래첨자 0">₀</button>
+            <button type="button" class="sym-btn" onclick="insertSymbol('₁')" title="아래첨자 1">₁</button>
+            <button type="button" class="sym-btn" onclick="insertSymbol('₂')" title="아래첨자 2">₂</button>
+            <button type="button" class="sym-btn" onclick="insertSymbol('₃')" title="아래첨자 3">₃</button>
+            <button type="button" class="sym-btn" onclick="insertSymbol('₊')" title="아래첨자 +">₊</button>
+            <button type="button" class="sym-btn" onclick="insertSymbol('₋')" title="아래첨자 -">₋</button>
+          </div>
+        </div>
+
+        <!-- 글꼴 서체 -->
+        <div class="control-group">
+          <label for="textFontFamilySelect">글꼴:</label>
+          <select id="textFontFamilySelect" onchange="onTextFontFamily(this.value)">
+            <option value="'Times New Roman', serif">Times New Roman (수식/영문)</option>
+            <option value="'Batang', serif">바탕체 (한글 명조)</option>
+            <option value="'Malgun Gothic', sans-serif">맑은 고딕 (한글 고딕)</option>
+            <option value="sans-serif">기본 고딕 (sans-serif)</option>
+          </select>
+        </div>
+
+        <!-- 폰트 크기, 서식 버튼(이탤릭/볼드), 색상 -->
+        <div style="display:flex; gap:6px; align-items:center; width:100%;">
+          <div class="control-group" style="flex:1;">
+            <label for="textFontSizeNum">크기(px):</label>
+            <input type="number" id="textFontSizeNum" min="8" max="200" step="1" value="24" style="width:52px;" oninput="onTextFontSize(this.value)">
+          </div>
+          <div style="display:flex; gap:3px;">
+            <button type="button" id="textItalicBtn" class="format-btn" onclick="toggleTextItalic()" title="기울임꼴 (Italic)"><i>I</i></button>
+            <button type="button" id="textBoldBtn" class="format-btn" onclick="toggleTextBold()" title="굵게 (Bold)"><b>B</b></button>
+            <input type="color" id="textColorPicker" value="#000000" style="width:28px; height:28px; padding:1px; border:1px solid #cbd5e1; border-radius:4px; cursor:pointer;" onchange="onTextColor(this.value)" title="글자 색상">
+          </div>
+        </div>
+
+        <!-- 배율(%) 스케일 조절 -->
         <div class="control-group text-scale-group">
           <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
-            <label for="textScaleRange">크기(%):</label>
+            <label for="textScaleRange">배율(%):</label>
             <div class="inputs-wrap">
               <input type="number" id="textScaleNum" min="10" max="1000" step="1" value="100" oninput="onTextScaleNumber(this.value)">
               <span style="font-size:11px; color:#555;">%</span>
@@ -279,6 +344,8 @@
             </div>
           </div>
         </div>
+
+        <!-- 배경 스타일 -->
         <div class="control-group">
           <label for="textBgModeSelect">배경 스타일:</label>
           <select id="textBgModeSelect" onchange="onChangeTextBgMode(this.value)">
@@ -485,14 +552,14 @@
   </div>
 
   <!-- 자바스크립트 모듈 로드 (강제 캐시 갱신 파라미터 적용) -->
-  <script src="js/state.js?v=20261029_8"></script>
-  <script src="js/utils.js?v=20261029_8"></script>
-  <script src="js/canvas.js?v=20261029_8"></script>
-  <script src="js/tools.js?v=20261029_8"></script>
-  <script src="js/inspector.js?v=20261029_8"></script>
-  <script src="js/interaction.js?v=20261029_8"></script>
-  <script src="js/export-import.js?v=20261029_8"></script>
-  <script src="js/github.js?v=20261029_8"></script>
-  <script src="js/app.js?v=20261029_8"></script>
+  <script src="js/state.js?v=20261029_9"></script>
+  <script src="js/utils.js?v=20261029_9"></script>
+  <script src="js/canvas.js?v=20261029_9"></script>
+  <script src="js/tools.js?v=20261029_9"></script>
+  <script src="js/inspector.js?v=20261029_9"></script>
+  <script src="js/interaction.js?v=20261029_9"></script>
+  <script src="js/export-import.js?v=20261029_9"></script>
+  <script src="js/github.js?v=20261029_9"></script>
+  <script src="js/app.js?v=20261029_9"></script>
 </body>
 </html>

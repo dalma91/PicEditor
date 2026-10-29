@@ -14,8 +14,10 @@ window.PicEditor.tools = {
     const arrowGrp = document.getElementById('arrowOptionGroup');
     const arcGrp = document.getElementById('arcOptionGroup');
     
+    const textGrp = document.getElementById('textOptionGroup');
     if (arrowGrp) arrowGrp.style.display = (tool === 'arrow') ? 'flex' : 'none';
     if (arcGrp) arcGrp.style.display = (tool === 'arc') ? 'flex' : 'none';
+    if (textGrp) textGrp.style.display = (tool === 'text') ? 'flex' : 'none';
   },
 
   /**

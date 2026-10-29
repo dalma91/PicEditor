@@ -5,6 +5,29 @@ window.PicEditor = window.PicEditor || {};
 
 window.PicEditor.canvas = {
   /**
+   * 단일 텍스트 요소의 배경 박스 크기(BBox) 계산 및 갱신
+   */
+  updateSingleTextBgBox(wrap) {
+    if (!wrap) return;
+    const textEl = wrap.querySelector('.text-el');
+    const bgRect = wrap.querySelector('.text-bg-rect');
+    if (textEl && bgRect) {
+      try {
+        const bbox = textEl.getBBox();
+        bgRect.setAttribute('x', bbox.x - 4);
+        bgRect.setAttribute('y', bbox.y - 3);
+        bgRect.setAttribute('width', Math.max(10, bbox.width + 8));
+        bgRect.setAttribute('height', Math.max(10, bbox.height + 6));
+        bgRect.setAttribute('fill', '#ffffff');
+        bgRect.setAttribute('stroke', 'none');
+        bgRect.setAttribute('stroke-width', '0');
+      } catch (e) {
+        // SVG getBBox fallback
+      }
+    }
+  },
+
+  /**
    * 모든 텍스트의 배경 박스 크기(BBox)를 계산하여 갱신
    */
   updateAllTextBgBoxes() {
@@ -12,22 +35,7 @@ window.PicEditor.canvas = {
     if (!svg) return;
     
     svg.querySelectorAll('.text-wrap').forEach(wrap => {
-      const textEl = wrap.querySelector('.text-el');
-      const bgRect = wrap.querySelector('.text-bg-rect');
-      if (textEl && bgRect) {
-        try {
-          const bbox = textEl.getBBox();
-          bgRect.setAttribute('x', bbox.x - 4);
-          bgRect.setAttribute('y', bbox.y - 3);
-          bgRect.setAttribute('width', bbox.width + 8);
-          bgRect.setAttribute('height', bbox.height + 6);
-          bgRect.setAttribute('fill', '#ffffff');
-          bgRect.setAttribute('stroke', 'none');
-          bgRect.setAttribute('stroke-width', '0');
-        } catch (e) {
-          // BBox calculation fallback
-        }
-      }
+      this.updateSingleTextBgBox(wrap);
     });
   },
 
@@ -65,6 +73,7 @@ window.PicEditor.canvas = {
 };
 
 // 전역 단축 참조
-window.updateAllTextBgBoxes = window.PicEditor.canvas.updateAllTextBgBoxes;
-window.updateCanvasInfo = window.PicEditor.canvas.updateCanvasInfo;
-window.resizeCanvas = window.PicEditor.canvas.resizeCanvas;
+window.updateSingleTextBgBox = (wrap) => window.PicEditor.canvas.updateSingleTextBgBox(wrap);
+window.updateAllTextBgBoxes = () => window.PicEditor.canvas.updateAllTextBgBoxes();
+window.updateCanvasInfo = () => window.PicEditor.canvas.updateCanvasInfo();
+window.resizeCanvas = () => window.PicEditor.canvas.resizeCanvas;
