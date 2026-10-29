@@ -237,9 +237,13 @@ window.PicEditor.tools = {
    */
   isArcElement(el) {
     if (!el || el.tagName.toLowerCase() !== 'path') return false;
-    if (el.getAttribute('data-type') === 'arc') return true;
+    const type = el.getAttribute('data-type') || '';
+    if (type === 'arc') return true;
+    if (type.startsWith('parabola') || type === 'hyperbola' || type === 'sqrt' || type === 'exp') return false;
     const d = el.getAttribute('d') || '';
-    return d.includes('A ') || d.includes('a ') || d.includes('Q ') || d.includes('q ');
+    if (d.includes('A ') || d.includes('a ')) return true;
+    if (el.getAttribute('data-cx') && el.getAttribute('data-r')) return true;
+    return false;
   },
 
   /**
@@ -898,7 +902,187 @@ window.PicEditor.tools = {
   },
 
   /**
-   * 모든 기즈모 조작점(호, 직선, 원, 삼각형, 직사각형) 일괄 숨김
+   * 요소가 포물선(parabola2 또는 parabola3)인지 여부 판별
+   */
+  isParabolaElement(el) {
+    if (!el || (el.tagName || '').toLowerCase() !== 'path') return false;
+    const type = el.getAttribute('data-type') || '';
+    if (type === 'parabola2' || type === 'parabola3' || el.classList.contains('parabola-shape')) return true;
+    if (type === 'arc' || type === 'hyperbola' || type === 'sqrt' || type === 'exp') return false;
+    const d = el.getAttribute('d') || '';
+    return d.includes('Q ') || d.includes('q ');
+  },
+
+  /**
+   * 포물선 곡선 데이터 (타입, 꼭짓점 V, 양 끝점 P1, P2) 추출
+   */
+  getParabolaData(el) {
+    if (!el) return null;
+    const d = (el.getAttribute('d') || '').trim();
+    // d 형식: M x0,y0 Q cx,cy x1,y1
+    const m = d.match(/M\s*([-\d.]+)[,\s]+([-\d.]+)\s*Q\s*([-\d.]+)[,\s]+([-\d.]+)[,\s]+([-\d.]+)[,\s]+([-\d.]+)/i);
+    if (!m) return null;
+    const x0 = parseFloat(m[1]), y0 = parseFloat(m[2]);
+    const cx = parseFloat(m[3]), cy = parseFloat(m[4]);
+    const x1 = parseFloat(m[5]), y1 = parseFloat(m[6]);
+
+    let type = el.getAttribute('data-type');
+    if (!type) {
+      if (Math.abs(cy - y0) < 1.0 || Math.abs(cx - x1) < 1.0) type = 'parabola2';
+      else type = 'parabola3';
+    }
+
+    if (type === 'parabola3') {
+      // parabola3: x0,y0 (좌측 시점), x1,y0 (우측 끝점), cx (꼭짓점 X), cy (조절점 Y)
+      // 꼭짓점 V의 Y = (cy + y0) / 2
+      const vx = cx;
+      const vy = (cy + y0) / 2;
+      return {
+        type: 'parabola3',
+        v: { x: vx, y: vy },
+        p1: { x: x0, y: y0 },
+        p2: { x: x1, y: y1 }
+      };
+    } else {
+      // parabola2: x0,y0 (꼭짓점 V), x1,y1 (끝점 P1)
+      return {
+        type: 'parabola2',
+        v: { x: x0, y: y0 },
+        p1: { x: x1, y: y1 }
+      };
+    }
+  },
+
+  /**
+   * 포물선 조작 핸들 보장 (꼭짓점에 붉은색 점, 끝점에 파란색 점)
+   */
+  ensureParabolaGizmo(svg) {
+    let gizmo = svg.querySelector('#parabola-handle-group');
+    if (!gizmo) {
+      gizmo = document.createElementNS("http://www.w3.org/2000/svg", "g");
+      gizmo.setAttribute('id', 'parabola-handle-group');
+      gizmo.setAttribute('class', 'editor-gizmo-group');
+      gizmo.setAttribute('style', 'display:none; pointer-events:none;');
+      gizmo.innerHTML = `
+        <!-- 꼭짓점 붉은색 점 조작 핸들 -->
+        <g id="parabola-v-handle-wrap" style="cursor:grab; pointer-events:all;">
+          <circle id="parabola-v-hit" r="22" fill="#000000" opacity="0.001" style="cursor:grab; pointer-events:all;" />
+          <circle id="parabola-v-anchor" r="7" fill="#ef4444" stroke="#ffffff" stroke-width="2.5" style="filter:drop-shadow(0 2px 4px rgba(0,0,0,0.35)); pointer-events:none;" />
+          <circle id="parabola-v-inner" r="2.5" fill="#ffffff" style="pointer-events:none;" />
+          <text id="parabola-v-label" font-size="10" font-weight="700" fill="#dc2626" x="12" y="4" style="user-select:none; pointer-events:none; text-shadow:0 1px 2px #ffffff;">꼭짓점</text>
+        </g>
+
+        <!-- 끝점 / 시점 파란색 점 조작 핸들 -->
+        <g id="parabola-p1-handle-wrap" style="cursor:grab; pointer-events:all;">
+          <circle id="parabola-p1-hit" r="22" fill="#000000" opacity="0.001" style="cursor:grab; pointer-events:all;" />
+          <circle id="parabola-p1-anchor" r="6.5" fill="#3b82f6" stroke="#ffffff" stroke-width="2.5" style="filter:drop-shadow(0 2px 4px rgba(0,0,0,0.35)); pointer-events:none;" />
+          <circle id="parabola-p1-inner" r="2" fill="#ffffff" style="pointer-events:none;" />
+          <text id="parabola-p1-label" font-size="10" font-weight="700" fill="#2563eb" x="12" y="4" style="user-select:none; pointer-events:none; text-shadow:0 1px 2px #ffffff;">끝점</text>
+        </g>
+
+        <!-- 우측 끝점 파란색 점 조작 핸들 (parabola3 전용) -->
+        <g id="parabola-p2-handle-wrap" style="cursor:grab; pointer-events:all;">
+          <circle id="parabola-p2-hit" r="22" fill="#000000" opacity="0.001" style="cursor:grab; pointer-events:all;" />
+          <circle id="parabola-p2-anchor" r="6.5" fill="#3b82f6" stroke="#ffffff" stroke-width="2.5" style="filter:drop-shadow(0 2px 4px rgba(0,0,0,0.35)); pointer-events:none;" />
+          <circle id="parabola-p2-inner" r="2" fill="#ffffff" style="pointer-events:none;" />
+          <text id="parabola-p2-label" font-size="10" font-weight="700" fill="#2563eb" x="12" y="4" style="user-select:none; pointer-events:none; text-shadow:0 1px 2px #ffffff;">종점</text>
+        </g>
+      `;
+      svg.appendChild(gizmo);
+
+      const vWrap = gizmo.querySelector('#parabola-v-handle-wrap');
+      const startDragV = (e) => {
+        e.stopPropagation();
+        if (e.cancelable && e.type === 'touchstart') e.preventDefault();
+        const state = window.PicEditor.state;
+        state.isDraggingParabolaV = true;
+        state.hasDragged = false;
+        vWrap.style.cursor = 'grabbing';
+      };
+      vWrap.addEventListener('mousedown', startDragV);
+      vWrap.addEventListener('touchstart', startDragV, { passive: false });
+
+      const p1Wrap = gizmo.querySelector('#parabola-p1-handle-wrap');
+      const startDragP1 = (e) => {
+        e.stopPropagation();
+        if (e.cancelable && e.type === 'touchstart') e.preventDefault();
+        const state = window.PicEditor.state;
+        state.isDraggingParabolaP1 = true;
+        state.hasDragged = false;
+        p1Wrap.style.cursor = 'grabbing';
+      };
+      p1Wrap.addEventListener('mousedown', startDragP1);
+      p1Wrap.addEventListener('touchstart', startDragP1, { passive: false });
+
+      const p2Wrap = gizmo.querySelector('#parabola-p2-handle-wrap');
+      const startDragP2 = (e) => {
+        e.stopPropagation();
+        if (e.cancelable && e.type === 'touchstart') e.preventDefault();
+        const state = window.PicEditor.state;
+        state.isDraggingParabolaP2 = true;
+        state.hasDragged = false;
+        p2Wrap.style.cursor = 'grabbing';
+      };
+      p2Wrap.addEventListener('mousedown', startDragP2);
+      p2Wrap.addEventListener('touchstart', startDragP2, { passive: false });
+    }
+    return gizmo;
+  },
+
+  showParabolaHandles(parabolaEl) {
+    if (!parabolaEl) return;
+    const svg = window.PicEditor.utils.getActiveSvg();
+    if (!svg) return;
+
+    const gizmo = this.ensureParabolaGizmo(svg);
+    const data = this.getParabolaData(parabolaEl);
+    if (!data) {
+      gizmo.style.display = 'none';
+      return;
+    }
+
+    gizmo.setAttribute('transform', parabolaEl.getAttribute('transform') || 'translate(0,0) scale(1,1) rotate(0)');
+
+    const vWrap = gizmo.querySelector('#parabola-v-handle-wrap');
+    const p1Wrap = gizmo.querySelector('#parabola-p1-handle-wrap');
+    const p2Wrap = gizmo.querySelector('#parabola-p2-handle-wrap');
+
+    if (vWrap) vWrap.setAttribute('transform', `translate(${data.v.x}, ${data.v.y})`);
+    if (p1Wrap) p1Wrap.setAttribute('transform', `translate(${data.p1.x}, ${data.p1.y})`);
+
+    const p1Lbl = gizmo.querySelector('#parabola-p1-label');
+    if (data.type === 'parabola3') {
+      if (p1Lbl) p1Lbl.textContent = '시점';
+      if (p2Wrap) {
+        p2Wrap.style.display = 'block';
+        p2Wrap.setAttribute('transform', `translate(${data.p2.x}, ${data.p2.y})`);
+      }
+    } else {
+      if (p1Lbl) p1Lbl.textContent = '끝점';
+      if (p2Wrap) p2Wrap.style.display = 'none';
+    }
+
+    gizmo.style.display = 'block';
+  },
+
+  hideParabolaHandles() {
+    const svg = window.PicEditor.utils.getActiveSvg();
+    if (!svg) return;
+    const gizmo = svg.querySelector('#parabola-handle-group');
+    if (gizmo) gizmo.style.display = 'none';
+  },
+
+  updateParabolaGizmoTransform(parabolaEl) {
+    const svg = window.PicEditor.utils.getActiveSvg();
+    if (!svg) return;
+    const gizmo = svg.querySelector('#parabola-handle-group');
+    if (gizmo && gizmo.style.display !== 'none') {
+      gizmo.setAttribute('transform', parabolaEl.getAttribute('transform') || 'translate(0,0) scale(1,1) rotate(0)');
+    }
+  },
+
+  /**
+   * 모든 기즈모 조작점(호, 직선, 원, 삼각형, 직사각형, 포물선) 일괄 숨김
    */
   hideAllGizmos() {
     this.hideArcCenterHandle();
@@ -906,6 +1090,7 @@ window.PicEditor.tools = {
     this.hideCircleHandles();
     this.hideTriangleHandles();
     this.hideRectHandles();
+    this.hideParabolaHandles();
   },
 
   /**
@@ -918,6 +1103,7 @@ window.PicEditor.tools = {
     else if (this.isCircleElement(el)) this.updateCircleGizmoTransform(el);
     else if (this.isTriangleElement(el)) this.updateTriangleGizmoTransform(el);
     else if (this.isRectElement(el)) this.updateRectGizmoTransform(el);
+    else if (this.isParabolaElement(el)) this.updateParabolaGizmoTransform(el);
   },
 
 

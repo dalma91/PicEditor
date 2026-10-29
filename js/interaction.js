@@ -80,6 +80,8 @@ window.PicEditor.interaction = {
             window.PicEditor.tools.showTriangleHandles(el);
           } else if (window.PicEditor.tools.isRectElement(el)) {
             window.PicEditor.tools.showRectHandles(el);
+          } else if (window.PicEditor.tools.isParabolaElement(el)) {
+            window.PicEditor.tools.showParabolaHandles(el);
           }
         }
 
@@ -131,6 +133,7 @@ window.PicEditor.interaction = {
             e.target.closest('#circle-handle-group') ||
             e.target.closest('#triangle-handle-group') ||
             e.target.closest('#rect-handle-group') ||
+            e.target.closest('#parabola-handle-group') ||
             e.target.closest('.editor-gizmo-group')
           )) {
             return;
@@ -247,18 +250,6 @@ window.PicEditor.interaction = {
           state.tempShape.setAttribute("stroke", "#000000");
           state.tempShape.setAttribute("stroke-width", "2");
           if (strokeStyle === 'dashed') state.tempShape.setAttribute("stroke-dasharray", "6,4");
-        } else if (tool === 'triangle') {
-          const x0 = state.drawStart.x;
-          const y0 = state.drawStart.y;
-          const x1 = pt.x;
-          const y1 = pt.y;
-          const p1x = ((x0 + x1) / 2).toFixed(1);
-          const p1y = Math.min(y0, y1).toFixed(1);
-          const p2x = Math.min(x0, x1).toFixed(1);
-          const p2y = Math.max(y0, y1).toFixed(1);
-          const p3x = Math.max(x0, x1).toFixed(1);
-          const p3y = Math.max(y0, y1).toFixed(1);
-          state.tempShape.setAttribute("points", `${p1x},${p1y} ${p2x},${p2y} ${p3x},${p3y}`);
         } else if (tool === 'rect') {
           state.tempShape = document.createElementNS("http://www.w3.org/2000/svg", "rect");
           state.tempShape.setAttribute("x", pt.x);
@@ -283,6 +274,10 @@ window.PicEditor.interaction = {
           state.tempShape.setAttribute("fill", "none");
           state.tempShape.setAttribute("stroke", "#000000");
           state.tempShape.setAttribute("stroke-width", "2");
+          state.tempShape.setAttribute("data-type", tool);
+          if (tool === 'parabola2' || tool === 'parabola3') {
+            state.tempShape.classList.add('parabola-shape');
+          }
           if (strokeStyle === 'dashed') state.tempShape.setAttribute("stroke-dasharray", "6,4");
           state.tempShape.setAttribute("d", `M ${pt.x},${pt.y} L ${pt.x},${pt.y}`);
         } else if (tool === 'axes') {
@@ -596,6 +591,60 @@ window.PicEditor.interaction = {
         return;
       }
 
+      // 1-P. 포물선(Parabola) 꼭짓점(붉은 점) 및 끝점(파란 점) 드래그 이동
+      if ((state.isDraggingParabolaV || state.isDraggingParabolaP1 || state.isDraggingParabolaP2) && state.selectedElement) {
+        state.hasDragged = true;
+        if (e.cancelable) e.preventDefault();
+        const parabolaEl = state.selectedElement;
+        const data = window.PicEditor.tools.getParabolaData(parabolaEl);
+        if (data) {
+          const t = window.PicEditor.utils.parseTransform(parabolaEl);
+          const rad = (t.r || 0) * Math.PI / 180;
+          const cos = Math.cos(-rad);
+          const sin = Math.sin(-rad);
+          const lx = (pt.x - t.x) / (t.sx || 1);
+          const ly = (pt.y - t.y) / (t.sy || 1);
+          const localX = lx * cos - ly * sin;
+          const localY = lx * sin + ly * cos;
+
+          if (data.type === 'parabola3') {
+            if (state.isDraggingParabolaV) {
+              const currentMidX = (data.p1.x + data.p2.x) / 2;
+              const dx = localX - currentMidX;
+              data.p1.x += dx;
+              data.p2.x += dx;
+              data.v.x = localX;
+              data.v.y = localY;
+            } else if (state.isDraggingParabolaP1) {
+              data.p1.x = localX;
+              data.p1.y = localY;
+              data.p2.y = localY;
+            } else if (state.isDraggingParabolaP2) {
+              data.p2.x = localX;
+              data.p2.y = localY;
+              data.p1.y = localY;
+            }
+            const xv = ((data.p1.x + data.p2.x) / 2).toFixed(1);
+            const yc = (2 * data.v.y - data.p1.y).toFixed(1);
+            const d = `M ${data.p1.x.toFixed(1)},${data.p1.y.toFixed(1)} Q ${xv},${yc} ${data.p2.x.toFixed(1)},${data.p1.y.toFixed(1)}`;
+            parabolaEl.setAttribute('d', d);
+          } else {
+            if (state.isDraggingParabolaV) {
+              data.v.x = localX;
+              data.v.y = localY;
+            } else if (state.isDraggingParabolaP1) {
+              data.p1.x = localX;
+              data.p1.y = localY;
+            }
+            const d = `M ${data.v.x.toFixed(1)},${data.v.y.toFixed(1)} Q ${data.p1.x.toFixed(1)},${data.v.y.toFixed(1)} ${data.p1.x.toFixed(1)},${data.p1.y.toFixed(1)}`;
+            parabolaEl.setAttribute('d', d);
+          }
+          if (window.PicEditor.tools) window.PicEditor.tools.showParabolaHandles(parabolaEl);
+          if (window.PicEditor.inspector) window.PicEditor.inspector.syncUItoSelected();
+        }
+        return;
+      }
+
       // 2. 작도 모드 드로잉
       if (state.isDrawMode && state.isDrawing && state.tempShape) {
         if (e.cancelable) e.preventDefault();
@@ -614,14 +663,6 @@ window.PicEditor.interaction = {
         } else if (tool === 'arc') {
           const mid = { x: (state.drawStart.x + pt.x) / 2, y: (state.drawStart.y + pt.y) / 2 };
           window.PicEditor.tools.updateArcPath(state.tempShape, state.drawStart, pt, mid);
-        } else if (tool === 'triangle') {
-          state.tempShape = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
-          state.tempShape.setAttribute("class", "movable triangle-shape");
-          state.tempShape.setAttribute("points", `${pt.x},${pt.y} ${pt.x},${pt.y} ${pt.x},${pt.y}`);
-          state.tempShape.setAttribute("fill", "none");
-          state.tempShape.setAttribute("stroke", "#000000");
-          state.tempShape.setAttribute("stroke-width", "2");
-          if (strokeStyle === 'dashed') state.tempShape.setAttribute("stroke-dasharray", "6,4");
         } else if (tool === 'triangle') {
           const x0 = state.drawStart.x;
           const y0 = state.drawStart.y;
@@ -839,6 +880,23 @@ window.PicEditor.interaction = {
         return;
       }
 
+      // 포물선 꼭짓점 및 끝점 드래그 종료
+      if (state.isDraggingParabolaV || state.isDraggingParabolaP1 || state.isDraggingParabolaP2) {
+        state.isDraggingParabolaV = false;
+        state.isDraggingParabolaP1 = false;
+        state.isDraggingParabolaP2 = false;
+        if (svg) {
+          const vH = svg.querySelector('#parabola-v-handle-wrap');
+          if (vH) vH.style.cursor = 'grab';
+          const p1H = svg.querySelector('#parabola-p1-handle-wrap');
+          if (p1H) p1H.style.cursor = 'grab';
+          const p2H = svg.querySelector('#parabola-p2-handle-wrap');
+          if (p2H) p2H.style.cursor = 'grab';
+        }
+        if (state.hasDragged && window.PicEditor.sync) window.PicEditor.sync.markModified();
+        return;
+      }
+
       // 작도 완료
       if (state.isDrawMode && state.isDrawing) {
         state.isDrawing = false;
@@ -895,6 +953,13 @@ window.PicEditor.interaction = {
             state.selectedElement = created;
             created.classList.add('selected');
             window.PicEditor.tools.showCircleHandles(created);
+            window.PicEditor.inspector.syncUItoSelected();
+          } else if (tool === 'parabola2' || tool === 'parabola3') {
+            window.PicEditor.interaction.toggleMode();
+            window.PicEditor.utils.deselectAll();
+            state.selectedElement = created;
+            created.classList.add('selected');
+            window.PicEditor.tools.showParabolaHandles(created);
             window.PicEditor.inspector.syncUItoSelected();
           }
 
