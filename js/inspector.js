@@ -214,6 +214,9 @@ window.PicEditor.inspector = {
         bgRect.setAttribute('y', bbox.y - 3);
         bgRect.setAttribute('width', bbox.width + 8);
         bgRect.setAttribute('height', bbox.height + 6);
+        bgRect.setAttribute('fill', '#ffffff');
+        bgRect.setAttribute('stroke', 'none');
+        bgRect.setAttribute('stroke-width', '0');
       }
     } else if (mode === 'stroke-white') {
       state.selectedElement.classList.add('bg-stroke-white');

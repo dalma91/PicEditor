@@ -124,8 +124,8 @@ window.PicEditor.github = {
     const styleEl = document.createElementNS('http://www.w3.org/2000/svg', 'style');
     styleEl.textContent = `
       text { font-family: 'Batang', 'Times New Roman', serif; }
-      .text-bg-rect { fill: #ffffff; stroke: #cccccc; stroke-width: 0.5px; }
-      .text-wrap.bg-box-white .text-bg-rect { display: block; }
+      .text-bg-rect { fill: #ffffff; stroke: none; stroke-width: 0; }
+      .text-wrap.bg-box-white .text-bg-rect { display: block; fill: #ffffff; stroke: none; stroke-width: 0; }
     `;
     cloneSvg.insertBefore(styleEl, cloneSvg.firstChild);
 

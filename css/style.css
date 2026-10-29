@@ -484,12 +484,15 @@ button.github-accent-btn:hover { background: #4338ca; }
 .text-bg-rect {
   display: none;
   fill: #ffffff;
-  stroke: #cccccc;
-  stroke-width: 0.5;
+  stroke: none;
+  stroke-width: 0;
 }
 
 .text-wrap.bg-box-white .text-bg-rect {
   display: block;
+  fill: #ffffff;
+  stroke: none;
+  stroke-width: 0;
 }
 
 .hint-box {

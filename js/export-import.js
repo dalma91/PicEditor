@@ -203,6 +203,9 @@ window.PicEditor.storage = {
             const bgRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
             bgRect.setAttribute('class', 'text-bg-rect');
             bgRect.setAttribute('rx', '2');
+            bgRect.setAttribute('fill', '#ffffff');
+            bgRect.setAttribute('stroke', 'none');
+            bgRect.setAttribute('stroke-width', '0');
 
             const textClone = node.cloneNode(true);
             textClone.classList.add('text-el');
@@ -237,6 +240,9 @@ window.PicEditor.storage = {
             const bgRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
             bgRect.setAttribute('class', 'text-bg-rect');
             bgRect.setAttribute('rx', '2');
+            bgRect.setAttribute('fill', '#ffffff');
+            bgRect.setAttribute('stroke', 'none');
+            bgRect.setAttribute('stroke-width', '0');
             const textClone = node.cloneNode(true);
             textClone.classList.add('text-el');
             wrap.appendChild(bgRect);

@@ -748,3 +748,83 @@ if (apiRes.ok) {
    - **Test 9 (내보내기 순수성):** `getCleanSvgString()` 결과물에 `#line-handle-group` 기즈모 100% 미포함 확인 (✅ PASS)
 2. **실제 UI 캡처 스크린샷 ([line_handles_screenshot.png](file:///C:/Users/ADMIN/.gemini/antigravity/brain/b6156b08-8313-4c7a-a614-3c5d57cf47b8/line_handles_screenshot.png)):**
    - 파란색 시점/종점 핸들과 "시점" 라벨, 종점 길이 라벨이 캔버스에 선명하게 표시되고 안정적으로 조작됨을 헤드리스 크롬을 통해 시각적으로 최종 검증 완료.
+
+
+---
+
+## 🔍 [PATCH-011] 글자 배경 '박스 흰색' 선택 시 외곽 테두리선(stroke) 완전 제거
+
+### 1. 이슈 개요 및 사용자 보고
+- **보고 일시:** 2026-10-29 11:37 KST
+- **사용자 보고 내용:**
+  > *"글자 선택후 박스 흰색을 선택하면 테두리 검은색 선이 있어. 테두리 선이 없도록 수정해."*
+- **핵심 문제점:**
+  - 캔버스에서 글자를 선택하고 우측 인스펙터의 **글자 배경**을 **`박스 흰색`**으로 변경했을 때, 글자 뒤에 생기는 흰색 사각형 테두리에 원치 않는 테두리선(stroke)이 얇게 둘러져 나타남.
+  - 사용자는 테두리 선이 전혀 없는 깔끔한 순수 흰색 배경 박스를 원함.
+
+---
+
+### 2. 근본 원인 분석 (Root Cause Analysis)
+
+- **원인 ①: CSS 기본 테두리 스타일 지정 (`stroke: #cccccc; stroke-width: 0.5;`)**
+  - [css/style.css](file:///E:/Git/PicEditor/css/style.css) 484행의 `.text-bg-rect` 선택자에 `stroke: #cccccc; stroke-width: 0.5;` 속성이 정의되어 있었습니다.
+  - 흰색 캔버스 또는 검은색 도면 요소 위에 이 박스가 겹쳐질 때, 0.5px의 옅은 테두리가 시각적으로 얇은 경계선으로 도드라져 보였습니다.
+- **원인 ②: GitHub 썸네일 생성 인라인 스타일에도 stroke 잔존**
+  - [js/github.js](file:///E:/Git/PicEditor/js/github.js)의 `generateThumbnailBase64` 내 임베디드 스타일에도 `.text-bg-rect { fill: #ffffff; stroke: #cccccc; stroke-width: 0.5px; }`가 지정되어 있었습니다.
+- **원인 ③: 동적 생성 rect 요소의 프레젠테이션 속성 부재**
+  - 인스펙터에서 배경 모드를 바꿀 때(`onChangeTextBgMode`), `bgRect`에 `stroke="none"` 프레젠테이션 속성이 명시되지 않아 기본 스타일 또는 상속 스타일에 영향을 받을 여지가 있었습니다.
+
+---
+
+### 3. 기술적 해결 조치 (Technical Implementation)
+
+1. **[css/style.css](file:///E:/Git/PicEditor/css/style.css) 테두리 선 완전 제거:**
+   ```css
+   /* 7. 텍스트 배경 사각형 스타일 */
+   .text-bg-rect {
+     display: none;
+     fill: #ffffff;
+     stroke: none;
+     stroke-width: 0;
+   }
+
+   .text-wrap.bg-box-white .text-bg-rect {
+     display: block;
+     fill: #ffffff;
+     stroke: none;
+     stroke-width: 0;
+   }
+   ```
+2. **[js/inspector.js](file:///E:/Git/PicEditor/js/inspector.js) 인스펙터 변경 시 무테두리 속성 명시:**
+   - `onChangeTextBgMode('box-white')` 실행 시 `bgRect`에 `fill="#ffffff"`, `stroke="none"`, `stroke-width="0"`을 직접 설정하여 SVG 자체 속성으로도 테두리가 일체 없음을 보장.
+3. **[js/canvas.js](file:///E:/Git/PicEditor/js/canvas.js) & [js/export-import.js](file:///E:/Git/PicEditor/js/export-import.js) 동기화:**
+   - 텍스트 BBox 갱신(`updateAllTextBgBoxes`) 및 외부 HTML 가져오기(`importHtmlCode`) 시 생성되는 모든 `text-bg-rect`에 `fill="#ffffff" stroke="none" stroke-width="0"` 일괄 적용.
+4. **[js/github.js](file:///E:/Git/PicEditor/js/github.js) 썸네일 스타일 개편:**
+   - `.text-bg-rect { fill: #ffffff; stroke: none; stroke-width: 0; }`로 변경하여 보관함 썸네일에서도 테두리 없는 깔끔한 흰색 박스 렌더링.
+5. **캐시 버스터 갱신:**
+   - `css/style.css?v=20261029_7` 및 자바스크립트 모듈 `?v=20261029_7`을 [index.html](file:///E:/Git/PicEditor/index.html) 및 [PicEditor.html](file:///E:/Git/PicEditor/PicEditor.html)에 일괄 적용.
+
+---
+
+### 4. 변경된 파일 목록 (Files Modified)
+
+| 파일 경로 | 주요 변경 내용 |
+| :--- | :--- |
+| [css/style.css](file:///E:/Git/PicEditor/css/style.css) | `.text-bg-rect`에서 `stroke: #cccccc` 제거, `stroke: none; stroke-width: 0;` 적용 |
+| [js/inspector.js](file:///E:/Git/PicEditor/js/inspector.js) | `onChangeTextBgMode`에서 `bgRect`에 `stroke="none"` 명시적 속성 주입 |
+| [js/canvas.js](file:///E:/Git/PicEditor/js/canvas.js) | `updateAllTextBgBoxes`에서 `stroke="none"` 적용 |
+| [js/export-import.js](file:///E:/Git/PicEditor/js/export-import.js) | 텍스트 임포트 시 `stroke="none"` 속성 주입 |
+| [js/github.js](file:///E:/Git/PicEditor/js/github.js) | 썸네일 생성 스타일 내 `stroke: none; stroke-width: 0;` 동기화 |
+| [index.html](file:///E:/Git/PicEditor/index.html) | 샘플 텍스트 rect `stroke="none"` 적용 및 캐시 버스터 `v=20261029_7` 갱신 |
+| [PicEditor.html](file:///E:/Git/PicEditor/PicEditor.html) | `index.html`과 완전 동기화 |
+| [physics_diagram_studio_patch_report.md](file:///E:/Git/PicEditor/physics_diagram_studio_patch_report.md) | `PATCH-011` 상세 분석 및 검증 보고서 추가 |
+
+---
+
+### 5. 테스트 및 검증 결과
+
+1. **자동화 검증 ([scratch/test_text_bg.html](file:///E:/Git/PicEditor/scratch/test_text_bg.html)):**
+   - 글자 선택 후 `onChangeTextBgMode('box-white')` 호출 시:
+     - `display`: `block` (✅ PASS)
+     - `stroke`: `none` (✅ PASS, 테두리 선 완전 제거 확인)
+     - `fill`: `#ffffff` (✅ PASS, 순수 흰색 배경 유지 확인)
