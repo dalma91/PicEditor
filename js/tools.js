@@ -33,6 +33,7 @@ window.PicEditor.tools = {
       line: '직선',
       arrow: '화살표',
       rect: '사각형',
+      triangle: '삼각형',
       circle: '원',
       arc: '호',
       text: '글자',
@@ -59,8 +60,9 @@ window.PicEditor.tools = {
       axes: '💡 <b>직교 좌표계</b>: 마우스로 드래그하여 직사각형 크기에 맞는 직교 좌표계(x, y축)를 생성합니다. (원점 기준 회전 가능)',
       line: '💡 <b>직선</b>: 마우스로 드래그하여 시점부터 종점까지 직선을 그립니다.',
       arrow: '💡 <b>화살표</b>: 드래그하여 벡터 화살표를 작도합니다. (하단에서 방향 선택 가능)',
-      rect: '💡 <b>사각형</b>: 드래그하여 사각형(물체/블록/경사면)을 작도합니다.',
-      circle: '💡 <b>원</b>: 중심점을 클릭하고 바깥으로 드래그하여 원(도르래/구체)을 그립니다.',
+      rect: '💡 <b>직사각형</b>: 드래그하여 작도합니다. (선택 시 4개 꼭짓점(파란 점)을 드래그하면 직사각형의 정의를 유지하며 점 한 쌍이 함께 조절됩니다)',
+      triangle: '💡 <b>삼각형</b>: 드래그하여 작도합니다. (선택 시 3개 꼭짓점(파란 점)을 각각 자유롭게 이동할 수 있습니다)',
+      circle: '💡 <b>원</b>: 중심점을 클릭하고 바깥으로 드래그하여 원을 그립니다. (선택 시 원 중심에 빨간 점이 표시되며 드래그하여 이동할 수 있습니다)',
       arc: '💡 <b>원호</b>: 드래그 후 나타나는 🔴호의 중심이나 🔵끝점을 당겨 곡률을 조절합니다.',
       text: '💡 <b>글자</b>: 캔버스에서 글자를 넣을 위치를 클릭하면 즉시 입력창이 열립니다.',
       parabola2: '💡 <b>포물선 (꼭짓점-끝점)</b>: 꼭짓점을 누른 채 좌/우 낙하지점으로 드래그합니다.',
@@ -575,6 +577,349 @@ window.PicEditor.tools = {
       gizmo.setAttribute('transform', lineEl.getAttribute('transform') || 'translate(0,0) scale(1,1) rotate(0)');
     }
   },
+
+  /**
+   * 요소가 원(Circle)인지 여부 판별
+   */
+  isCircleElement(el) {
+    if (!el) return false;
+    const tag = (el.tagName || '').toLowerCase();
+    if (tag !== 'circle') return false;
+    if (el.id && el.id.includes('handle')) return false;
+    if (el.classList && (el.classList.contains('axis-origin-dot') || el.classList.contains('text-bg-rect'))) return false;
+    return el.classList && el.classList.contains('movable');
+  },
+
+  /**
+   * 요소가 삼각형(Polygon)인지 여부 판별
+   */
+  isTriangleElement(el) {
+    if (!el) return false;
+    const tag = (el.tagName || '').toLowerCase();
+    if (tag !== 'polygon') return false;
+    if (el.classList && el.classList.contains('mid-arrow')) return false;
+    return el.classList && el.classList.contains('movable');
+  },
+
+  /**
+   * 삼각형의 3개 꼭짓점 좌표 배열 [{x,y}, {x,y}, {x,y}] 추출
+   */
+  getTrianglePoints(el) {
+    if (!el) return null;
+    const raw = (el.getAttribute('points') || '').trim();
+    if (!raw) return null;
+    const pairs = raw.split(/[\s,]+/).filter(Boolean);
+    if (pairs.length >= 6) {
+      return [
+        { x: parseFloat(pairs[0]) || 0, y: parseFloat(pairs[1]) || 0 },
+        { x: parseFloat(pairs[2]) || 0, y: parseFloat(pairs[3]) || 0 },
+        { x: parseFloat(pairs[4]) || 0, y: parseFloat(pairs[5]) || 0 }
+      ];
+    }
+    return null;
+  },
+
+  /**
+   * 요소가 직사각형(Rect)인지 여부 판별
+   */
+  isRectElement(el) {
+    if (!el) return false;
+    const tag = (el.tagName || '').toLowerCase();
+    if (tag !== 'rect') return false;
+    if (el.classList && el.classList.contains('text-bg-rect')) return false;
+    return el.classList && el.classList.contains('movable');
+  },
+
+  /**
+   * 원(Circle) 중심 빨간 점 조작 핸들 보장 및 이벤트 바인딩
+   */
+  ensureCircleGizmo(svg) {
+    let gizmo = svg.querySelector('#circle-handle-group');
+    if (!gizmo) {
+      gizmo = document.createElementNS("http://www.w3.org/2000/svg", "g");
+      gizmo.setAttribute('id', 'circle-handle-group');
+      gizmo.setAttribute('class', 'editor-gizmo-group');
+      gizmo.setAttribute('style', 'display:none; pointer-events:none;');
+      gizmo.innerHTML = `
+        <!-- 원의 중심 붉은 점 조작 핸들 -->
+        <g id="circle-center-handle-wrap" style="cursor:grab; pointer-events:all;">
+          <circle id="circle-center-hit" r="22" fill="#000000" opacity="0.001" style="cursor:grab; pointer-events:all;" />
+          <circle id="circle-center-anchor" r="6.5" fill="#ef4444" stroke="#ffffff" stroke-width="2.5" style="filter:drop-shadow(0 2px 4px rgba(0,0,0,0.35)); pointer-events:none;" />
+          <circle id="circle-center-inner" r="2" fill="#ffffff" style="pointer-events:none;" />
+          <text id="circle-center-label" font-size="10" font-weight="700" fill="#dc2626" x="12" y="4" style="user-select:none; pointer-events:none; text-shadow:0 1px 2px #ffffff;">중심</text>
+        </g>
+      `;
+      svg.appendChild(gizmo);
+
+      const handleCenter = gizmo.querySelector('#circle-center-handle-wrap');
+      const startDragCenter = (e) => {
+        e.stopPropagation();
+        if (e.cancelable && e.type === 'touchstart') e.preventDefault();
+        const state = window.PicEditor.state;
+        state.isDraggingCircleCenter = true;
+        state.hasDragged = false;
+        handleCenter.style.cursor = 'grabbing';
+      };
+      handleCenter.addEventListener('mousedown', startDragCenter);
+      handleCenter.addEventListener('touchstart', startDragCenter, { passive: false });
+    }
+    return gizmo;
+  },
+
+  showCircleHandles(circleEl) {
+    if (!circleEl) return;
+    const svg = window.PicEditor.utils.getActiveSvg();
+    if (!svg) return;
+
+    const gizmo = this.ensureCircleGizmo(svg);
+    const cx = parseFloat(circleEl.getAttribute('cx')) || 0;
+    const cy = parseFloat(circleEl.getAttribute('cy')) || 0;
+
+    gizmo.setAttribute('transform', circleEl.getAttribute('transform') || 'translate(0,0) scale(1,1) rotate(0)');
+    const centerWrap = gizmo.querySelector('#circle-center-handle-wrap');
+    if (centerWrap) centerWrap.setAttribute('transform', `translate(${cx}, ${cy})`);
+    gizmo.style.display = 'block';
+  },
+
+  hideCircleHandles() {
+    const svg = window.PicEditor.utils.getActiveSvg();
+    if (!svg) return;
+    const gizmo = svg.querySelector('#circle-handle-group');
+    if (gizmo) gizmo.style.display = 'none';
+  },
+
+  updateCircleGizmoTransform(circleEl) {
+    const svg = window.PicEditor.utils.getActiveSvg();
+    if (!svg) return;
+    const gizmo = svg.querySelector('#circle-handle-group');
+    if (gizmo && gizmo.style.display !== 'none') {
+      gizmo.setAttribute('transform', circleEl.getAttribute('transform') || 'translate(0,0) scale(1,1) rotate(0)');
+    }
+  },
+
+  /**
+   * 삼각형(Triangle) 꼭짓점 3개 파란 점 조작 핸들 보장 및 이벤트 바인딩
+   */
+  ensureTriangleGizmo(svg) {
+    let gizmo = svg.querySelector('#triangle-handle-group');
+    if (!gizmo) {
+      gizmo = document.createElementNS("http://www.w3.org/2000/svg", "g");
+      gizmo.setAttribute('id', 'triangle-handle-group');
+      gizmo.setAttribute('class', 'editor-gizmo-group');
+      gizmo.setAttribute('style', 'display:none; pointer-events:none;');
+      gizmo.innerHTML = `
+        <g id="triangle-p1-handle-wrap" style="cursor:grab; pointer-events:all;">
+          <circle r="22" fill="#000000" opacity="0.001" style="cursor:grab; pointer-events:all;" />
+          <circle r="6.5" fill="#3b82f6" stroke="#ffffff" stroke-width="2.5" style="filter:drop-shadow(0 2px 4px rgba(0,0,0,0.35)); pointer-events:none;" />
+          <circle r="2" fill="#ffffff" style="pointer-events:none;" />
+          <text font-size="10" font-weight="700" fill="#2563eb" x="10" y="-8" style="user-select:none; pointer-events:none; text-shadow:0 1px 2px #ffffff;">P1</text>
+        </g>
+        <g id="triangle-p2-handle-wrap" style="cursor:grab; pointer-events:all;">
+          <circle r="22" fill="#000000" opacity="0.001" style="cursor:grab; pointer-events:all;" />
+          <circle r="6.5" fill="#3b82f6" stroke="#ffffff" stroke-width="2.5" style="filter:drop-shadow(0 2px 4px rgba(0,0,0,0.35)); pointer-events:none;" />
+          <circle r="2" fill="#ffffff" style="pointer-events:none;" />
+          <text font-size="10" font-weight="700" fill="#2563eb" x="-24" y="16" style="user-select:none; pointer-events:none; text-shadow:0 1px 2px #ffffff;">P2</text>
+        </g>
+        <g id="triangle-p3-handle-wrap" style="cursor:grab; pointer-events:all;">
+          <circle r="22" fill="#000000" opacity="0.001" style="cursor:grab; pointer-events:all;" />
+          <circle r="6.5" fill="#3b82f6" stroke="#ffffff" stroke-width="2.5" style="filter:drop-shadow(0 2px 4px rgba(0,0,0,0.35)); pointer-events:none;" />
+          <circle r="2" fill="#ffffff" style="pointer-events:none;" />
+          <text font-size="10" font-weight="700" fill="#2563eb" x="10" y="16" style="user-select:none; pointer-events:none; text-shadow:0 1px 2px #ffffff;">P3</text>
+        </g>
+      `;
+      svg.appendChild(gizmo);
+
+      [1, 2, 3].forEach(idx => {
+        const h = gizmo.querySelector(`#triangle-p${idx}-handle-wrap`);
+        const startDrag = (e) => {
+          e.stopPropagation();
+          if (e.cancelable && e.type === 'touchstart') e.preventDefault();
+          const state = window.PicEditor.state;
+          state[`isDraggingTriangleP${idx}`] = true;
+          state.hasDragged = false;
+          h.style.cursor = 'grabbing';
+        };
+        h.addEventListener('mousedown', startDrag);
+        h.addEventListener('touchstart', startDrag, { passive: false });
+      });
+    }
+    return gizmo;
+  },
+
+  showTriangleHandles(triEl) {
+    if (!triEl) return;
+    const svg = window.PicEditor.utils.getActiveSvg();
+    if (!svg) return;
+
+    const gizmo = this.ensureTriangleGizmo(svg);
+    const pts = this.getTrianglePoints(triEl);
+    if (!pts) {
+      gizmo.style.display = 'none';
+      return;
+    }
+
+    gizmo.setAttribute('transform', triEl.getAttribute('transform') || 'translate(0,0) scale(1,1) rotate(0)');
+
+    const p1 = gizmo.querySelector('#triangle-p1-handle-wrap');
+    const p2 = gizmo.querySelector('#triangle-p2-handle-wrap');
+    const p3 = gizmo.querySelector('#triangle-p3-handle-wrap');
+
+    if (p1) p1.setAttribute('transform', `translate(${pts[0].x}, ${pts[0].y})`);
+    if (p2) p2.setAttribute('transform', `translate(${pts[1].x}, ${pts[1].y})`);
+    if (p3) p3.setAttribute('transform', `translate(${pts[2].x}, ${pts[2].y})`);
+
+    gizmo.style.display = 'block';
+  },
+
+  hideTriangleHandles() {
+    const svg = window.PicEditor.utils.getActiveSvg();
+    if (!svg) return;
+    const gizmo = svg.querySelector('#triangle-handle-group');
+    if (gizmo) gizmo.style.display = 'none';
+  },
+
+  updateTriangleGizmoTransform(triEl) {
+    const svg = window.PicEditor.utils.getActiveSvg();
+    if (!svg) return;
+    const gizmo = svg.querySelector('#triangle-handle-group');
+    if (gizmo && gizmo.style.display !== 'none') {
+      gizmo.setAttribute('transform', triEl.getAttribute('transform') || 'translate(0,0) scale(1,1) rotate(0)');
+    }
+  },
+
+  /**
+   * 직사각형(Rect) 꼭짓점 4개 파란 점 조작 핸들 보장 및 이벤트 바인딩
+   */
+  ensureRectGizmo(svg) {
+    let gizmo = svg.querySelector('#rect-handle-group');
+    if (!gizmo) {
+      gizmo = document.createElementNS("http://www.w3.org/2000/svg", "g");
+      gizmo.setAttribute('id', 'rect-handle-group');
+      gizmo.setAttribute('class', 'editor-gizmo-group');
+      gizmo.setAttribute('style', 'display:none; pointer-events:none;');
+      gizmo.innerHTML = `
+        <g id="rect-v0-handle-wrap" style="cursor:grab; pointer-events:all;">
+          <circle r="22" fill="#000000" opacity="0.001" style="cursor:grab; pointer-events:all;" />
+          <circle r="6.5" fill="#3b82f6" stroke="#ffffff" stroke-width="2.5" style="filter:drop-shadow(0 2px 4px rgba(0,0,0,0.35)); pointer-events:none;" />
+          <circle r="2" fill="#ffffff" style="pointer-events:none;" />
+        </g>
+        <g id="rect-v1-handle-wrap" style="cursor:grab; pointer-events:all;">
+          <circle r="22" fill="#000000" opacity="0.001" style="cursor:grab; pointer-events:all;" />
+          <circle r="6.5" fill="#3b82f6" stroke="#ffffff" stroke-width="2.5" style="filter:drop-shadow(0 2px 4px rgba(0,0,0,0.35)); pointer-events:none;" />
+          <circle r="2" fill="#ffffff" style="pointer-events:none;" />
+        </g>
+        <g id="rect-v2-handle-wrap" style="cursor:grab; pointer-events:all;">
+          <circle r="22" fill="#000000" opacity="0.001" style="cursor:grab; pointer-events:all;" />
+          <circle r="6.5" fill="#3b82f6" stroke="#ffffff" stroke-width="2.5" style="filter:drop-shadow(0 2px 4px rgba(0,0,0,0.35)); pointer-events:none;" />
+          <circle r="2" fill="#ffffff" style="pointer-events:none;" />
+        </g>
+        <g id="rect-v3-handle-wrap" style="cursor:grab; pointer-events:all;">
+          <circle r="22" fill="#000000" opacity="0.001" style="cursor:grab; pointer-events:all;" />
+          <circle r="6.5" fill="#3b82f6" stroke="#ffffff" stroke-width="2.5" style="filter:drop-shadow(0 2px 4px rgba(0,0,0,0.35)); pointer-events:none;" />
+          <circle r="2" fill="#ffffff" style="pointer-events:none;" />
+        </g>
+      `;
+      svg.appendChild(gizmo);
+
+      [0, 1, 2, 3].forEach(idx => {
+        const h = gizmo.querySelector(`#rect-v${idx}-handle-wrap`);
+        const startDrag = (e) => {
+          e.stopPropagation();
+          if (e.cancelable && e.type === 'touchstart') e.preventDefault();
+          const state = window.PicEditor.state;
+          state.isDraggingRectCorner = true;
+          state.rectCornerIndex = idx;
+          state.hasDragged = false;
+
+          const rectEl = state.selectedElement;
+          if (rectEl) {
+            const x = parseFloat(rectEl.getAttribute('x')) || 0;
+            const y = parseFloat(rectEl.getAttribute('y')) || 0;
+            const w = parseFloat(rectEl.getAttribute('width')) || 0;
+            const h = parseFloat(rectEl.getAttribute('height')) || 0;
+
+            // 반대편 대각선 꼭짓점을 고정 앵커로 설정하여 직사각형의 정의 엄격 유지
+            let ax = x, ay = y;
+            if (idx === 0) { ax = x + w; ay = y + h; }
+            else if (idx === 1) { ax = x; ay = y + h; }
+            else if (idx === 2) { ax = x; ay = y; }
+            else if (idx === 3) { ax = x + w; ay = y; }
+            state.rectAnchor = { x: ax, y: ay };
+          }
+          h.style.cursor = 'grabbing';
+        };
+        h.addEventListener('mousedown', startDrag);
+        h.addEventListener('touchstart', startDrag, { passive: false });
+      });
+    }
+    return gizmo;
+  },
+
+  showRectHandles(rectEl) {
+    if (!rectEl) return;
+    const svg = window.PicEditor.utils.getActiveSvg();
+    if (!svg) return;
+
+    const gizmo = this.ensureRectGizmo(svg);
+    const x = parseFloat(rectEl.getAttribute('x')) || 0;
+    const y = parseFloat(rectEl.getAttribute('y')) || 0;
+    const w = parseFloat(rectEl.getAttribute('width')) || 0;
+    const h = parseFloat(rectEl.getAttribute('height')) || 0;
+
+    gizmo.setAttribute('transform', rectEl.getAttribute('transform') || 'translate(0,0) scale(1,1) rotate(0)');
+
+    const v0 = gizmo.querySelector('#rect-v0-handle-wrap');
+    const v1 = gizmo.querySelector('#rect-v1-handle-wrap');
+    const v2 = gizmo.querySelector('#rect-v2-handle-wrap');
+    const v3 = gizmo.querySelector('#rect-v3-handle-wrap');
+
+    if (v0) v0.setAttribute('transform', `translate(${x}, ${y})`);
+    if (v1) v1.setAttribute('transform', `translate(${x + w}, ${y})`);
+    if (v2) v2.setAttribute('transform', `translate(${x + w}, ${y + h})`);
+    if (v3) v3.setAttribute('transform', `translate(${x}, ${y + h})`);
+
+    gizmo.style.display = 'block';
+  },
+
+  hideRectHandles() {
+    const svg = window.PicEditor.utils.getActiveSvg();
+    if (!svg) return;
+    const gizmo = svg.querySelector('#rect-handle-group');
+    if (gizmo) gizmo.style.display = 'none';
+  },
+
+  updateRectGizmoTransform(rectEl) {
+    const svg = window.PicEditor.utils.getActiveSvg();
+    if (!svg) return;
+    const gizmo = svg.querySelector('#rect-handle-group');
+    if (gizmo && gizmo.style.display !== 'none') {
+      gizmo.setAttribute('transform', rectEl.getAttribute('transform') || 'translate(0,0) scale(1,1) rotate(0)');
+    }
+  },
+
+  /**
+   * 모든 기즈모 조작점(호, 직선, 원, 삼각형, 직사각형) 일괄 숨김
+   */
+  hideAllGizmos() {
+    this.hideArcCenterHandle();
+    this.hideLineHandles();
+    this.hideCircleHandles();
+    this.hideTriangleHandles();
+    this.hideRectHandles();
+  },
+
+  /**
+   * 선택된 요소의 타입에 맞추어 활성화된 기즈모의 transform 속성 동기화
+   */
+  updateGizmosTransform(el) {
+    if (!el) return;
+    if (this.isArcElement(el)) this.updateArcGizmoTransform(el);
+    else if (this.isLineElement(el)) this.updateLineGizmoTransform(el);
+    else if (this.isCircleElement(el)) this.updateCircleGizmoTransform(el);
+    else if (this.isTriangleElement(el)) this.updateTriangleGizmoTransform(el);
+    else if (this.isRectElement(el)) this.updateRectGizmoTransform(el);
+  },
+
 
   /**
    * 중간 화살표(mid-arrow) 위치 및 각도 갱신

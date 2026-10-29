@@ -576,10 +576,8 @@ window.PicEditor.inspector = {
     const t = window.PicEditor.utils.parseTransform(target);
     t.r = angle;
     window.PicEditor.utils.setTransform(target, t);
-    if (window.PicEditor.tools && window.PicEditor.tools.isArcElement(target)) {
-      window.PicEditor.tools.updateArcGizmoTransform(target);
-    } else if (window.PicEditor.tools && window.PicEditor.tools.isLineElement(target)) {
-      window.PicEditor.tools.updateLineGizmoTransform(target);
+    if (window.PicEditor.tools && window.PicEditor.tools.updateGizmosTransform) {
+      window.PicEditor.tools.updateGizmosTransform(target);
     }
     if (window.PicEditor.sync) window.PicEditor.sync.markModified();
   },
@@ -598,10 +596,8 @@ window.PicEditor.inspector = {
     if (direction === 'H') t.sx *= -1;
     if (direction === 'V') t.sy *= -1;
     window.PicEditor.utils.setTransform(target, t);
-    if (window.PicEditor.tools && window.PicEditor.tools.isArcElement(target)) {
-      window.PicEditor.tools.updateArcGizmoTransform(target);
-    } else if (window.PicEditor.tools && window.PicEditor.tools.isLineElement(target)) {
-      window.PicEditor.tools.updateLineGizmoTransform(target);
+    if (window.PicEditor.tools && window.PicEditor.tools.updateGizmosTransform) {
+      window.PicEditor.tools.updateGizmosTransform(target);
     }
     if (window.PicEditor.sync) window.PicEditor.sync.markModified();
   },

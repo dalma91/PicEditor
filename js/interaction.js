@@ -68,15 +68,19 @@ window.PicEditor.interaction = {
         
         window.PicEditor.inspector.syncUItoSelected();
 
-        if (window.PicEditor.tools.isArcElement(el)) {
-          window.PicEditor.tools.showArcCenterHandle(el);
-          window.PicEditor.tools.hideLineHandles();
-        } else if (window.PicEditor.tools.isLineElement(el)) {
-          window.PicEditor.tools.showLineHandles(el);
-          window.PicEditor.tools.hideArcCenterHandle();
-        } else {
-          window.PicEditor.tools.hideArcCenterHandle();
-          window.PicEditor.tools.hideLineHandles();
+        if (window.PicEditor.tools && window.PicEditor.tools.hideAllGizmos) {
+          window.PicEditor.tools.hideAllGizmos();
+          if (window.PicEditor.tools.isArcElement(el)) {
+            window.PicEditor.tools.showArcCenterHandle(el);
+          } else if (window.PicEditor.tools.isLineElement(el)) {
+            window.PicEditor.tools.showLineHandles(el);
+          } else if (window.PicEditor.tools.isCircleElement(el)) {
+            window.PicEditor.tools.showCircleHandles(el);
+          } else if (window.PicEditor.tools.isTriangleElement(el)) {
+            window.PicEditor.tools.showTriangleHandles(el);
+          } else if (window.PicEditor.tools.isRectElement(el)) {
+            window.PicEditor.tools.showRectHandles(el);
+          }
         }
 
         state.isDragging = true;
@@ -121,7 +125,14 @@ window.PicEditor.interaction = {
       const handleCanvasStart = (e) => {
         if (!state.isDrawMode) {
           // 아크 또는 라인 기즈모 클릭/터치 시 선택 해제 방지
-          if (e.target.closest && (e.target.closest('#arc-center-handle-group') || e.target.closest('#line-handle-group'))) {
+          if (e.target.closest && (
+            e.target.closest('#arc-center-handle-group') ||
+            e.target.closest('#line-handle-group') ||
+            e.target.closest('#circle-handle-group') ||
+            e.target.closest('#triangle-handle-group') ||
+            e.target.closest('#rect-handle-group') ||
+            e.target.closest('.editor-gizmo-group')
+          )) {
             return;
           }
 
@@ -228,6 +239,26 @@ window.PicEditor.interaction = {
           }
           const mid = { x: (pt.x + pt.x) / 2, y: (pt.y + pt.y) / 2 };
           window.PicEditor.tools.updateArcPath(state.tempShape, state.drawStart, pt, mid);
+        } else if (tool === 'triangle') {
+          state.tempShape = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+          state.tempShape.setAttribute("class", "movable triangle-shape");
+          state.tempShape.setAttribute("points", `${pt.x},${pt.y} ${pt.x},${pt.y} ${pt.x},${pt.y}`);
+          state.tempShape.setAttribute("fill", "none");
+          state.tempShape.setAttribute("stroke", "#000000");
+          state.tempShape.setAttribute("stroke-width", "2");
+          if (strokeStyle === 'dashed') state.tempShape.setAttribute("stroke-dasharray", "6,4");
+        } else if (tool === 'triangle') {
+          const x0 = state.drawStart.x;
+          const y0 = state.drawStart.y;
+          const x1 = pt.x;
+          const y1 = pt.y;
+          const p1x = ((x0 + x1) / 2).toFixed(1);
+          const p1y = Math.min(y0, y1).toFixed(1);
+          const p2x = Math.min(x0, x1).toFixed(1);
+          const p2y = Math.max(y0, y1).toFixed(1);
+          const p3x = Math.max(x0, x1).toFixed(1);
+          const p3y = Math.max(y0, y1).toFixed(1);
+          state.tempShape.setAttribute("points", `${p1x},${p1y} ${p2x},${p2y} ${p3x},${p3y}`);
         } else if (tool === 'rect') {
           state.tempShape = document.createElementNS("http://www.w3.org/2000/svg", "rect");
           state.tempShape.setAttribute("x", pt.x);
@@ -486,6 +517,85 @@ window.PicEditor.interaction = {
         return;
       }
 
+      // 1-C. 원(Circle) 중심 빨간 점 드래그 이동
+      if (state.isDraggingCircleCenter && state.selectedElement) {
+        state.hasDragged = true;
+        if (e.cancelable) e.preventDefault();
+        const circleEl = state.selectedElement;
+        const t = window.PicEditor.utils.parseTransform(circleEl);
+        const rad = (t.r || 0) * Math.PI / 180;
+        const cos = Math.cos(-rad);
+        const sin = Math.sin(-rad);
+        const lx = (pt.x - t.x) / (t.sx || 1);
+        const ly = (pt.y - t.y) / (t.sy || 1);
+        const localX = lx * cos - ly * sin;
+        const localY = lx * sin + ly * cos;
+
+        circleEl.setAttribute('cx', localX.toFixed(1));
+        circleEl.setAttribute('cy', localY.toFixed(1));
+        if (window.PicEditor.tools) window.PicEditor.tools.showCircleHandles(circleEl);
+        return;
+      }
+
+      // 1-T. 삼각형(Triangle) 꼭짓점(파란 점) 드래그 이동 (자유 이동)
+      if ((state.isDraggingTriangleP1 || state.isDraggingTriangleP2 || state.isDraggingTriangleP3) && state.selectedElement) {
+        state.hasDragged = true;
+        if (e.cancelable) e.preventDefault();
+        const triEl = state.selectedElement;
+        const pts = window.PicEditor.tools.getTrianglePoints(triEl);
+        if (pts) {
+          const t = window.PicEditor.utils.parseTransform(triEl);
+          const rad = (t.r || 0) * Math.PI / 180;
+          const cos = Math.cos(-rad);
+          const sin = Math.sin(-rad);
+          const lx = (pt.x - t.x) / (t.sx || 1);
+          const ly = (pt.y - t.y) / (t.sy || 1);
+          const localX = lx * cos - ly * sin;
+          const localY = lx * sin + ly * cos;
+
+          if (state.isDraggingTriangleP1) pts[0] = { x: localX, y: localY };
+          else if (state.isDraggingTriangleP2) pts[1] = { x: localX, y: localY };
+          else if (state.isDraggingTriangleP3) pts[2] = { x: localX, y: localY };
+
+          triEl.setAttribute('points', `${pts[0].x.toFixed(1)},${pts[0].y.toFixed(1)} ${pts[1].x.toFixed(1)},${pts[1].y.toFixed(1)} ${pts[2].x.toFixed(1)},${pts[2].y.toFixed(1)}`);
+          if (window.PicEditor.tools) window.PicEditor.tools.showTriangleHandles(triEl);
+          if (window.PicEditor.inspector) window.PicEditor.inspector.syncUItoSelected();
+        }
+        return;
+      }
+
+      // 1-R. 직사각형(Rectangle) 꼭짓점(파란 점) 드래그 이동 (직사각형 정의 유지, 점 한 쌍 함께 이동)
+      if (state.isDraggingRectCorner && state.selectedElement) {
+        state.hasDragged = true;
+        if (e.cancelable) e.preventDefault();
+        const rectEl = state.selectedElement;
+        const t = window.PicEditor.utils.parseTransform(rectEl);
+        const rad = (t.r || 0) * Math.PI / 180;
+        const cos = Math.cos(-rad);
+        const sin = Math.sin(-rad);
+        const lx = (pt.x - t.x) / (t.sx || 1);
+        const ly = (pt.y - t.y) / (t.sy || 1);
+        const localX = lx * cos - ly * sin;
+        const localY = lx * sin + ly * cos;
+
+        const ax = state.rectAnchor ? state.rectAnchor.x : 0;
+        const ay = state.rectAnchor ? state.rectAnchor.y : 0;
+
+        const newX = Math.min(ax, localX);
+        const newY = Math.min(ay, localY);
+        const newW = Math.max(3, Math.abs(localX - ax));
+        const newH = Math.max(3, Math.abs(localY - ay));
+
+        rectEl.setAttribute('x', newX.toFixed(1));
+        rectEl.setAttribute('y', newY.toFixed(1));
+        rectEl.setAttribute('width', newW.toFixed(1));
+        rectEl.setAttribute('height', newH.toFixed(1));
+
+        if (window.PicEditor.tools) window.PicEditor.tools.showRectHandles(rectEl);
+        if (window.PicEditor.inspector) window.PicEditor.inspector.syncUItoSelected();
+        return;
+      }
+
       // 2. 작도 모드 드로잉
       if (state.isDrawMode && state.isDrawing && state.tempShape) {
         if (e.cancelable) e.preventDefault();
@@ -504,6 +614,26 @@ window.PicEditor.interaction = {
         } else if (tool === 'arc') {
           const mid = { x: (state.drawStart.x + pt.x) / 2, y: (state.drawStart.y + pt.y) / 2 };
           window.PicEditor.tools.updateArcPath(state.tempShape, state.drawStart, pt, mid);
+        } else if (tool === 'triangle') {
+          state.tempShape = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+          state.tempShape.setAttribute("class", "movable triangle-shape");
+          state.tempShape.setAttribute("points", `${pt.x},${pt.y} ${pt.x},${pt.y} ${pt.x},${pt.y}`);
+          state.tempShape.setAttribute("fill", "none");
+          state.tempShape.setAttribute("stroke", "#000000");
+          state.tempShape.setAttribute("stroke-width", "2");
+          if (strokeStyle === 'dashed') state.tempShape.setAttribute("stroke-dasharray", "6,4");
+        } else if (tool === 'triangle') {
+          const x0 = state.drawStart.x;
+          const y0 = state.drawStart.y;
+          const x1 = pt.x;
+          const y1 = pt.y;
+          const p1x = ((x0 + x1) / 2).toFixed(1);
+          const p1y = Math.min(y0, y1).toFixed(1);
+          const p2x = Math.min(x0, x1).toFixed(1);
+          const p2y = Math.max(y0, y1).toFixed(1);
+          const p3x = Math.max(x0, x1).toFixed(1);
+          const p3y = Math.max(y0, y1).toFixed(1);
+          state.tempShape.setAttribute("points", `${p1x},${p1y} ${p2x},${p2y} ${p3x},${p3y}`);
         } else if (tool === 'rect') {
           const x = Math.min(state.drawStart.x, pt.x);
           const y = Math.min(state.drawStart.y, pt.y);
@@ -610,10 +740,10 @@ window.PicEditor.interaction = {
         t.y += dy;
         window.PicEditor.utils.setTransform(target, t);
 
-        if (window.PicEditor.tools.isArcElement(target)) {
-          window.PicEditor.tools.updateArcGizmoTransform(target);
-        } else if (window.PicEditor.tools.isLineElement(target)) {
-          window.PicEditor.tools.updateLineGizmoTransform(target);
+        if (window.PicEditor.tools) {
+          if (window.PicEditor.tools.updateGizmosTransform) {
+            window.PicEditor.tools.updateGizmosTransform(target);
+          }
           if (target.id) {
             const midG = svg.querySelector(`g.mid-arrow[data-for="${target.id}"]`);
             if (midG) {
@@ -669,6 +799,46 @@ window.PicEditor.interaction = {
         return;
       }
 
+      // 원 중심 드래그 종료
+      if (state.isDraggingCircleCenter) {
+        state.isDraggingCircleCenter = false;
+        if (svg) {
+          const cH = svg.querySelector('#circle-center-handle-wrap');
+          if (cH) cH.style.cursor = 'grab';
+        }
+        if (state.hasDragged && window.PicEditor.sync) window.PicEditor.sync.markModified();
+        return;
+      }
+
+      // 삼각형 꼭짓점 드래그 종료
+      if (state.isDraggingTriangleP1 || state.isDraggingTriangleP2 || state.isDraggingTriangleP3) {
+        state.isDraggingTriangleP1 = false;
+        state.isDraggingTriangleP2 = false;
+        state.isDraggingTriangleP3 = false;
+        if (svg) {
+          [1, 2, 3].forEach(idx => {
+            const h = svg.querySelector(`#triangle-p${idx}-handle-wrap`);
+            if (h) h.style.cursor = 'grab';
+          });
+        }
+        if (state.hasDragged && window.PicEditor.sync) window.PicEditor.sync.markModified();
+        return;
+      }
+
+      // 직사각형 꼭짓점 드래그 종료
+      if (state.isDraggingRectCorner) {
+        state.isDraggingRectCorner = false;
+        state.rectCornerIndex = -1;
+        if (svg) {
+          [0, 1, 2, 3].forEach(idx => {
+            const h = svg.querySelector(`#rect-v${idx}-handle-wrap`);
+            if (h) h.style.cursor = 'grab';
+          });
+        }
+        if (state.hasDragged && window.PicEditor.sync) window.PicEditor.sync.markModified();
+        return;
+      }
+
       // 작도 완료
       if (state.isDrawMode && state.isDrawing) {
         state.isDrawing = false;
@@ -704,6 +874,27 @@ window.PicEditor.interaction = {
             window.PicEditor.utils.deselectAll();
             state.selectedElement = created;
             created.classList.add('selected');
+            window.PicEditor.inspector.syncUItoSelected();
+          } else if (tool === 'triangle') {
+            window.PicEditor.interaction.toggleMode();
+            window.PicEditor.utils.deselectAll();
+            state.selectedElement = created;
+            created.classList.add('selected');
+            window.PicEditor.tools.showTriangleHandles(created);
+            window.PicEditor.inspector.syncUItoSelected();
+          } else if (tool === 'rect') {
+            window.PicEditor.interaction.toggleMode();
+            window.PicEditor.utils.deselectAll();
+            state.selectedElement = created;
+            created.classList.add('selected');
+            window.PicEditor.tools.showRectHandles(created);
+            window.PicEditor.inspector.syncUItoSelected();
+          } else if (tool === 'circle') {
+            window.PicEditor.interaction.toggleMode();
+            window.PicEditor.utils.deselectAll();
+            state.selectedElement = created;
+            created.classList.add('selected');
+            window.PicEditor.tools.showCircleHandles(created);
             window.PicEditor.inspector.syncUItoSelected();
           }
 
@@ -771,19 +962,17 @@ window.PicEditor.interaction = {
           window.PicEditor.utils.setTransform(target, t);
 
           if (window.PicEditor.tools) {
-            if (window.PicEditor.tools.isArcElement(target)) {
-              window.PicEditor.tools.updateArcGizmoTransform(target);
-            } else if (window.PicEditor.tools.isLineElement(target)) {
-              window.PicEditor.tools.updateLineGizmoTransform(target);
-              if (target.id) {
-                const svg = window.PicEditor.utils.getActiveSvg();
-                const midG = svg ? svg.querySelector(`g.mid-arrow[data-for="${target.id}"]`) : null;
-                if (midG) {
-                  const mt = window.PicEditor.utils.parseTransform(midG);
-                  mt.x += dx;
-                  mt.y += dy;
-                  window.PicEditor.utils.setTransform(midG, mt);
-                }
+            if (window.PicEditor.tools.updateGizmosTransform) {
+              window.PicEditor.tools.updateGizmosTransform(target);
+            }
+            if (target.id) {
+              const svg = window.PicEditor.utils.getActiveSvg();
+              const midG = svg ? svg.querySelector(`g.mid-arrow[data-for="${target.id}"]`) : null;
+              if (midG) {
+                const mt = window.PicEditor.utils.parseTransform(midG);
+                mt.x += dx;
+                mt.y += dy;
+                window.PicEditor.utils.setTransform(midG, mt);
               }
             }
           }

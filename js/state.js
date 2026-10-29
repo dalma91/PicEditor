@@ -18,6 +18,13 @@ window.PicEditor.state = {
   isDraggingArcP2: false,
   isDraggingLineP1: false,
   isDraggingLineP2: false,
+  isDraggingCircleCenter: false,
+  isDraggingTriangleP1: false,
+  isDraggingTriangleP2: false,
+  isDraggingTriangleP3: false,
+  isDraggingRectCorner: false,
+  rectCornerIndex: -1,
+  rectAnchor: { x: 0, y: 0 },
   // 현재 캔버스에 로드된 도면 정보 추적
   currentDiagramName: '',
   currentDiagramSha: null,

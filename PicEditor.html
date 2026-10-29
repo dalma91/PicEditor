@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>물리 마스터 에디터 스튜디오 v15</title>
-  <link rel="stylesheet" href="css/style.css?v=20261029_11">
+  <link rel="stylesheet" href="css/style.css?v=20261029_12">
   <style>
     /* 브라우저 100vh 고정 뷰포트 및 2열 그리드 레이아웃 */
     html, body {
@@ -166,6 +166,7 @@
           <option value="line">직선</option>
           <option value="arrow">화살표</option>
           <option value="rect">사각형</option>
+          <option value="triangle">삼각형</option>
           <option value="circle">원</option>
           <option value="arc">호</option>
           <option value="text">글자</option>
@@ -201,6 +202,10 @@
           <button type="button" class="tool-btn" data-tool="rect" onclick="setTool('rect')" title="사각형 (Rectangle)">
             <svg viewBox="0 0 24 24"><rect x="3.5" y="5.5" width="17" height="13" rx="1.5" fill="none" stroke="currentColor" stroke-width="2.3"/></svg>
             <span class="btn-sublabel">사각형</span>
+          </button>
+          <button type="button" class="tool-btn" data-tool="triangle" onclick="setTool('triangle')" title="삼각형 (Triangle)">
+            <svg viewBox="0 0 24 24"><polygon points="12,3.5 3.5,20.5 20.5,20.5" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linejoin="round"/></svg>
+            <span class="btn-sublabel">삼각형</span>
           </button>
           <button type="button" class="tool-btn" data-tool="circle" onclick="setTool('circle')" title="원 (Circle)">
             <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="2.3"/></svg>
@@ -638,14 +643,14 @@
   </div>
 
   <!-- 자바스크립트 모듈 로드 (강제 캐시 갱신 파라미터 적용) -->
-  <script src="js/state.js?v=20261029_11"></script>
-  <script src="js/utils.js?v=20261029_11"></script>
-  <script src="js/canvas.js?v=20261029_11"></script>
-  <script src="js/tools.js?v=20261029_11"></script>
-  <script src="js/inspector.js?v=20261029_11"></script>
-  <script src="js/interaction.js?v=20261029_11"></script>
-  <script src="js/export-import.js?v=20261029_11"></script>
-  <script src="js/github.js?v=20261029_11"></script>
-  <script src="js/app.js?v=20261029_11"></script>
+  <script src="js/state.js?v=20261029_12"></script>
+  <script src="js/utils.js?v=20261029_12"></script>
+  <script src="js/canvas.js?v=20261029_12"></script>
+  <script src="js/tools.js?v=20261029_12"></script>
+  <script src="js/inspector.js?v=20261029_12"></script>
+  <script src="js/interaction.js?v=20261029_12"></script>
+  <script src="js/export-import.js?v=20261029_12"></script>
+  <script src="js/github.js?v=20261029_12"></script>
+  <script src="js/app.js?v=20261029_12"></script>
 </body>
 </html>

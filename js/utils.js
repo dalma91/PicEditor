@@ -67,8 +67,12 @@ window.PicEditor.utils = {
       inspector.classList.remove('active');
     }
     if (window.PicEditor.tools) {
-      if (window.PicEditor.tools.hideArcCenterHandle) window.PicEditor.tools.hideArcCenterHandle();
-      if (window.PicEditor.tools.hideLineHandles) window.PicEditor.tools.hideLineHandles();
+      if (window.PicEditor.tools.hideAllGizmos) {
+        window.PicEditor.tools.hideAllGizmos();
+      } else {
+        if (window.PicEditor.tools.hideArcCenterHandle) window.PicEditor.tools.hideArcCenterHandle();
+        if (window.PicEditor.tools.hideLineHandles) window.PicEditor.tools.hideLineHandles();
+      }
     }
   },
 
