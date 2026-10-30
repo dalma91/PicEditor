@@ -220,6 +220,12 @@ html, body {
   transform-origin: center;
 }
 
+/* 직교좌표계는 원점(붉은색 점, 로컬 0,0)을 회전 피벗 중심으로 회전 */
+.axes-wrap,
+#axes-handle-group {
+  transform-origin: 0 0 !important;
+}
+
 .movable:active {
   cursor: grabbing;
 }

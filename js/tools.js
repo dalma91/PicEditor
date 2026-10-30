@@ -1334,6 +1334,14 @@ window.PicEditor.tools = {
           <circle id="axes-y-inner" r="2" fill="#ffffff" style="pointer-events:none;" />
           <text id="axes-y-label" font-size="10" font-weight="700" fill="#2563eb" x="10" y="4" style="user-select:none; pointer-events:none; text-shadow:0 1px 2px #ffffff;">Y축</text>
         </g>
+        <!-- 원점 기준 회전 조절 핸들 (에메랄드 녹색 점) -->
+        <g id="axes-rot-handle-wrap" style="cursor:grab; pointer-events:all;">
+          <path id="axes-rot-guide-arc" stroke="#94a3b8" stroke-dasharray="3,3" stroke-width="1.2" fill="none" style="pointer-events:none;" />
+          <circle id="axes-rot-hit" r="22" fill="#000000" opacity="0.001" style="cursor:grab; pointer-events:all;" />
+          <circle id="axes-rot-anchor" r="6" fill="#10b981" stroke="#ffffff" stroke-width="2.5" style="filter:drop-shadow(0 2px 4px rgba(0,0,0,0.35)); pointer-events:none;" />
+          <circle id="axes-rot-inner" r="2" fill="#ffffff" style="pointer-events:none;" />
+          <text id="axes-rot-label" font-size="10" font-weight="700" fill="#059669" x="10" y="4" style="user-select:none; pointer-events:none; text-shadow:0 1px 2px #ffffff;">회전</text>
+        </g>
       `;
       svg.appendChild(gizmo);
 
@@ -1379,6 +1387,28 @@ window.PicEditor.tools = {
       };
       hY.addEventListener('mousedown', startDragY);
       hY.addEventListener('touchstart', startDragY, { passive: false });
+
+      const hRot = gizmo.querySelector('#axes-rot-handle-wrap');
+      if (hRot) {
+        const startDragRot = (e) => {
+          e.stopPropagation();
+          if (e.cancelable && e.type === 'touchstart') e.preventDefault();
+          const state = window.PicEditor.state;
+          const svg = window.PicEditor.utils.getActiveSvg();
+          const pt = window.PicEditor.utils.getSvgPoint(e, svg);
+          const axesWrap = window.PicEditor.tools.getAxesElement(state.selectedElement);
+          if (axesWrap) {
+            const t = window.PicEditor.utils.parseTransform(axesWrap);
+            state.isDraggingAxesRotate = true;
+            state.axesRotStartAngle = Math.atan2(pt.y - t.y, pt.x - t.x) * 180 / Math.PI;
+            state.axesRotInitialR = t.r || 0;
+            state.hasDragged = false;
+            hRot.style.cursor = 'grabbing';
+          }
+        };
+        hRot.addEventListener('mousedown', startDragRot);
+        hRot.addEventListener('touchstart', startDragRot, { passive: false });
+      }
     }
     return gizmo;
   },
@@ -1400,10 +1430,26 @@ window.PicEditor.tools = {
     const origWrap = gizmo.querySelector('#axes-origin-handle-wrap');
     const xWrap = gizmo.querySelector('#axes-x-handle-wrap');
     const yWrap = gizmo.querySelector('#axes-y-handle-wrap');
+    const rotWrap = gizmo.querySelector('#axes-rot-handle-wrap');
 
     if (origWrap) origWrap.setAttribute('transform', 'translate(0, 0)');
     if (xWrap) xWrap.setAttribute('transform', `translate(${x2}, 0)`);
     if (yWrap) yWrap.setAttribute('transform', `translate(0, ${y2})`);
+    if (rotWrap) {
+      const signX = (x2 >= 0) ? 1 : -1;
+      const signY = (y2 <= 0) ? -1 : 1;
+      const rotR = 48;
+      const rx = rotR * signX * Math.SQRT1_2;
+      const ry = rotR * signY * Math.SQRT1_2;
+      rotWrap.setAttribute('transform', `translate(${rx.toFixed(1)}, ${ry.toFixed(1)})`);
+
+      const arcPath = gizmo.querySelector('#axes-rot-guide-arc');
+      if (arcPath) {
+        const sweepFlag = (signX * signY < 0) ? 0 : 1;
+        const arcD = `M ${(rotR * signX).toFixed(1)},0 A ${rotR} ${rotR} 0 0 ${sweepFlag} 0,${(rotR * signY).toFixed(1)}`;
+        arcPath.setAttribute('d', arcD);
+      }
+    }
 
     gizmo.style.display = 'block';
   },

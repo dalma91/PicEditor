@@ -317,6 +317,7 @@ window.PicEditor.interaction = {
           }
           const group = document.createElementNS("http://www.w3.org/2000/svg", "g");
           group.setAttribute('class', 'movable axes-wrap');
+          group.setAttribute('style', 'transform-origin: 0 0;');
           group.setAttribute('transform', `translate(${pt.x}, ${pt.y}) scale(1,1) rotate(0)`);
 
           // 투명 광폭 히트 영역 (축 선 클릭 반응성 대폭 강화)
@@ -876,6 +877,39 @@ window.PicEditor.interaction = {
         return;
       }
 
+      // 1-A2. 직교 좌표계 회전 핸들 드래그 (원점 기준 회전)
+      if (state.isDraggingAxesRotate && state.selectedElement) {
+        state.hasDragged = true;
+        if (e.cancelable) e.preventDefault();
+        const axesWrap = window.PicEditor.tools.getAxesElement(state.selectedElement);
+        if (axesWrap) {
+          const t = window.PicEditor.utils.parseTransform(axesWrap);
+          const curAngle = Math.atan2(pt.y - t.y, pt.x - t.x) * 180 / Math.PI;
+          let delta = curAngle - state.axesRotStartAngle;
+          let newAngle = state.axesRotInitialR + delta;
+
+          while (newAngle > 180) newAngle -= 360;
+          while (newAngle < -180) newAngle += 360;
+
+          const snapCheck = document.getElementById('snapCheck');
+          if (snapCheck && snapCheck.checked) {
+            newAngle = Math.round(newAngle / 45) * 45;
+          }
+          newAngle = parseFloat(newAngle.toFixed(1));
+          t.r = newAngle;
+          window.PicEditor.utils.setTransform(axesWrap, t);
+          window.PicEditor.tools.updateAxesGizmoTransform(axesWrap);
+
+          const rangeEl = document.getElementById('rotateRange');
+          const numEl = document.getElementById('rotateNum');
+          if (rangeEl) rangeEl.value = newAngle;
+          if (numEl) numEl.value = newAngle;
+
+          if (window.PicEditor.sync) window.PicEditor.sync.markModified();
+        }
+        return;
+      }
+
       // 2. 작도 모드 드로잉
       if (state.isDrawMode && state.isDrawing && state.tempShape) {
         if (e.cancelable) e.preventDefault();
@@ -1177,6 +1211,17 @@ window.PicEditor.interaction = {
           if (hX) hX.style.cursor = 'ew-resize';
           const hY = svg.querySelector('#axes-y-handle-wrap');
           if (hY) hY.style.cursor = 'ns-resize';
+        }
+        if (state.hasDragged && window.PicEditor.sync) window.PicEditor.sync.markModified();
+        return;
+      }
+
+      // 직교 좌표계 회전 드래그 종료
+      if (state.isDraggingAxesRotate) {
+        state.isDraggingAxesRotate = false;
+        if (svg) {
+          const hRot = svg.querySelector('#axes-rot-handle-wrap');
+          if (hRot) hRot.style.cursor = 'grab';
         }
         if (state.hasDragged && window.PicEditor.sync) window.PicEditor.sync.markModified();
         return;

@@ -65,6 +65,7 @@ window.PicEditor.utils = {
     state.isDragging = false;
     state.isDraggingAxesX = false;
     state.isDraggingAxesY = false;
+    state.isDraggingAxesRotate = false;
     state.isDraggingCircleRadius = false;
     state.isDraggingCurveP1 = false;
     state.isDraggingCurveP2 = false;
