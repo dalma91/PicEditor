@@ -82,6 +82,8 @@ window.PicEditor.interaction = {
             window.PicEditor.tools.showRectHandles(el);
           } else if (window.PicEditor.tools.isParabolaElement(el)) {
             window.PicEditor.tools.showParabolaHandles(el);
+          } else if (window.PicEditor.tools.isAxesElement(el)) {
+            window.PicEditor.tools.showAxesHandles(el);
           }
         }
 
@@ -281,6 +283,9 @@ window.PicEditor.interaction = {
           if (strokeStyle === 'dashed') state.tempShape.setAttribute("stroke-dasharray", "6,4");
           state.tempShape.setAttribute("d", `M ${pt.x},${pt.y} L ${pt.x},${pt.y}`);
         } else if (tool === 'axes') {
+          if (window.PicEditor.tools && window.PicEditor.tools.ensureArrowMarkers) {
+            window.PicEditor.tools.ensureArrowMarkers(svg);
+          }
           const group = document.createElementNS("http://www.w3.org/2000/svg", "g");
           group.setAttribute('class', 'movable axes-wrap');
           group.setAttribute('transform', `translate(${pt.x}, ${pt.y}) scale(1,1) rotate(0)`);
@@ -807,6 +812,42 @@ window.PicEditor.interaction = {
         return;
       }
 
+      // 직교 좌표계 X축 / Y축 조절점 드래그
+      if ((state.isDraggingAxesX || state.isDraggingAxesY) && state.selectedElement) {
+        const axesWrap = window.PicEditor.tools.getAxesElement(state.selectedElement);
+        if (axesWrap) {
+          const t = window.PicEditor.utils.parseTransform(axesWrap);
+          const rad = -(t.r || 0) * Math.PI / 180;
+          const cos = Math.cos(rad);
+          const sin = Math.sin(rad);
+          const unrotX = (pt.x - t.x) / (t.sx || 1);
+          const unrotY = (pt.y - t.y) / (t.sy || 1);
+          const localX = unrotX * cos - unrotY * sin;
+          const localY = unrotX * sin + unrotY * cos;
+
+          const lineX = axesWrap.querySelector('.axis-x');
+          const lineY = axesWrap.querySelector('.axis-y');
+          const lblX = axesWrap.querySelector('.axis-label-x');
+          const lblY = axesWrap.querySelector('.axis-label-y');
+
+          if (state.isDraggingAxesX && lineX) {
+            lineX.setAttribute('x2', localX.toFixed(1));
+            if (lblX) {
+              lblX.setAttribute('x', (localX >= 0 ? localX + 6 : localX - 14).toFixed(1));
+            }
+          } else if (state.isDraggingAxesY && lineY) {
+            lineY.setAttribute('y2', localY.toFixed(1));
+            if (lblY) {
+              lblY.setAttribute('y', (localY <= 0 ? localY - 6 : localY + 15).toFixed(1));
+            }
+          }
+          window.PicEditor.tools.showAxesHandles(axesWrap);
+          window.PicEditor.inspector.syncUItoSelected();
+          if (window.PicEditor.sync) window.PicEditor.sync.markModified();
+        }
+        return;
+      }
+
       // 3. 선택 모드 요소 드래그 이동
       if (!state.isDrawMode && state.isDragging && state.selectedElement) {
         const dx = pt.x - state.startX;
@@ -975,6 +1016,7 @@ window.PicEditor.interaction = {
             window.PicEditor.utils.deselectAll();
             state.selectedElement = created;
             created.classList.add('selected');
+            window.PicEditor.tools.showAxesHandles(created);
             window.PicEditor.inspector.syncUItoSelected();
           } else if (tool === 'triangle') {
             window.PicEditor.interaction.toggleMode();

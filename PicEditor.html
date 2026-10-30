@@ -162,7 +162,7 @@
 
         <!-- 하위 호환용 hidden select -->
         <select id="toolSelect" style="display:none;" onchange="onToolChange()">
-          <option value="axes">좌표계</option>
+          <option value="axes">직교 좌표계</option>
           <option value="line">직선</option>
           <option value="arrow">화살표</option>
           <option value="rect">사각형</option>
@@ -222,11 +222,11 @@
         </div>
 
         <!-- 2. 물리 및 함수 곡선 팔레트 (5개) -->
-        <div class="tool-grid-label">물리 / 수학 곡선</div>
+        <div class="tool-grid-label">좌표계 및 함수 곡선</div>
         <div class="tool-icon-grid curves-grid">
           <button type="button" class="tool-btn" data-tool="axes" onclick="setTool('axes')" title="직교 좌표계 (x, y축, 원점 기준 회전)">
             <svg viewBox="0 0 24 24"><line x1="5" y1="20" x2="5" y2="4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><polygon points="2,6 5,2 8,6" fill="currentColor" stroke="none"/><line x1="5" y1="20" x2="21" y2="20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><polygon points="19,17 23,20 19,23" fill="currentColor" stroke="none"/><circle cx="5" cy="20" r="2" fill="#dc2626" stroke="none"/></svg>
-            <span class="btn-sublabel">좌표계</span>
+            <span class="btn-sublabel">직교좌표</span>
           </button>
           <button type="button" class="tool-btn" data-tool="parabola2" onclick="setTool('parabola2')" title="포물선 2점 (꼭짓점-끝점)">
             <svg viewBox="0 0 24 24"><path d="M 4,6 Q 19,6 20,20" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"/><circle cx="4" cy="6" r="2.2" fill="#dc2626" stroke="none"/></svg>

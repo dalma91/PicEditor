@@ -29,7 +29,7 @@ window.PicEditor.tools = {
     // 상단 뱃지 갱신
     const badge = document.getElementById('currentToolBadge');
     const toolNames = {
-      axes: '좌표계',
+      axes: '직교 좌표계',
       line: '직선',
       arrow: '화살표',
       rect: '사각형',
@@ -1233,6 +1233,156 @@ window.PicEditor.tools = {
   /**
    * 모든 기즈모 조작점(호, 직선, 원, 삼각형, 직사각형, 포물선) 일괄 숨김
    */
+
+  /**
+   * 화살표 마커(#arrow, #arrow-start)가 SVG defs에 항상 존재하도록 보장
+   */
+  ensureArrowMarkers(svg) {
+    if (!svg) return;
+    let defs = svg.querySelector('defs');
+    if (!defs) {
+      defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
+      svg.insertBefore(defs, svg.firstChild);
+    }
+    if (!defs.querySelector('#arrow')) {
+      const marker = document.createElementNS("http://www.w3.org/2000/svg", "marker");
+      marker.setAttribute('id', 'arrow');
+      marker.setAttribute('viewBox', '0 0 10 10');
+      marker.setAttribute('refX', '5');
+      marker.setAttribute('refY', '5');
+      marker.setAttribute('markerWidth', '6');
+      marker.setAttribute('markerHeight', '6');
+      marker.setAttribute('orient', 'auto-start-reverse');
+      marker.innerHTML = '<path d="M 0 0 L 10 5 L 0 10 z" fill="#000000" />';
+      defs.appendChild(marker);
+    }
+    if (!defs.querySelector('#arrow-start')) {
+      const markerStart = document.createElementNS("http://www.w3.org/2000/svg", "marker");
+      markerStart.setAttribute('id', 'arrow-start');
+      markerStart.setAttribute('viewBox', '0 0 10 10');
+      markerStart.setAttribute('refX', '5');
+      markerStart.setAttribute('refY', '5');
+      markerStart.setAttribute('markerWidth', '6');
+      markerStart.setAttribute('markerHeight', '6');
+      markerStart.setAttribute('orient', 'auto');
+      markerStart.innerHTML = '<path d="M 10 0 L 0 5 L 10 10 z" fill="#000000" />';
+      defs.appendChild(markerStart);
+    }
+  },
+
+  isAxesElement(el) {
+    if (!el) return false;
+    const wrap = el.closest ? el.closest('.axes-wrap') : null;
+    return !!(wrap || (el.classList && el.classList.contains('axes-wrap')));
+  },
+
+  getAxesElement(el) {
+    if (!el) return null;
+    return (el.closest && el.closest('.axes-wrap')) || (el.classList && el.classList.contains('axes-wrap') ? el : null);
+  },
+
+  ensureAxesGizmo(svg) {
+    let gizmo = svg.querySelector('#axes-handle-group');
+    if (!gizmo) {
+      gizmo = document.createElementNS("http://www.w3.org/2000/svg", "g");
+      gizmo.setAttribute('id', 'axes-handle-group');
+      gizmo.setAttribute('class', 'editor-gizmo-group');
+      gizmo.setAttribute('style', 'display:none; pointer-events:none;');
+      gizmo.innerHTML = `
+        <!-- 직교좌표계 원점(회전 피벗 중심) 붉은색 조작 핸들 -->
+        <g id="axes-origin-handle-wrap" style="cursor:grab; pointer-events:all;">
+          <circle id="axes-origin-hit" r="22" fill="#000000" opacity="0.001" style="cursor:grab; pointer-events:all;" />
+          <circle id="axes-origin-anchor" r="7" fill="#ef4444" stroke="#ffffff" stroke-width="2.5" style="filter:drop-shadow(0 2px 4px rgba(0,0,0,0.35)); pointer-events:none;" />
+          <circle id="axes-origin-inner" r="2.5" fill="#ffffff" style="pointer-events:none;" />
+          <text id="axes-origin-label" font-size="10.5" font-weight="700" fill="#dc2626" x="12" y="4" style="user-select:none; pointer-events:none; text-shadow:0 1px 2px #ffffff;">원점(회전 중심)</text>
+        </g>
+        <!-- X축 끝점 조절 핸들 (파란 점) -->
+        <g id="axes-x-handle-wrap" style="cursor:ew-resize; pointer-events:all;">
+          <circle id="axes-x-hit" r="22" fill="#000000" opacity="0.001" style="cursor:ew-resize; pointer-events:all;" />
+          <circle id="axes-x-anchor" r="6.5" fill="#3b82f6" stroke="#ffffff" stroke-width="2.5" style="filter:drop-shadow(0 2px 4px rgba(0,0,0,0.35)); pointer-events:none;" />
+          <circle id="axes-x-inner" r="2" fill="#ffffff" style="pointer-events:none;" />
+          <text id="axes-x-label" font-size="10" font-weight="700" fill="#2563eb" x="10" y="4" style="user-select:none; pointer-events:none; text-shadow:0 1px 2px #ffffff;">X축</text>
+        </g>
+        <!-- Y축 끝점 조절 핸들 (파란 점) -->
+        <g id="axes-y-handle-wrap" style="cursor:ns-resize; pointer-events:all;">
+          <circle id="axes-y-hit" r="22" fill="#000000" opacity="0.001" style="cursor:ns-resize; pointer-events:all;" />
+          <circle id="axes-y-anchor" r="6.5" fill="#3b82f6" stroke="#ffffff" stroke-width="2.5" style="filter:drop-shadow(0 2px 4px rgba(0,0,0,0.35)); pointer-events:none;" />
+          <circle id="axes-y-inner" r="2" fill="#ffffff" style="pointer-events:none;" />
+          <text id="axes-y-label" font-size="10" font-weight="700" fill="#2563eb" x="10" y="4" style="user-select:none; pointer-events:none; text-shadow:0 1px 2px #ffffff;">Y축</text>
+        </g>
+      `;
+      svg.appendChild(gizmo);
+
+      const hX = gizmo.querySelector('#axes-x-handle-wrap');
+      const startDragX = (e) => {
+        e.stopPropagation();
+        if (e.cancelable && e.type === 'touchstart') e.preventDefault();
+        const state = window.PicEditor.state;
+        state.isDraggingAxesX = true;
+        state.hasDragged = false;
+        hX.style.cursor = 'grabbing';
+      };
+      hX.addEventListener('mousedown', startDragX);
+      hX.addEventListener('touchstart', startDragX, { passive: false });
+
+      const hY = gizmo.querySelector('#axes-y-handle-wrap');
+      const startDragY = (e) => {
+        e.stopPropagation();
+        if (e.cancelable && e.type === 'touchstart') e.preventDefault();
+        const state = window.PicEditor.state;
+        state.isDraggingAxesY = true;
+        state.hasDragged = false;
+        hY.style.cursor = 'grabbing';
+      };
+      hY.addEventListener('mousedown', startDragY);
+      hY.addEventListener('touchstart', startDragY, { passive: false });
+    }
+    return gizmo;
+  },
+
+  showAxesHandles(axesEl) {
+    const wrap = this.getAxesElement(axesEl);
+    if (!wrap) return;
+    const svg = window.PicEditor.utils.getActiveSvg();
+    if (!svg) return;
+
+    const gizmo = this.ensureAxesGizmo(svg);
+    gizmo.setAttribute('transform', wrap.getAttribute('transform') || 'translate(0,0) scale(1,1) rotate(0)');
+
+    const lineX = wrap.querySelector('.axis-x');
+    const lineY = wrap.querySelector('.axis-y');
+    const x2 = parseFloat(lineX ? lineX.getAttribute('x2') : 0) || 0;
+    const y2 = parseFloat(lineY ? lineY.getAttribute('y2') : 0) || 0;
+
+    const origWrap = gizmo.querySelector('#axes-origin-handle-wrap');
+    const xWrap = gizmo.querySelector('#axes-x-handle-wrap');
+    const yWrap = gizmo.querySelector('#axes-y-handle-wrap');
+
+    if (origWrap) origWrap.setAttribute('transform', 'translate(0, 0)');
+    if (xWrap) xWrap.setAttribute('transform', `translate(${x2}, 0)`);
+    if (yWrap) yWrap.setAttribute('transform', `translate(0, ${y2})`);
+
+    gizmo.style.display = 'block';
+  },
+
+  hideAxesHandles() {
+    const svg = window.PicEditor.utils.getActiveSvg();
+    if (!svg) return;
+    const gizmo = svg.querySelector('#axes-handle-group');
+    if (gizmo) gizmo.style.display = 'none';
+  },
+
+  updateAxesGizmoTransform(axesEl) {
+    const wrap = this.getAxesElement(axesEl);
+    if (!wrap) return;
+    const svg = window.PicEditor.utils.getActiveSvg();
+    if (!svg) return;
+    const gizmo = svg.querySelector('#axes-handle-group');
+    if (gizmo && gizmo.style.display !== 'none') {
+      gizmo.setAttribute('transform', wrap.getAttribute('transform') || 'translate(0,0) scale(1,1) rotate(0)');
+    }
+  },
+
   hideAllGizmos() {
     this.hideArcCenterHandle();
     this.hideLineHandles();
@@ -1240,6 +1390,7 @@ window.PicEditor.tools = {
     this.hideTriangleHandles();
     this.hideRectHandles();
     this.hideParabolaHandles();
+    this.hideAxesHandles();
   },
 
   /**
@@ -1253,6 +1404,7 @@ window.PicEditor.tools = {
     else if (this.isTriangleElement(el)) this.updateTriangleGizmoTransform(el);
     else if (this.isRectElement(el)) this.updateRectGizmoTransform(el);
     else if (this.isParabolaElement(el)) this.updateParabolaGizmoTransform(el);
+    else if (this.isAxesElement(el)) this.updateAxesGizmoTransform(el);
   },
 
 
