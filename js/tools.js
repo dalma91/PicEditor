@@ -1451,6 +1451,7 @@ window.PicEditor.tools = {
       }
     }
 
+    this.updateAxesLabelsOrientation(wrap);
     gizmo.style.display = 'block';
   },
 
@@ -1469,6 +1470,71 @@ window.PicEditor.tools = {
     const gizmo = svg.querySelector('#axes-handle-group');
     if (gizmo && gizmo.style.display !== 'none') {
       gizmo.setAttribute('transform', wrap.getAttribute('transform') || 'translate(0,0) scale(1,1) rotate(0)');
+    }
+    this.updateAxesLabelsOrientation(wrap);
+  },
+
+  /**
+   * 직교좌표계 회전 시 축 글자('x', 'y', 'O') 및 기즈모 라벨이 축과 함께 이동하되
+   * 글자 자체는 회전하지 않고 똑바로 서 있도록 역회전(counter-rotation) 보정
+   */
+  updateAxesLabelsOrientation(axesWrap) {
+    const wrap = this.getAxesElement(axesWrap);
+    if (!wrap) return;
+    const t = window.PicEditor.utils.parseTransform(wrap);
+    const r = (typeof t.r === 'number') ? t.r : (parseFloat(t.r) || 0);
+
+    const lblX = wrap.querySelector('.axis-label-x');
+    if (lblX) {
+      const x = parseFloat(lblX.getAttribute('x')) || 0;
+      const y = parseFloat(lblX.getAttribute('y')) || 0;
+      if (Math.abs(r) > 0.01) {
+        lblX.setAttribute('transform', `rotate(${-r}, ${x}, ${y})`);
+      } else {
+        lblX.removeAttribute('transform');
+      }
+    }
+
+    const lblY = wrap.querySelector('.axis-label-y');
+    if (lblY) {
+      const x = parseFloat(lblY.getAttribute('x')) || 0;
+      const y = parseFloat(lblY.getAttribute('y')) || 0;
+      if (Math.abs(r) > 0.01) {
+        lblY.setAttribute('transform', `rotate(${-r}, ${x}, ${y})`);
+      } else {
+        lblY.removeAttribute('transform');
+      }
+    }
+
+    const lblO = wrap.querySelector('.axis-label-o');
+    if (lblO) {
+      const x = parseFloat(lblO.getAttribute('x')) || 0;
+      const y = parseFloat(lblO.getAttribute('y')) || 0;
+      if (Math.abs(r) > 0.01) {
+        lblO.setAttribute('transform', `rotate(${-r}, ${x}, ${y})`);
+      } else {
+        lblO.removeAttribute('transform');
+      }
+    }
+
+    // 기즈모 안내 라벨들도 글자가 기울어지지 않고 정방향으로 서 있도록 동기화
+    const svg = window.PicEditor.utils.getActiveSvg();
+    if (svg) {
+      const gizmo = svg.querySelector('#axes-handle-group');
+      if (gizmo) {
+        ['#axes-origin-label', '#axes-x-label', '#axes-y-label', '#axes-rot-label'].forEach(sel => {
+          const gLbl = gizmo.querySelector(sel);
+          if (gLbl) {
+            const gx = parseFloat(gLbl.getAttribute('x')) || 0;
+            const gy = parseFloat(gLbl.getAttribute('y')) || 0;
+            if (Math.abs(r) > 0.01) {
+              gLbl.setAttribute('transform', `rotate(${-r}, ${gx}, ${gy})`);
+            } else {
+              gLbl.removeAttribute('transform');
+            }
+          }
+        });
+      }
     }
   },
 

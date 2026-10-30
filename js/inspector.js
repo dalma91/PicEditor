@@ -593,8 +593,13 @@ window.PicEditor.inspector = {
     const t = window.PicEditor.utils.parseTransform(target);
     t.r = angle;
     window.PicEditor.utils.setTransform(target, t);
-    if (window.PicEditor.tools && window.PicEditor.tools.updateGizmosTransform) {
-      window.PicEditor.tools.updateGizmosTransform(target);
+    if (window.PicEditor.tools) {
+      if (window.PicEditor.tools.updateGizmosTransform) {
+        window.PicEditor.tools.updateGizmosTransform(target);
+      }
+      if (window.PicEditor.tools.updateAxesLabelsOrientation) {
+        window.PicEditor.tools.updateAxesLabelsOrientation(target);
+      }
     }
     if (window.PicEditor.sync) window.PicEditor.sync.markModified();
   },
@@ -613,8 +618,13 @@ window.PicEditor.inspector = {
     if (direction === 'H') t.sx *= -1;
     if (direction === 'V') t.sy *= -1;
     window.PicEditor.utils.setTransform(target, t);
-    if (window.PicEditor.tools && window.PicEditor.tools.updateGizmosTransform) {
-      window.PicEditor.tools.updateGizmosTransform(target);
+    if (window.PicEditor.tools) {
+      if (window.PicEditor.tools.updateGizmosTransform) {
+        window.PicEditor.tools.updateGizmosTransform(target);
+      }
+      if (window.PicEditor.tools.updateAxesLabelsOrientation) {
+        window.PicEditor.tools.updateAxesLabelsOrientation(target);
+      }
     }
     if (window.PicEditor.sync) window.PicEditor.sync.markModified();
   },
