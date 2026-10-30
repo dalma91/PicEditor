@@ -372,7 +372,8 @@ window.PicEditor.tools = {
     if (!gizmo) {
       gizmo = document.createElementNS("http://www.w3.org/2000/svg", "g");
       gizmo.setAttribute('id', 'arc-center-handle-group');
-      gizmo.setAttribute('style', 'display:none; pointer-events:none;');
+      gizmo.setAttribute('class', 'editor-gizmo-group');
+      gizmo.setAttribute('style', 'display:none; pointer-events:none;')
 
       gizmo.innerHTML = `
         <line id="arc-chord-guide" stroke="#94a3b8" stroke-dasharray="4,4" stroke-width="1.2" style="pointer-events:none;" />
@@ -575,7 +576,8 @@ window.PicEditor.tools = {
     if (!gizmo) {
       gizmo = document.createElementNS("http://www.w3.org/2000/svg", "g");
       gizmo.setAttribute('id', 'line-handle-group');
-      gizmo.setAttribute('style', 'display:none; pointer-events:none;');
+      gizmo.setAttribute('class', 'editor-gizmo-group');
+      gizmo.setAttribute('style', 'display:none; pointer-events:none;')
 
       gizmo.innerHTML = `
         <!-- 파란색 시점 P1 조작 핸들 -->
@@ -745,9 +747,16 @@ window.PicEditor.tools = {
         <!-- 원의 중심 붉은 점 조작 핸들 -->
         <g id="circle-center-handle-wrap" style="cursor:grab; pointer-events:all;">
           <circle id="circle-center-hit" r="22" fill="#000000" opacity="0.001" style="cursor:grab; pointer-events:all;" />
-          <circle id="circle-center-anchor" r="6.5" fill="#ef4444" stroke="#ffffff" stroke-width="2.5" style="filter:drop-shadow(0 2px 4px rgba(0,0,0,0.35)); pointer-events:none;" />
-          <circle id="circle-center-inner" r="2" fill="#ffffff" style="pointer-events:none;" />
+          <circle id="circle-center-anchor" r="7" fill="#ef4444" stroke="#ffffff" stroke-width="2.5" style="filter:drop-shadow(0 2px 4px rgba(0,0,0,0.35)); pointer-events:none;" />
+          <circle id="circle-center-inner" r="2.5" fill="#ffffff" style="pointer-events:none;" />
           <text id="circle-center-label" font-size="10" font-weight="700" fill="#dc2626" x="12" y="4" style="user-select:none; pointer-events:none; text-shadow:0 1px 2px #ffffff;">중심</text>
+        </g>
+        <!-- 원 반지름(크기 조절) 파란 점 조작 핸들 -->
+        <g id="circle-radius-handle-wrap" style="cursor:ew-resize; pointer-events:all;">
+          <circle id="circle-radius-hit" r="22" fill="#000000" opacity="0.001" style="cursor:ew-resize; pointer-events:all;" />
+          <circle id="circle-radius-anchor" r="7" fill="#3b82f6" stroke="#ffffff" stroke-width="2.5" style="filter:drop-shadow(0 2px 4px rgba(0,0,0,0.35)); pointer-events:none;" />
+          <circle id="circle-radius-inner" r="2.5" fill="#ffffff" style="pointer-events:none;" />
+          <text id="circle-radius-label" font-size="10" font-weight="700" fill="#2563eb" x="12" y="4" style="user-select:none; pointer-events:none; text-shadow:0 1px 2px #ffffff;">반지름</text>
         </g>
       `;
       svg.appendChild(gizmo);
@@ -763,6 +772,18 @@ window.PicEditor.tools = {
       };
       handleCenter.addEventListener('mousedown', startDragCenter);
       handleCenter.addEventListener('touchstart', startDragCenter, { passive: false });
+
+      const handleRadius = gizmo.querySelector('#circle-radius-handle-wrap');
+      const startDragRadius = (e) => {
+        e.stopPropagation();
+        if (e.cancelable && e.type === 'touchstart') e.preventDefault();
+        const state = window.PicEditor.state;
+        state.isDraggingCircleRadius = true;
+        state.hasDragged = false;
+        handleRadius.style.cursor = 'grabbing';
+      };
+      handleRadius.addEventListener('mousedown', startDragRadius);
+      handleRadius.addEventListener('touchstart', startDragRadius, { passive: false });
     }
     return gizmo;
   },
@@ -775,10 +796,13 @@ window.PicEditor.tools = {
     const gizmo = this.ensureCircleGizmo(svg);
     const cx = parseFloat(circleEl.getAttribute('cx')) || 0;
     const cy = parseFloat(circleEl.getAttribute('cy')) || 0;
+    const r = parseFloat(circleEl.getAttribute('r')) || 0;
 
     gizmo.setAttribute('transform', circleEl.getAttribute('transform') || 'translate(0,0) scale(1,1) rotate(0)');
     const centerWrap = gizmo.querySelector('#circle-center-handle-wrap');
     if (centerWrap) centerWrap.setAttribute('transform', `translate(${cx}, ${cy})`);
+    const radiusWrap = gizmo.querySelector('#circle-radius-handle-wrap');
+    if (radiusWrap) radiusWrap.setAttribute('transform', `translate(${cx + r}, ${cy})`);
     gizmo.style.display = 'block';
   },
 
@@ -1291,21 +1315,21 @@ window.PicEditor.tools = {
       gizmo.innerHTML = `
         <!-- 직교좌표계 원점(회전 피벗 중심) 붉은색 조작 핸들 -->
         <g id="axes-origin-handle-wrap" style="cursor:grab; pointer-events:all;">
-          <circle id="axes-origin-hit" r="22" fill="#000000" opacity="0.001" style="cursor:grab; pointer-events:all;" />
+          <circle id="axes-origin-hit" r="26" fill="#000000" opacity="0.001" style="cursor:grab; pointer-events:all;" />
           <circle id="axes-origin-anchor" r="7" fill="#ef4444" stroke="#ffffff" stroke-width="2.5" style="filter:drop-shadow(0 2px 4px rgba(0,0,0,0.35)); pointer-events:none;" />
           <circle id="axes-origin-inner" r="2.5" fill="#ffffff" style="pointer-events:none;" />
           <text id="axes-origin-label" font-size="10.5" font-weight="700" fill="#dc2626" x="12" y="4" style="user-select:none; pointer-events:none; text-shadow:0 1px 2px #ffffff;">원점(회전 중심)</text>
         </g>
         <!-- X축 끝점 조절 핸들 (파란 점) -->
         <g id="axes-x-handle-wrap" style="cursor:ew-resize; pointer-events:all;">
-          <circle id="axes-x-hit" r="22" fill="#000000" opacity="0.001" style="cursor:ew-resize; pointer-events:all;" />
+          <circle id="axes-x-hit" r="26" fill="#000000" opacity="0.001" style="cursor:ew-resize; pointer-events:all;" />
           <circle id="axes-x-anchor" r="6.5" fill="#3b82f6" stroke="#ffffff" stroke-width="2.5" style="filter:drop-shadow(0 2px 4px rgba(0,0,0,0.35)); pointer-events:none;" />
           <circle id="axes-x-inner" r="2" fill="#ffffff" style="pointer-events:none;" />
           <text id="axes-x-label" font-size="10" font-weight="700" fill="#2563eb" x="10" y="4" style="user-select:none; pointer-events:none; text-shadow:0 1px 2px #ffffff;">X축</text>
         </g>
         <!-- Y축 끝점 조절 핸들 (파란 점) -->
         <g id="axes-y-handle-wrap" style="cursor:ns-resize; pointer-events:all;">
-          <circle id="axes-y-hit" r="22" fill="#000000" opacity="0.001" style="cursor:ns-resize; pointer-events:all;" />
+          <circle id="axes-y-hit" r="26" fill="#000000" opacity="0.001" style="cursor:ns-resize; pointer-events:all;" />
           <circle id="axes-y-anchor" r="6.5" fill="#3b82f6" stroke="#ffffff" stroke-width="2.5" style="filter:drop-shadow(0 2px 4px rgba(0,0,0,0.35)); pointer-events:none;" />
           <circle id="axes-y-inner" r="2" fill="#ffffff" style="pointer-events:none;" />
           <text id="axes-y-label" font-size="10" font-weight="700" fill="#2563eb" x="10" y="4" style="user-select:none; pointer-events:none; text-shadow:0 1px 2px #ffffff;">Y축</text>
@@ -1313,12 +1337,30 @@ window.PicEditor.tools = {
       `;
       svg.appendChild(gizmo);
 
+      const hOrig = gizmo.querySelector('#axes-origin-handle-wrap');
+      if (hOrig) {
+        const startDragOrig = (e) => {
+          e.stopPropagation();
+          if (e.cancelable && e.type === 'touchstart') e.preventDefault();
+          const state = window.PicEditor.state;
+          const svg = window.PicEditor.utils.getActiveSvg();
+          const pt = window.PicEditor.utils.getSvgPoint(e, svg);
+          state.startX = pt.x;
+          state.startY = pt.y;
+          state.isDragging = true;
+          state.hasDragged = false;
+        };
+        hOrig.addEventListener('mousedown', startDragOrig);
+        hOrig.addEventListener('touchstart', startDragOrig, { passive: false });
+      }
+
       const hX = gizmo.querySelector('#axes-x-handle-wrap');
       const startDragX = (e) => {
         e.stopPropagation();
         if (e.cancelable && e.type === 'touchstart') e.preventDefault();
         const state = window.PicEditor.state;
         state.isDraggingAxesX = true;
+        state.isDraggingAxesY = false;
         state.hasDragged = false;
         hX.style.cursor = 'grabbing';
       };
@@ -1331,6 +1373,7 @@ window.PicEditor.tools = {
         if (e.cancelable && e.type === 'touchstart') e.preventDefault();
         const state = window.PicEditor.state;
         state.isDraggingAxesY = true;
+        state.isDraggingAxesX = false;
         state.hasDragged = false;
         hY.style.cursor = 'grabbing';
       };
@@ -1383,6 +1426,113 @@ window.PicEditor.tools = {
     }
   },
 
+
+  isCurveElement(el) {
+    if (!el) return false;
+    const tag = (el.tagName || '').toLowerCase();
+    if (tag !== 'path') return false;
+    const dt = el.getAttribute('data-type');
+    return dt === 'hyperbola' || dt === 'sqrt' || dt === 'exp';
+  },
+
+  getCurveData(pathEl) {
+    if (!pathEl || !this.isCurveElement(pathEl)) return null;
+    let x1 = parseFloat(pathEl.getAttribute('data-x1'));
+    let y1 = parseFloat(pathEl.getAttribute('data-y1'));
+    let x2 = parseFloat(pathEl.getAttribute('data-x2'));
+    let y2 = parseFloat(pathEl.getAttribute('data-y2'));
+    if (isNaN(x1) || isNaN(y1) || isNaN(x2) || isNaN(y2)) {
+      const bbox = pathEl.getBBox();
+      x1 = bbox.x; y1 = bbox.y;
+      x2 = bbox.x + bbox.width; y2 = bbox.y + bbox.height;
+    }
+    return { x1, y1, x2, y2, type: pathEl.getAttribute('data-type') };
+  },
+
+  ensureCurveGizmo(svg) {
+    let gizmo = svg.querySelector('#curve-handle-group');
+    if (!gizmo) {
+      gizmo = document.createElementNS("http://www.w3.org/2000/svg", "g");
+      gizmo.setAttribute('id', 'curve-handle-group');
+      gizmo.setAttribute('class', 'editor-gizmo-group');
+      gizmo.setAttribute('style', 'display:none; pointer-events:none;');
+      gizmo.innerHTML = `
+        <!-- 곡선 시점 P1 조작 핸들 (파란 점) -->
+        <g id="curve-p1-handle-wrap" style="cursor:grab; pointer-events:all;">
+          <circle r="22" fill="#000000" opacity="0.001" style="cursor:grab; pointer-events:all;" />
+          <circle r="7" fill="#3b82f6" stroke="#ffffff" stroke-width="2.5" style="filter:drop-shadow(0 2px 4px rgba(0,0,0,0.35)); pointer-events:none;" />
+          <circle r="2.5" fill="#ffffff" style="pointer-events:none;" />
+          <text font-size="10" font-weight="700" fill="#2563eb" x="12" y="4" style="user-select:none; pointer-events:none; text-shadow:0 1px 2px #ffffff;">시점</text>
+        </g>
+        <!-- 곡선 종점 P2 조작 핸들 (파란 점) -->
+        <g id="curve-p2-handle-wrap" style="cursor:grab; pointer-events:all;">
+          <circle r="22" fill="#000000" opacity="0.001" style="cursor:grab; pointer-events:all;" />
+          <circle r="7" fill="#3b82f6" stroke="#ffffff" stroke-width="2.5" style="filter:drop-shadow(0 2px 4px rgba(0,0,0,0.35)); pointer-events:none;" />
+          <circle r="2.5" fill="#ffffff" style="pointer-events:none;" />
+          <text font-size="10" font-weight="700" fill="#2563eb" x="12" y="4" style="user-select:none; pointer-events:none; text-shadow:0 1px 2px #ffffff;">종점</text>
+        </g>
+      `;
+      svg.appendChild(gizmo);
+
+      const h1 = gizmo.querySelector('#curve-p1-handle-wrap');
+      const startDragP1 = (e) => {
+        e.stopPropagation();
+        if (e.cancelable && e.type === 'touchstart') e.preventDefault();
+        const state = window.PicEditor.state;
+        state.isDraggingCurveP1 = true;
+        state.hasDragged = false;
+        h1.style.cursor = 'grabbing';
+      };
+      h1.addEventListener('mousedown', startDragP1);
+      h1.addEventListener('touchstart', startDragP1, { passive: false });
+
+      const h2 = gizmo.querySelector('#curve-p2-handle-wrap');
+      const startDragP2 = (e) => {
+        e.stopPropagation();
+        if (e.cancelable && e.type === 'touchstart') e.preventDefault();
+        const state = window.PicEditor.state;
+        state.isDraggingCurveP2 = true;
+        state.hasDragged = false;
+        h2.style.cursor = 'grabbing';
+      };
+      h2.addEventListener('mousedown', startDragP2);
+      h2.addEventListener('touchstart', startDragP2, { passive: false });
+    }
+    return gizmo;
+  },
+
+  showCurveHandles(curveEl) {
+    if (!curveEl) return;
+    const svg = window.PicEditor.utils.getActiveSvg();
+    if (!svg) return;
+    const data = this.getCurveData(curveEl);
+    if (!data) return;
+
+    const gizmo = this.ensureCurveGizmo(svg);
+    gizmo.setAttribute('transform', curveEl.getAttribute('transform') || 'translate(0,0) scale(1,1) rotate(0)');
+    const p1Wrap = gizmo.querySelector('#curve-p1-handle-wrap');
+    const p2Wrap = gizmo.querySelector('#curve-p2-handle-wrap');
+    if (p1Wrap) p1Wrap.setAttribute('transform', `translate(${data.x1}, ${data.y1})`);
+    if (p2Wrap) p2Wrap.setAttribute('transform', `translate(${data.x2}, ${data.y2})`);
+    gizmo.style.display = 'block';
+  },
+
+  hideCurveHandles() {
+    const svg = window.PicEditor.utils.getActiveSvg();
+    if (!svg) return;
+    const gizmo = svg.querySelector('#curve-handle-group');
+    if (gizmo) gizmo.style.display = 'none';
+  },
+
+  updateCurveGizmoTransform(curveEl) {
+    const svg = window.PicEditor.utils.getActiveSvg();
+    if (!svg) return;
+    const gizmo = svg.querySelector('#curve-handle-group');
+    if (gizmo && gizmo.style.display !== 'none') {
+      gizmo.setAttribute('transform', curveEl.getAttribute('transform') || 'translate(0,0) scale(1,1) rotate(0)');
+    }
+  },
+
   hideAllGizmos() {
     this.hideArcCenterHandle();
     this.hideLineHandles();
@@ -1391,6 +1541,7 @@ window.PicEditor.tools = {
     this.hideRectHandles();
     this.hideParabolaHandles();
     this.hideAxesHandles();
+    this.hideCurveHandles();
   },
 
   /**
@@ -1405,6 +1556,7 @@ window.PicEditor.tools = {
     else if (this.isRectElement(el)) this.updateRectGizmoTransform(el);
     else if (this.isParabolaElement(el)) this.updateParabolaGizmoTransform(el);
     else if (this.isAxesElement(el)) this.updateAxesGizmoTransform(el);
+    else if (this.isCurveElement(el)) this.updateCurveGizmoTransform(el);
   },
 
 

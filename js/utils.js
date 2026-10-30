@@ -62,6 +62,12 @@ window.PicEditor.utils = {
       wrap.classList.remove('selected');
       state.selectedElement = null;
     }
+    state.isDragging = false;
+    state.isDraggingAxesX = false;
+    state.isDraggingAxesY = false;
+    state.isDraggingCircleRadius = false;
+    state.isDraggingCurveP1 = false;
+    state.isDraggingCurveP2 = false;
     const inspector = document.getElementById('textInspector');
     if (inspector) {
       inspector.classList.remove('active');
@@ -82,7 +88,7 @@ window.PicEditor.utils = {
   getCleanSvgString(svg) {
     if (!svg) return '';
     const clone = svg.cloneNode(true);
-    clone.querySelectorAll('.editor-gizmo-group, #axes-handle-group, #arc-center-handle-group, #line-handle-group, #circle-handle-group, #triangle-handle-group, #rect-handle-group, #parabola-handle-group').forEach(el => el.remove());
+    clone.querySelectorAll('.editor-gizmo-group, #axes-handle-group, #arc-center-handle-group, #line-handle-group, #circle-handle-group, #triangle-handle-group, #rect-handle-group, #parabola-handle-group, #curve-handle-group, .axis-hit-line, .axis-arrow-hit').forEach(el => el.remove());
     clone.querySelectorAll('.selected').forEach(el => el.classList.remove('selected'));
     return new XMLSerializer().serializeToString(clone);
   }

@@ -50,10 +50,9 @@ window.PicEditor.interaction = {
         const wrap = el.closest('.axes-wrap') || el.closest('.text-wrap') || el.closest('.mid-arrow') || el;
         const targetEl = wrap.classList.contains('axes-wrap') ? wrap : (wrap.querySelector('.text-el') || el);
 
-        // 선택해제를 누르지 않으면 다른 객체가 선택되지 않도록 차단
+        // 기존에 다른 객체가 선택되어 있다면 자연스럽게 선택 해제하고 신규 객체 선택
         if (state.selectedElement && state.selectedElement !== targetEl && state.selectedElement !== wrap) {
-          e.stopPropagation();
-          return;
+          window.PicEditor.utils.deselectAll();
         }
 
         e.stopPropagation();
@@ -70,20 +69,22 @@ window.PicEditor.interaction = {
 
         if (window.PicEditor.tools && window.PicEditor.tools.hideAllGizmos) {
           window.PicEditor.tools.hideAllGizmos();
-          if (window.PicEditor.tools.isArcElement(el)) {
-            window.PicEditor.tools.showArcCenterHandle(el);
-          } else if (window.PicEditor.tools.isLineElement(el)) {
-            window.PicEditor.tools.showLineHandles(el);
-          } else if (window.PicEditor.tools.isCircleElement(el)) {
-            window.PicEditor.tools.showCircleHandles(el);
-          } else if (window.PicEditor.tools.isTriangleElement(el)) {
-            window.PicEditor.tools.showTriangleHandles(el);
-          } else if (window.PicEditor.tools.isRectElement(el)) {
-            window.PicEditor.tools.showRectHandles(el);
-          } else if (window.PicEditor.tools.isParabolaElement(el)) {
-            window.PicEditor.tools.showParabolaHandles(el);
-          } else if (window.PicEditor.tools.isAxesElement(el)) {
-            window.PicEditor.tools.showAxesHandles(el);
+          if (window.PicEditor.tools.isArcElement(targetEl)) {
+            window.PicEditor.tools.showArcCenterHandle(targetEl);
+          } else if (window.PicEditor.tools.isLineElement(targetEl)) {
+            window.PicEditor.tools.showLineHandles(targetEl);
+          } else if (window.PicEditor.tools.isCircleElement(targetEl)) {
+            window.PicEditor.tools.showCircleHandles(targetEl);
+          } else if (window.PicEditor.tools.isTriangleElement(targetEl)) {
+            window.PicEditor.tools.showTriangleHandles(targetEl);
+          } else if (window.PicEditor.tools.isRectElement(targetEl)) {
+            window.PicEditor.tools.showRectHandles(targetEl);
+          } else if (window.PicEditor.tools.isParabolaElement(targetEl)) {
+            window.PicEditor.tools.showParabolaHandles(targetEl);
+          } else if (window.PicEditor.tools.isAxesElement(targetEl)) {
+            window.PicEditor.tools.showAxesHandles(targetEl);
+          } else if (window.PicEditor.tools.isCurveElement(targetEl)) {
+            window.PicEditor.tools.showCurveHandles(targetEl);
           }
         }
 
@@ -114,6 +115,34 @@ window.PicEditor.interaction = {
           window.PicEditor.inspector.startInlineTextEdit(textEl);
         }
       };
+
+      // 직교 좌표계 화살표 끝부분 직접 클릭 및 드래그 바인딩 (선택 전에도 화살표 끝 클릭으로 즉시 선택/길이조절)
+      if (el.classList.contains('axes-wrap')) {
+        const hitArrX = el.querySelector('.axis-arrow-hit-x');
+        if (hitArrX) {
+          hitArrX.onmousedown = (e) => {
+            if (state.isDrawMode) return;
+            e.stopPropagation();
+            selectAndStartDrag(e);
+            state.isDraggingAxesX = true;
+            state.isDraggingAxesY = false;
+            state.isDragging = false;
+          };
+          hitArrX.ontouchstart = hitArrX.onmousedown;
+        }
+        const hitArrY = el.querySelector('.axis-arrow-hit-y');
+        if (hitArrY) {
+          hitArrY.onmousedown = (e) => {
+            if (state.isDrawMode) return;
+            e.stopPropagation();
+            selectAndStartDrag(e);
+            state.isDraggingAxesY = true;
+            state.isDraggingAxesX = false;
+            state.isDragging = false;
+          };
+          hitArrY.ontouchstart = hitArrY.onmousedown;
+        }
+      }
     });
   },
 
@@ -289,7 +318,43 @@ window.PicEditor.interaction = {
           const group = document.createElementNS("http://www.w3.org/2000/svg", "g");
           group.setAttribute('class', 'movable axes-wrap');
           group.setAttribute('transform', `translate(${pt.x}, ${pt.y}) scale(1,1) rotate(0)`);
-          
+
+          // 투명 광폭 히트 영역 (축 선 클릭 반응성 대폭 강화)
+          const hitLineX = document.createElementNS("http://www.w3.org/2000/svg", "line");
+          hitLineX.setAttribute('class', 'axis-hit-line axis-hit-x');
+          hitLineX.setAttribute('x1', '0'); hitLineX.setAttribute('y1', '0');
+          hitLineX.setAttribute('x2', '0'); hitLineX.setAttribute('y2', '0');
+          hitLineX.setAttribute('stroke', '#000000');
+          hitLineX.setAttribute('stroke-width', '24');
+          hitLineX.setAttribute('opacity', '0.001');
+          hitLineX.setAttribute('style', 'cursor:ew-resize;');
+
+          const hitLineY = document.createElementNS("http://www.w3.org/2000/svg", "line");
+          hitLineY.setAttribute('class', 'axis-hit-line axis-hit-y');
+          hitLineY.setAttribute('x1', '0'); hitLineY.setAttribute('y1', '0');
+          hitLineY.setAttribute('x2', '0'); hitLineY.setAttribute('y2', '0');
+          hitLineY.setAttribute('stroke', '#000000');
+          hitLineY.setAttribute('stroke-width', '24');
+          hitLineY.setAttribute('opacity', '0.001');
+          hitLineY.setAttribute('style', 'cursor:ns-resize;');
+
+          // 화살표 끝부분 전용 히트 영역 (화살표 끝을 바로 클릭/선택하고 길이 조절 가능)
+          const hitArrowX = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+          hitArrowX.setAttribute('class', 'axis-arrow-hit axis-arrow-hit-x');
+          hitArrowX.setAttribute('cx', '0'); hitArrowX.setAttribute('cy', '0');
+          hitArrowX.setAttribute('r', '24');
+          hitArrowX.setAttribute('fill', '#000000');
+          hitArrowX.setAttribute('opacity', '0.001');
+          hitArrowX.setAttribute('style', 'cursor:ew-resize;');
+
+          const hitArrowY = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+          hitArrowY.setAttribute('class', 'axis-arrow-hit axis-arrow-hit-y');
+          hitArrowY.setAttribute('cx', '0'); hitArrowY.setAttribute('cy', '0');
+          hitArrowY.setAttribute('r', '24');
+          hitArrowY.setAttribute('fill', '#000000');
+          hitArrowY.setAttribute('opacity', '0.001');
+          hitArrowY.setAttribute('style', 'cursor:ns-resize;');
+
           const lineX = document.createElementNS("http://www.w3.org/2000/svg", "line");
           lineX.setAttribute('class', 'axis-line axis-x');
           lineX.setAttribute('x1', '0');
@@ -349,8 +414,12 @@ window.PicEditor.interaction = {
           labelO.setAttribute('fill', '#000000');
           labelO.textContent = 'O';
 
+          group.appendChild(hitLineX);
+          group.appendChild(hitLineY);
           group.appendChild(lineX);
           group.appendChild(lineY);
+          group.appendChild(hitArrowX);
+          group.appendChild(hitArrowY);
           group.appendChild(originDot);
           group.appendChild(labelX);
           group.appendChild(labelY);
@@ -516,6 +585,79 @@ window.PicEditor.interaction = {
           window.PicEditor.tools.updateMidArrowPosition(lineEl);
           window.PicEditor.tools.showLineHandles(lineEl);
         }
+        return;
+      }
+
+      // 1-C. 원(Circle) 반지름 크기 조절 드래그
+      if (state.isDraggingCircleRadius && state.selectedElement) {
+        state.hasDragged = true;
+        if (e.cancelable) e.preventDefault();
+        const circleEl = state.selectedElement;
+        const t = window.PicEditor.utils.parseTransform(circleEl);
+        const rad = (t.r || 0) * Math.PI / 180;
+        const cos = Math.cos(-rad);
+        const sin = Math.sin(-rad);
+        const lx = (pt.x - t.x) / (t.sx || 1);
+        const ly = (pt.y - t.y) / (t.sy || 1);
+        const localX = lx * cos - ly * sin;
+        const localY = lx * sin + ly * cos;
+
+        const cx = parseFloat(circleEl.getAttribute('cx')) || 0;
+        const cy = parseFloat(circleEl.getAttribute('cy')) || 0;
+        const newR = Math.max(5, Math.round(Math.hypot(localX - cx, localY - cy)));
+        circleEl.setAttribute('r', newR);
+        window.PicEditor.tools.showCircleHandles(circleEl);
+        window.PicEditor.inspector.syncUItoSelected();
+        if (window.PicEditor.sync) window.PicEditor.sync.markModified();
+        return;
+      }
+
+      // 1-F. 함수 곡선(반비례, 루트, 지수) 양 끝점 드래그
+      if ((state.isDraggingCurveP1 || state.isDraggingCurveP2) && state.selectedElement) {
+        state.hasDragged = true;
+        if (e.cancelable) e.preventDefault();
+        const curveEl = state.selectedElement;
+        const t = window.PicEditor.utils.parseTransform(curveEl);
+        const rad = (t.r || 0) * Math.PI / 180;
+        const cos = Math.cos(-rad);
+        const sin = Math.sin(-rad);
+        const lx = (pt.x - t.x) / (t.sx || 1);
+        const ly = (pt.y - t.y) / (t.sy || 1);
+        const localX = lx * cos - ly * sin;
+        const localY = lx * sin + ly * cos;
+
+        let x1 = parseFloat(curveEl.getAttribute('data-x1')) || 0;
+        let y1 = parseFloat(curveEl.getAttribute('data-y1')) || 0;
+        let x2 = parseFloat(curveEl.getAttribute('data-x2')) || 0;
+        let y2 = parseFloat(curveEl.getAttribute('data-y2')) || 0;
+        const type = curveEl.getAttribute('data-type');
+
+        if (state.isDraggingCurveP1) {
+          x1 = localX; y1 = localY;
+        } else if (state.isDraggingCurveP2) {
+          x2 = localX; y2 = localY;
+        }
+        curveEl.setAttribute('data-x1', x1.toFixed(1));
+        curveEl.setAttribute('data-y1', y1.toFixed(1));
+        curveEl.setAttribute('data-x2', x2.toFixed(1));
+        curveEl.setAttribute('data-y2', y2.toFixed(1));
+
+        const minX = Math.min(x1, x2), maxX = Math.max(x1, x2);
+        const minY = Math.min(y1, y2), maxY = Math.max(y1, y2);
+        const dx = maxX - minX, dy = maxY - minY;
+
+        let d = '';
+        if (type === 'hyperbola') {
+          d = `M ${minX.toFixed(1)},${minY.toFixed(1)} C ${minX.toFixed(1)},${(minY + 0.60 * dy).toFixed(1)} ${(minX + 0.40 * dx).toFixed(1)},${maxY.toFixed(1)} ${maxX.toFixed(1)},${maxY.toFixed(1)}`;
+        } else if (type === 'sqrt') {
+          d = `M ${minX.toFixed(1)},${maxY.toFixed(1)} Q ${minX.toFixed(1)},${minY.toFixed(1)} ${maxX.toFixed(1)},${minY.toFixed(1)}`;
+        } else if (type === 'exp') {
+          d = `M ${minX.toFixed(1)},${minY.toFixed(1)} C ${(minX + 0.30 * dx).toFixed(1)},${(minY + 0.65 * dy).toFixed(1)} ${(minX + 0.60 * dx).toFixed(1)},${maxY.toFixed(1)} ${maxX.toFixed(1)},${maxY.toFixed(1)}`;
+        }
+        if (d) curveEl.setAttribute('d', d);
+        window.PicEditor.tools.showCurveHandles(curveEl);
+        window.PicEditor.inspector.syncUItoSelected();
+        if (window.PicEditor.sync) window.PicEditor.sync.markModified();
         return;
       }
 
@@ -687,6 +829,53 @@ window.PicEditor.interaction = {
         return;
       }
 
+      // 1-A. 직교 좌표계 X축 / Y축 조절점 드래그
+      if ((state.isDraggingAxesX || state.isDraggingAxesY) && state.selectedElement) {
+        state.hasDragged = true;
+        if (e.cancelable) e.preventDefault();
+        const axesWrap = window.PicEditor.tools.getAxesElement(state.selectedElement);
+        if (axesWrap) {
+          const t = window.PicEditor.utils.parseTransform(axesWrap);
+          const rad = -(t.r || 0) * Math.PI / 180;
+          const cos = Math.cos(rad);
+          const sin = Math.sin(rad);
+          const unrotX = (pt.x - t.x) / (t.sx || 1);
+          const unrotY = (pt.y - t.y) / (t.sy || 1);
+          const localX = unrotX * cos - unrotY * sin;
+          const localY = unrotX * sin + unrotY * cos;
+
+          const lineX = axesWrap.querySelector('.axis-x');
+          const lineY = axesWrap.querySelector('.axis-y');
+          const lblX = axesWrap.querySelector('.axis-label-x');
+          const lblY = axesWrap.querySelector('.axis-label-y');
+
+          const hitX = axesWrap.querySelector('.axis-hit-x');
+          const hitY = axesWrap.querySelector('.axis-hit-y');
+          const hitArrX = axesWrap.querySelector('.axis-arrow-hit-x');
+          const hitArrY = axesWrap.querySelector('.axis-arrow-hit-y');
+
+          if (state.isDraggingAxesX && lineX) {
+            lineX.setAttribute('x2', localX.toFixed(1));
+            if (hitX) hitX.setAttribute('x2', localX.toFixed(1));
+            if (hitArrX) hitArrX.setAttribute('cx', localX.toFixed(1));
+            if (lblX) {
+              lblX.setAttribute('x', (localX >= 0 ? localX + 6 : localX - 14).toFixed(1));
+            }
+          } else if (state.isDraggingAxesY && lineY) {
+            lineY.setAttribute('y2', localY.toFixed(1));
+            if (hitY) hitY.setAttribute('y2', localY.toFixed(1));
+            if (hitArrY) hitArrY.setAttribute('cy', localY.toFixed(1));
+            if (lblY) {
+              lblY.setAttribute('y', (localY <= 0 ? localY - 6 : localY + 15).toFixed(1));
+            }
+          }
+          window.PicEditor.tools.showAxesHandles(axesWrap);
+          window.PicEditor.inspector.syncUItoSelected();
+          if (window.PicEditor.sync) window.PicEditor.sync.markModified();
+        }
+        return;
+      }
+
       // 2. 작도 모드 드로잉
       if (state.isDrawMode && state.isDrawing && state.tempShape) {
         if (e.cancelable) e.preventDefault();
@@ -786,14 +975,23 @@ window.PicEditor.interaction = {
           const lblY = state.tempShape.querySelector('.axis-label-y');
           const lblO = state.tempShape.querySelector('.axis-label-o');
 
+          const hitX = state.tempShape.querySelector('.axis-hit-x');
+          const hitY = state.tempShape.querySelector('.axis-hit-y');
+          const hitArrX = state.tempShape.querySelector('.axis-arrow-hit-x');
+          const hitArrY = state.tempShape.querySelector('.axis-arrow-hit-y');
           if (lineX) {
             lineX.setAttribute('x2', dx.toFixed(1));
             lineX.setAttribute('y2', '0');
           }
+          if (hitX) { hitX.setAttribute('x2', dx.toFixed(1)); hitX.setAttribute('y2', '0'); }
+          if (hitArrX) { hitArrX.setAttribute('cx', dx.toFixed(1)); hitArrX.setAttribute('cy', '0'); }
+
           if (lineY) {
             lineY.setAttribute('x2', '0');
             lineY.setAttribute('y2', dy.toFixed(1));
           }
+          if (hitY) { hitY.setAttribute('x2', '0'); hitY.setAttribute('y2', dy.toFixed(1)); }
+          if (hitArrY) { hitArrY.setAttribute('cx', '0'); hitArrY.setAttribute('cy', dy.toFixed(1)); }
           if (lblX) {
             lblX.setAttribute('x', (dx >= 0 ? dx + 6 : dx - 14).toFixed(1));
             lblX.setAttribute('y', '5');
@@ -808,42 +1006,6 @@ window.PicEditor.interaction = {
             lblO.setAttribute('x', ox.toString());
             lblO.setAttribute('y', oy.toString());
           }
-        }
-        return;
-      }
-
-      // 직교 좌표계 X축 / Y축 조절점 드래그
-      if ((state.isDraggingAxesX || state.isDraggingAxesY) && state.selectedElement) {
-        const axesWrap = window.PicEditor.tools.getAxesElement(state.selectedElement);
-        if (axesWrap) {
-          const t = window.PicEditor.utils.parseTransform(axesWrap);
-          const rad = -(t.r || 0) * Math.PI / 180;
-          const cos = Math.cos(rad);
-          const sin = Math.sin(rad);
-          const unrotX = (pt.x - t.x) / (t.sx || 1);
-          const unrotY = (pt.y - t.y) / (t.sy || 1);
-          const localX = unrotX * cos - unrotY * sin;
-          const localY = unrotX * sin + unrotY * cos;
-
-          const lineX = axesWrap.querySelector('.axis-x');
-          const lineY = axesWrap.querySelector('.axis-y');
-          const lblX = axesWrap.querySelector('.axis-label-x');
-          const lblY = axesWrap.querySelector('.axis-label-y');
-
-          if (state.isDraggingAxesX && lineX) {
-            lineX.setAttribute('x2', localX.toFixed(1));
-            if (lblX) {
-              lblX.setAttribute('x', (localX >= 0 ? localX + 6 : localX - 14).toFixed(1));
-            }
-          } else if (state.isDraggingAxesY && lineY) {
-            lineY.setAttribute('y2', localY.toFixed(1));
-            if (lblY) {
-              lblY.setAttribute('y', (localY <= 0 ? localY - 6 : localY + 15).toFixed(1));
-            }
-          }
-          window.PicEditor.tools.showAxesHandles(axesWrap);
-          window.PicEditor.inspector.syncUItoSelected();
-          if (window.PicEditor.sync) window.PicEditor.sync.markModified();
         }
         return;
       }
@@ -925,6 +1087,31 @@ window.PicEditor.interaction = {
       }
 
       // 원 중심 드래그 종료
+      if (state.isDraggingCircleRadius) {
+        state.isDraggingCircleRadius = false;
+        const gizmo = svg.querySelector('#circle-handle-group');
+        if (gizmo) {
+          const rH = gizmo.querySelector('#circle-radius-handle-wrap');
+          if (rH) rH.style.cursor = 'ew-resize';
+        }
+        if (state.hasDragged && window.PicEditor.sync) window.PicEditor.sync.markModified();
+        return;
+      }
+
+      if (state.isDraggingCurveP1 || state.isDraggingCurveP2) {
+        state.isDraggingCurveP1 = false;
+        state.isDraggingCurveP2 = false;
+        const gizmo = svg.querySelector('#curve-handle-group');
+        if (gizmo) {
+          const h1 = gizmo.querySelector('#curve-p1-handle-wrap');
+          const h2 = gizmo.querySelector('#curve-p2-handle-wrap');
+          if (h1) h1.style.cursor = 'grab';
+          if (h2) h2.style.cursor = 'grab';
+        }
+        if (state.hasDragged && window.PicEditor.sync) window.PicEditor.sync.markModified();
+        return;
+      }
+
       if (state.isDraggingCircleCenter) {
         state.isDraggingCircleCenter = false;
         if (svg) {
@@ -981,6 +1168,20 @@ window.PicEditor.interaction = {
         return;
       }
 
+      // 직교 좌표계 X축 / Y축 조절점 드래그 종료
+      if (state.isDraggingAxesX || state.isDraggingAxesY) {
+        state.isDraggingAxesX = false;
+        state.isDraggingAxesY = false;
+        if (svg) {
+          const hX = svg.querySelector('#axes-x-handle-wrap');
+          if (hX) hX.style.cursor = 'ew-resize';
+          const hY = svg.querySelector('#axes-y-handle-wrap');
+          if (hY) hY.style.cursor = 'ns-resize';
+        }
+        if (state.hasDragged && window.PicEditor.sync) window.PicEditor.sync.markModified();
+        return;
+      }
+
       // 작도 완료
       if (state.isDrawMode && state.isDrawing) {
         state.isDrawing = false;
@@ -992,7 +1193,21 @@ window.PicEditor.interaction = {
           const tool = (window.PicEditor.tools && window.PicEditor.tools.getCurrentTool)
             ? window.PicEditor.tools.getCurrentTool()
             : (document.getElementById('toolSelect') ? document.getElementById('toolSelect').value : 'line');
-          if (tool === 'arc') {
+          if (tool === 'line' || tool === 'arrow') {
+            window.PicEditor.interaction.toggleMode();
+            window.PicEditor.utils.deselectAll();
+            state.selectedElement = created;
+            created.classList.add('selected');
+            window.PicEditor.tools.showLineHandles(created);
+            window.PicEditor.inspector.syncUItoSelected();
+          } else if (['hyperbola', 'sqrt', 'exp'].includes(tool)) {
+            window.PicEditor.interaction.toggleMode();
+            window.PicEditor.utils.deselectAll();
+            state.selectedElement = created;
+            created.classList.add('selected');
+            window.PicEditor.tools.showCurveHandles(created);
+            window.PicEditor.inspector.syncUItoSelected();
+          } else if (tool === 'arc') {
             // 호(arc) 작도 완료 즉시 선택 모드로 전환하고 붉은 중심점 핸들 노출
             window.PicEditor.interaction.toggleMode();
             window.PicEditor.utils.deselectAll();
