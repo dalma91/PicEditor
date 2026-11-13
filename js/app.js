@@ -10,6 +10,22 @@ window.addEventListener('DOMContentLoaded', () => {
   window.PicEditor.interaction.initMovableEvents();
   window.PicEditor.interaction.initGlobalEvents();
 
+  // 기본 모드를 '선택/편집' 모드로 보장
+  if (window.PicEditor.state) {
+    window.PicEditor.state.isDrawMode = false;
+  }
+  document.querySelectorAll('svg').forEach(svg => {
+    svg.classList.remove('draw-mode');
+    svg.classList.add('select-mode');
+  });
+  const modeBtn = document.getElementById('modeToggleBtn');
+  if (modeBtn) {
+    modeBtn.textContent = '🖱️ 모드: 선택/편집';
+  }
+  if (window.PicEditor.utils && window.PicEditor.utils.deselectAll) {
+    window.PicEditor.utils.deselectAll();
+  }
+
   // 3. 텍스트 배경 박스 계산
   setTimeout(() => {
     window.PicEditor.canvas.updateAllTextBgBoxes();

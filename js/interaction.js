@@ -157,7 +157,7 @@ window.PicEditor.interaction = {
     svgs.forEach(svg => {
       const handleCanvasStart = (e) => {
         if (!state.isDrawMode) {
-          // 아크 또는 라인 기즈모 클릭/터치 시 선택 해제 방지
+          // 기즈모 클릭/터치 시 선택 해제 방지
           if (e.target.closest && (
             e.target.closest('#arc-center-handle-group') ||
             e.target.closest('#line-handle-group') ||
@@ -170,12 +170,8 @@ window.PicEditor.interaction = {
             return;
           }
 
-          // 선택된 객체가 있을 경우, 사용자가 명시적으로 [선택 해제] 버튼을 누르기 전까지 선택 유지
-          if (state.selectedElement) {
-            return;
-          }
-
-          if (e.target === svg || (e.target.tagName && e.target.tagName.toLowerCase() === 'rect' && !e.target.classList.contains('text-bg-rect'))) {
+          // 이동 가능한 객체(.movable)가 아닌 빈 캔버스/배경 클릭 시 선택 해제
+          if (!e.target.closest || !e.target.closest('.movable')) {
             window.PicEditor.utils.deselectAll();
           }
           return;
