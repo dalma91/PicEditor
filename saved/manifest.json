@@ -281,5 +281,29 @@
     "title": "KAIST 문제9_그림",
     "file": "KAIST_문제9_그림.html",
     "thumb": "KAIST_문제9_그림.png"
+  },
+  {
+    "id": "KAIST_문제13_그림",
+    "title": "KAIST 문제13_그림",
+    "file": "KAIST_문제13_그림.html",
+    "thumb": "KAIST_문제13_그림.png"
+  },
+  {
+    "id": "KAIST_문제14_그림",
+    "title": "KAIST 문제14_그림",
+    "file": "KAIST_문제14_그림.html",
+    "thumb": "KAIST_문제14_그림.png"
+  },
+  {
+    "id": "KAIST_문제15_그림15-1",
+    "title": "KAIST 문제15_그림15-1",
+    "file": "KAIST_문제15_그림15-1.html",
+    "thumb": "KAIST_문제15_그림15-1.png"
+  },
+  {
+    "id": "KAIST_문제15_그림15-2",
+    "title": "KAIST 문제15_그림15-2",
+    "file": "KAIST_문제15_그림15-2.html",
+    "thumb": "KAIST_문제15_그림15-2.png"
   }
 ]
