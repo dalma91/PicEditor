@@ -125,7 +125,7 @@ window.PicEditor.github = {
     styleEl.textContent = `
       text { font-family: 'Batang', 'Times New Roman', serif; }
       .text-bg-rect { fill: #ffffff; stroke: none; stroke-width: 0; }
-      .text-wrap.bg-box-white .text-bg-rect { display: block; fill: #ffffff; stroke: none; stroke-width: 0; }
+      .text-wrap.bg-box-white .text-bg-rect { display: inline !important; fill: #ffffff !important; stroke: none; stroke-width: 0; }
     `;
     cloneSvg.insertBefore(styleEl, cloneSvg.firstChild);
 

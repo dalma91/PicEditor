@@ -184,7 +184,30 @@ window.PicEditor.storage = {
           existingTextLayer.querySelectorAll('.text-wrap').forEach(node => {
             const clone = node.cloneNode(true);
             clone.classList.add('movable');
+            const textEl = clone.querySelector('.text-el') || clone.querySelector('text');
+            let bgRect = clone.querySelector('.text-bg-rect');
+            if (textEl && !bgRect) {
+              bgRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+              bgRect.setAttribute('class', 'text-bg-rect');
+              bgRect.setAttribute('rx', '3');
+              bgRect.setAttribute('ry', '3');
+              clone.insertBefore(bgRect, textEl);
+            }
             textLayer.appendChild(clone);
+          });
+          existingTextLayer.querySelectorAll(':scope > text').forEach(node => {
+            const wrap = document.createElementNS("http://www.w3.org/2000/svg", "g");
+            wrap.setAttribute('class', 'movable text-wrap');
+            wrap.setAttribute('transform', 'translate(0,0) scale(1,1) rotate(0)');
+            const bgRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+            bgRect.setAttribute('class', 'text-bg-rect');
+            bgRect.setAttribute('rx', '3');
+            bgRect.setAttribute('ry', '3');
+            const textClone = node.cloneNode(true);
+            textClone.classList.add('text-el');
+            wrap.appendChild(bgRect);
+            wrap.appendChild(textClone);
+            textLayer.appendChild(wrap);
           });
         }
 

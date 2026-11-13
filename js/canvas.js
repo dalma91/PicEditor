@@ -9,20 +9,66 @@ window.PicEditor.canvas = {
    */
   updateSingleTextBgBox(wrap) {
     if (!wrap) return;
-    const textEl = wrap.querySelector('.text-el');
-    const bgRect = wrap.querySelector('.text-bg-rect');
-    if (textEl && bgRect) {
+    const textEl = wrap.querySelector('.text-el') || wrap.querySelector('text');
+    if (!textEl) return;
+
+    let bgRect = wrap.querySelector('.text-bg-rect');
+
+    // 만약 bg-box-white 클래스가 켜져 있는데 bgRect가 없다면 자동 생성
+    if (!bgRect && wrap.classList.contains('bg-box-white')) {
+      bgRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+      bgRect.setAttribute('class', 'text-bg-rect');
+      bgRect.setAttribute('rx', '3');
+      bgRect.setAttribute('ry', '3');
+      wrap.insertBefore(bgRect, textEl);
+    }
+
+    if (bgRect) {
+      // bgRect가 항상 textEl 뒤(SVG 기준 앞 순서)에 오도록 보장 (글자가 가려지는 현상 원천 방지)
+      if (textEl.previousElementSibling !== bgRect) {
+        wrap.insertBefore(bgRect, textEl);
+      }
+
       try {
-        const bbox = textEl.getBBox();
-        bgRect.setAttribute('x', bbox.x - 4);
-        bgRect.setAttribute('y', bbox.y - 3);
-        bgRect.setAttribute('width', Math.max(10, bbox.width + 8));
-        bgRect.setAttribute('height', Math.max(10, bbox.height + 6));
+        let bbox = null;
+        try {
+          bbox = textEl.getBBox();
+        } catch (e) {
+          bbox = null;
+        }
+
+        const padX = 6;
+        const padY = 4;
+        const fs = parseInt(textEl.getAttribute('font-size')) || 24;
+        const txt = textEl.textContent || '';
+        const fallbackW = Math.max(16, txt.length * (fs * 0.55));
+        const fallbackH = fs * 1.15;
+
+        const w = (bbox && bbox.width > 0) ? bbox.width : fallbackW;
+        const h = (bbox && bbox.height > 0) ? bbox.height : fallbackH;
+        const x = (bbox && bbox.width > 0) ? bbox.x : (parseFloat(textEl.getAttribute('x')) || 0);
+        const y = (bbox && bbox.height > 0) ? bbox.y : ((parseFloat(textEl.getAttribute('y')) || 0) - h);
+
+        bgRect.setAttribute('x', Math.round(x - padX));
+        bgRect.setAttribute('y', Math.round(y - padY));
+        bgRect.setAttribute('width', Math.round(Math.max(12, w + padX * 2)));
+        bgRect.setAttribute('height', Math.round(Math.max(12, h + padY * 2)));
         bgRect.setAttribute('fill', '#ffffff');
+        bgRect.setAttribute('fill-opacity', '1');
         bgRect.setAttribute('stroke', 'none');
         bgRect.setAttribute('stroke-width', '0');
+        bgRect.setAttribute('rx', '3');
+        bgRect.setAttribute('ry', '3');
+
+        if (wrap.classList.contains('bg-box-white')) {
+          bgRect.removeAttribute('display');
+          bgRect.style.display = 'inline';
+        } else {
+          bgRect.setAttribute('display', 'none');
+          bgRect.style.display = 'none';
+        }
       } catch (e) {
-        // SVG getBBox fallback
+        console.warn('updateSingleTextBgBox fallback error:', e);
       }
     }
   },

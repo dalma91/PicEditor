@@ -488,35 +488,98 @@ window.PicEditor.inspector = {
    */
   onChangeTextBgMode(mode) {
     const state = window.PicEditor.state;
-    if (!state.selectedElement || !state.selectedElement.classList.contains('text-el')) return;
+    if (!state.selectedElement) return;
 
-    const wrap = state.selectedElement.closest('.text-wrap');
+    // 1. 선택된 대상에서 textEl 및 wrap 안전하게 추출
+    let textEl = this.getTextElement(state.selectedElement);
+    let wrap = state.selectedElement.closest ? state.selectedElement.closest('.text-wrap') : null;
+
+    // 만약 wrap이 없는 일반 <text>인 경우 동적으로 .text-wrap으로 감싸기
+    if (!wrap && textEl) {
+      wrap = textEl.closest ? textEl.closest('.text-wrap') : null;
+      if (!wrap) {
+        const parent = textEl.parentNode || window.PicEditor.utils.getActiveSvg().querySelector('.text-layer');
+        wrap = document.createElementNS("http://www.w3.org/2000/svg", "g");
+        wrap.setAttribute('class', 'movable text-wrap');
+        const tf = textEl.getAttribute('transform');
+        if (tf) {
+          wrap.setAttribute('transform', tf);
+          textEl.removeAttribute('transform');
+        } else {
+          wrap.setAttribute('transform', 'translate(0,0) scale(1,1) rotate(0)');
+        }
+        parent.insertBefore(wrap, textEl);
+        wrap.appendChild(textEl);
+      }
+    }
+
+    if (!textEl && wrap) {
+      textEl = wrap.querySelector('.text-el') || wrap.querySelector('text');
+    }
+
+    if (!wrap || !textEl) return;
+
+    // text-el 클래스 보장
+    if (textEl.classList && !textEl.classList.contains('text-el')) {
+      textEl.classList.add('text-el');
+    }
+
+    // 기존 스타일 초기화
     wrap.classList.remove('bg-box-white');
-    state.selectedElement.classList.remove('bg-stroke-white');
-    state.selectedElement.removeAttribute('paint-order');
-    state.selectedElement.removeAttribute('stroke');
-    state.selectedElement.removeAttribute('stroke-width');
+    textEl.classList.remove('bg-stroke-white');
+    textEl.removeAttribute('paint-order');
+    textEl.removeAttribute('stroke');
+    textEl.removeAttribute('stroke-width');
+
+    let bgRect = wrap.querySelector('.text-bg-rect');
 
     if (mode === 'box-white') {
       wrap.classList.add('bg-box-white');
-      const textEl = wrap.querySelector('.text-el');
-      const bgRect = wrap.querySelector('.text-bg-rect');
-      if (textEl && bgRect) {
-        const bbox = textEl.getBBox();
-        bgRect.setAttribute('x', bbox.x - 4);
-        bgRect.setAttribute('y', bbox.y - 3);
-        bgRect.setAttribute('width', bbox.width + 8);
-        bgRect.setAttribute('height', bbox.height + 6);
-        bgRect.setAttribute('fill', '#ffffff');
-        bgRect.setAttribute('stroke', 'none');
-        bgRect.setAttribute('stroke-width', '0');
+      if (!bgRect) {
+        bgRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+        bgRect.setAttribute('class', 'text-bg-rect');
+        wrap.insertBefore(bgRect, textEl);
+      } else {
+        // bgRect가 항상 textEl 뒤(SVG 기준 앞 순서)에 오도록 보장
+        if (textEl.previousElementSibling !== bgRect) {
+          wrap.insertBefore(bgRect, textEl);
+        }
+      }
+
+      bgRect.removeAttribute('display');
+      bgRect.style.display = 'inline';
+      bgRect.setAttribute('fill', '#ffffff');
+      bgRect.setAttribute('fill-opacity', '1');
+      bgRect.setAttribute('stroke', 'none');
+      bgRect.setAttribute('stroke-width', '0');
+      bgRect.setAttribute('rx', '3');
+      bgRect.setAttribute('ry', '3');
+
+      // BBox 및 박스 좌표 실시간 계산 적용
+      if (window.PicEditor.canvas) {
+        window.PicEditor.canvas.updateSingleTextBgBox(wrap);
       }
     } else if (mode === 'stroke-white') {
-      state.selectedElement.classList.add('bg-stroke-white');
-      state.selectedElement.setAttribute('paint-order', 'stroke fill');
-      state.selectedElement.setAttribute('stroke', '#FFFFFF');
-      state.selectedElement.setAttribute('stroke-width', '5px');
+      if (bgRect) {
+        bgRect.setAttribute('display', 'none');
+        bgRect.style.display = 'none';
+      }
+      textEl.classList.add('bg-stroke-white');
+      textEl.setAttribute('paint-order', 'stroke fill');
+      textEl.setAttribute('stroke', '#FFFFFF');
+      textEl.setAttribute('stroke-width', '5px');
+    } else {
+      // transparent (투명)
+      if (bgRect) {
+        bgRect.setAttribute('display', 'none');
+        bgRect.style.display = 'none';
+      }
     }
+
+    // UI 인스펙터 선택 상자 동기화
+    const bgSelect = document.getElementById('textBgModeSelect');
+    if (bgSelect) bgSelect.value = mode;
+
     if (window.PicEditor.sync) window.PicEditor.sync.markModified();
   },
 

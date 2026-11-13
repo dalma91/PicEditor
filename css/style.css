@@ -562,8 +562,11 @@ button.github-accent-btn:hover { background: #4338ca; }
 }
 
 .text-wrap.bg-box-white .text-bg-rect {
-  display: block;
-  fill: #ffffff;
+  display: inline !important;
+  fill: #ffffff !important;
+  fill-opacity: 1 !important;
+  opacity: 1 !important;
+  visibility: visible !important;
   stroke: none;
   stroke-width: 0;
 }
