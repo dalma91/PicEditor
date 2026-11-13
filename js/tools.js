@@ -643,14 +643,28 @@ window.PicEditor.tools = {
     const x2 = parseFloat(lineEl.getAttribute('x2')) || 0;
     const y2 = parseFloat(lineEl.getAttribute('y2')) || 0;
 
-    // 선 요소의 transform(위치/회전)과 동일하게 동기화
-    gizmo.setAttribute('transform', lineEl.getAttribute('transform') || 'translate(0,0) scale(1,1) rotate(0)');
-
     const p1Wrap = gizmo.querySelector('#line-p1-handle-wrap');
-    if (p1Wrap) p1Wrap.setAttribute('transform', `translate(${x1}, ${y1})`);
-
     const p2Wrap = gizmo.querySelector('#line-p2-handle-wrap');
-    if (p2Wrap) p2Wrap.setAttribute('transform', `translate(${x2}, ${y2})`);
+
+    try {
+      const m = svg.getScreenCTM().inverse().multiply(lineEl.getScreenCTM());
+      const getPt = (px, py) => {
+        const pt = svg.createSVGPoint();
+        pt.x = px;
+        pt.y = py;
+        return pt.matrixTransform(m);
+      };
+      const p1 = getPt(x1, y1);
+      const p2 = getPt(x2, y2);
+
+      gizmo.setAttribute('transform', 'translate(0,0) scale(1,1) rotate(0)');
+      if (p1Wrap) p1Wrap.setAttribute('transform', `translate(${p1.x}, ${p1.y})`);
+      if (p2Wrap) p2Wrap.setAttribute('transform', `translate(${p2.x}, ${p2.y})`);
+    } catch (e) {
+      gizmo.setAttribute('transform', lineEl.getAttribute('transform') || 'translate(0,0) scale(1,1) rotate(0)');
+      if (p1Wrap) p1Wrap.setAttribute('transform', `translate(${x1}, ${y1})`);
+      if (p2Wrap) p2Wrap.setAttribute('transform', `translate(${x2}, ${y2})`);
+    }
 
     const len = Math.round(Math.hypot(x2 - x1, y2 - y1));
     const p2Label = gizmo.querySelector('#line-p2-label');
@@ -659,9 +673,6 @@ window.PicEditor.tools = {
     gizmo.style.display = 'block';
   },
 
-  /**
-   * 직선/화살표 양 끝점 조작 핸들 숨기기
-   */
   hideLineHandles() {
     const svg = window.PicEditor.utils.getActiveSvg();
     if (!svg) return;
@@ -669,16 +680,8 @@ window.PicEditor.tools = {
     if (gizmo) gizmo.style.display = 'none';
   },
 
-  /**
-   * 직선/화살표가 드래그 이동 또는 변환될 때 기즈모의 transform 동기화
-   */
   updateLineGizmoTransform(lineEl) {
-    const svg = window.PicEditor.utils.getActiveSvg();
-    if (!svg) return;
-    const gizmo = svg.querySelector('#line-handle-group');
-    if (gizmo && gizmo.style.display !== 'none') {
-      gizmo.setAttribute('transform', lineEl.getAttribute('transform') || 'translate(0,0) scale(1,1) rotate(0)');
-    }
+    this.showLineHandles(lineEl);
   },
 
   /**
@@ -798,11 +801,29 @@ window.PicEditor.tools = {
     const cy = parseFloat(circleEl.getAttribute('cy')) || 0;
     const r = parseFloat(circleEl.getAttribute('r')) || 0;
 
-    gizmo.setAttribute('transform', circleEl.getAttribute('transform') || 'translate(0,0) scale(1,1) rotate(0)');
     const centerWrap = gizmo.querySelector('#circle-center-handle-wrap');
-    if (centerWrap) centerWrap.setAttribute('transform', `translate(${cx}, ${cy})`);
     const radiusWrap = gizmo.querySelector('#circle-radius-handle-wrap');
-    if (radiusWrap) radiusWrap.setAttribute('transform', `translate(${cx + r}, ${cy})`);
+
+    try {
+      const m = svg.getScreenCTM().inverse().multiply(circleEl.getScreenCTM());
+      const getPt = (px, py) => {
+        const pt = svg.createSVGPoint();
+        pt.x = px;
+        pt.y = py;
+        return pt.matrixTransform(m);
+      };
+      const cp = getPt(cx, cy);
+      const rp = getPt(cx + r, cy);
+
+      gizmo.setAttribute('transform', 'translate(0,0) scale(1,1) rotate(0)');
+      if (centerWrap) centerWrap.setAttribute('transform', `translate(${cp.x}, ${cp.y})`);
+      if (radiusWrap) radiusWrap.setAttribute('transform', `translate(${rp.x}, ${rp.y})`);
+    } catch (e) {
+      gizmo.setAttribute('transform', circleEl.getAttribute('transform') || 'translate(0,0) scale(1,1) rotate(0)');
+      if (centerWrap) centerWrap.setAttribute('transform', `translate(${cx}, ${cy})`);
+      if (radiusWrap) radiusWrap.setAttribute('transform', `translate(${cx + r}, ${cy})`);
+    }
+
     gizmo.style.display = 'block';
   },
 
@@ -814,12 +835,7 @@ window.PicEditor.tools = {
   },
 
   updateCircleGizmoTransform(circleEl) {
-    const svg = window.PicEditor.utils.getActiveSvg();
-    if (!svg) return;
-    const gizmo = svg.querySelector('#circle-handle-group');
-    if (gizmo && gizmo.style.display !== 'none') {
-      gizmo.setAttribute('transform', circleEl.getAttribute('transform') || 'translate(0,0) scale(1,1) rotate(0)');
-    }
+    this.showCircleHandles(circleEl);
   },
 
   /**
@@ -883,15 +899,32 @@ window.PicEditor.tools = {
       return;
     }
 
-    gizmo.setAttribute('transform', triEl.getAttribute('transform') || 'translate(0,0) scale(1,1) rotate(0)');
-
     const p1 = gizmo.querySelector('#triangle-p1-handle-wrap');
     const p2 = gizmo.querySelector('#triangle-p2-handle-wrap');
     const p3 = gizmo.querySelector('#triangle-p3-handle-wrap');
 
-    if (p1) p1.setAttribute('transform', `translate(${pts[0].x}, ${pts[0].y})`);
-    if (p2) p2.setAttribute('transform', `translate(${pts[1].x}, ${pts[1].y})`);
-    if (p3) p3.setAttribute('transform', `translate(${pts[2].x}, ${pts[2].y})`);
+    try {
+      const m = svg.getScreenCTM().inverse().multiply(triEl.getScreenCTM());
+      const getPt = (p) => {
+        const pt = svg.createSVGPoint();
+        pt.x = p.x;
+        pt.y = p.y;
+        return pt.matrixTransform(m);
+      };
+      const tp1 = getPt(pts[0]);
+      const tp2 = getPt(pts[1]);
+      const tp3 = getPt(pts[2]);
+
+      gizmo.setAttribute('transform', 'translate(0,0) scale(1,1) rotate(0)');
+      if (p1) p1.setAttribute('transform', `translate(${tp1.x}, ${tp1.y})`);
+      if (p2) p2.setAttribute('transform', `translate(${tp2.x}, ${tp2.y})`);
+      if (p3) p3.setAttribute('transform', `translate(${tp3.x}, ${tp3.y})`);
+    } catch (e) {
+      gizmo.setAttribute('transform', triEl.getAttribute('transform') || 'translate(0,0) scale(1,1) rotate(0)');
+      if (p1) p1.setAttribute('transform', `translate(${pts[0].x}, ${pts[0].y})`);
+      if (p2) p2.setAttribute('transform', `translate(${pts[1].x}, ${pts[1].y})`);
+      if (p3) p3.setAttribute('transform', `translate(${pts[2].x}, ${pts[2].y})`);
+    }
 
     gizmo.style.display = 'block';
   },
@@ -904,12 +937,7 @@ window.PicEditor.tools = {
   },
 
   updateTriangleGizmoTransform(triEl) {
-    const svg = window.PicEditor.utils.getActiveSvg();
-    if (!svg) return;
-    const gizmo = svg.querySelector('#triangle-handle-group');
-    if (gizmo && gizmo.style.display !== 'none') {
-      gizmo.setAttribute('transform', triEl.getAttribute('transform') || 'translate(0,0) scale(1,1) rotate(0)');
-    }
+    this.showTriangleHandles(triEl);
   },
 
   /**
@@ -991,17 +1019,36 @@ window.PicEditor.tools = {
     const w = parseFloat(rectEl.getAttribute('width')) || 0;
     const h = parseFloat(rectEl.getAttribute('height')) || 0;
 
-    gizmo.setAttribute('transform', rectEl.getAttribute('transform') || 'translate(0,0) scale(1,1) rotate(0)');
-
     const v0 = gizmo.querySelector('#rect-v0-handle-wrap');
     const v1 = gizmo.querySelector('#rect-v1-handle-wrap');
     const v2 = gizmo.querySelector('#rect-v2-handle-wrap');
     const v3 = gizmo.querySelector('#rect-v3-handle-wrap');
 
-    if (v0) v0.setAttribute('transform', `translate(${x}, ${y})`);
-    if (v1) v1.setAttribute('transform', `translate(${x + w}, ${y})`);
-    if (v2) v2.setAttribute('transform', `translate(${x + w}, ${y + h})`);
-    if (v3) v3.setAttribute('transform', `translate(${x}, ${y + h})`);
+    try {
+      const m = svg.getScreenCTM().inverse().multiply(rectEl.getScreenCTM());
+      const getPt = (px, py) => {
+        const pt = svg.createSVGPoint();
+        pt.x = px;
+        pt.y = py;
+        return pt.matrixTransform(m);
+      };
+      const p0 = getPt(x, y);
+      const p1 = getPt(x + w, y);
+      const p2 = getPt(x + w, y + h);
+      const p3 = getPt(x, y + h);
+
+      gizmo.setAttribute('transform', 'translate(0,0) scale(1,1) rotate(0)');
+      if (v0) v0.setAttribute('transform', `translate(${p0.x}, ${p0.y})`);
+      if (v1) v1.setAttribute('transform', `translate(${p1.x}, ${p1.y})`);
+      if (v2) v2.setAttribute('transform', `translate(${p2.x}, ${p2.y})`);
+      if (v3) v3.setAttribute('transform', `translate(${p3.x}, ${p3.y})`);
+    } catch (e) {
+      gizmo.setAttribute('transform', rectEl.getAttribute('transform') || 'translate(0,0) scale(1,1) rotate(0)');
+      if (v0) v0.setAttribute('transform', `translate(${x}, ${y})`);
+      if (v1) v1.setAttribute('transform', `translate(${x + w}, ${y})`);
+      if (v2) v2.setAttribute('transform', `translate(${x + w}, ${y + h})`);
+      if (v3) v3.setAttribute('transform', `translate(${x}, ${y + h})`);
+    }
 
     gizmo.style.display = 'block';
   },
@@ -1014,12 +1061,7 @@ window.PicEditor.tools = {
   },
 
   updateRectGizmoTransform(rectEl) {
-    const svg = window.PicEditor.utils.getActiveSvg();
-    if (!svg) return;
-    const gizmo = svg.querySelector('#rect-handle-group');
-    if (gizmo && gizmo.style.display !== 'none') {
-      gizmo.setAttribute('transform', rectEl.getAttribute('transform') || 'translate(0,0) scale(1,1) rotate(0)');
-    }
+    this.showRectHandles(rectEl);
   },
 
   /**
