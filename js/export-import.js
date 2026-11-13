@@ -172,6 +172,12 @@ window.PicEditor.storage = {
           defs.appendChild(item.cloneNode(true));
         });
 
+        // 2-1. style 태그 복사 (인라인 CSS 보존)
+        const importedStyles = importedSvg.querySelectorAll('style');
+        importedStyles.forEach(s => {
+          activeSvg.appendChild(s.cloneNode(true));
+        });
+
         // 3. 텍스트 레이어 및 일반 그래픽 요소 분리 가져오기
         const existingTextLayer = importedSvg.querySelector('.text-layer');
         if (existingTextLayer) {

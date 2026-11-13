@@ -525,52 +525,81 @@ ${svgStr}
 
     const cfg = this.getConfig();
     let items = [];
+    const isLocal = window.location.protocol === 'file:' || 
+                    window.location.hostname === 'localhost' || 
+                    window.location.hostname === '127.0.0.1';
 
-    // 1차 시도: 깃허브 REST API contents 조회 (캐시 무효화)
-    try {
-      const encodedFolder = this.encodeApiPath(cfg.folder);
-      const url = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${encodedFolder}?ref=${encodeURIComponent(cfg.branch)}&_t=${Date.now()}`;
-      const res = await fetch(url, {
-        headers: this.getHeaders(cfg.token),
-        cache: 'no-store'
-      });
-
-      if (res.ok) {
-        const fileList = await res.json();
-        if (Array.isArray(fileList)) {
-          const htmlFiles = fileList.filter(f => f.name.toLowerCase().endsWith('.html'));
-          const pngFiles = fileList.filter(f => f.name.toLowerCase().endsWith('.png'));
-          const pngMap = {};
-          pngFiles.forEach(f => {
-            const base = f.name.slice(0, -4);
-            pngMap[base] = {
-              download_url: f.download_url,
-              sha: f.sha
-            };
-          });
-
-          items = htmlFiles.map(h => {
-            const base = h.name.slice(0, -5);
-            const pngInfo = pngMap[base];
-            const rawThumb = pngInfo ? pngInfo.download_url : `./${cfg.folder}/${base}.png`;
-            const thumbSha = pngInfo ? pngInfo.sha : h.sha;
-            return {
-              name: base,
-              filename: h.name,
-              download_url: h.download_url,
-              thumb_url: rawThumb,
-              size: h.size,
-              sha: h.sha,
-              thumb_sha: thumbSha
-            };
-          });
+    // 1순위: 로컬 실행 환경(localhost/127.0.0.1/file)인 경우 로컬 saved/manifest.json 우선 조회
+    if (isLocal) {
+      try {
+        const manifestRes = await fetch(`./${cfg.folder}/manifest.json?_t=${Date.now()}`, {
+          cache: 'no-store',
+          headers: { 'Cache-Control': 'no-cache', 'Pragma': 'no-cache' }
+        });
+        if (manifestRes.ok) {
+          const mList = await manifestRes.json();
+          items = mList.map(m => ({
+            name: m.name,
+            filename: m.filename,
+            download_url: `./${cfg.folder}/${m.filename}`,
+            thumb_url: `./${cfg.folder}/${m.thumb}`,
+            size: 0,
+            sha: null,
+            thumb_sha: null
+          }));
         }
+      } catch (errLocal) {
+        console.warn('로컬 manifest 조회 실패, GitHub API 시도:', errLocal);
       }
-    } catch (err) {
-      console.warn('GitHub API contents 조회 실패, 로컬 manifest 폴백 시도:', err);
     }
 
-    // 2차 폴백: 저장소의 saved/manifest.json 조회
+    // 2순위: 원격 웹 호스팅 환경이거나 로컬 manifest 조회가 비어있는 경우 GitHub REST API 조회
+    if (items.length === 0) {
+      try {
+        const encodedFolder = this.encodeApiPath(cfg.folder);
+        const url = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${encodedFolder}?ref=${encodeURIComponent(cfg.branch)}&_t=${Date.now()}`;
+        const res = await fetch(url, {
+          headers: this.getHeaders(cfg.token),
+          cache: 'no-store'
+        });
+
+        if (res.ok) {
+          const fileList = await res.json();
+          if (Array.isArray(fileList)) {
+            const htmlFiles = fileList.filter(f => f.name.toLowerCase().endsWith('.html'));
+            const pngFiles = fileList.filter(f => f.name.toLowerCase().endsWith('.png'));
+            const pngMap = {};
+            pngFiles.forEach(f => {
+              const base = f.name.slice(0, -4);
+              pngMap[base] = {
+                download_url: f.download_url,
+                sha: f.sha
+              };
+            });
+
+            items = htmlFiles.map(h => {
+              const base = h.name.slice(0, -5);
+              const pngInfo = pngMap[base];
+              const rawThumb = pngInfo ? pngInfo.download_url : `./${cfg.folder}/${base}.png`;
+              const thumbSha = pngInfo ? pngInfo.sha : h.sha;
+              return {
+                name: base,
+                filename: h.name,
+                download_url: h.download_url,
+                thumb_url: rawThumb,
+                size: h.size,
+                sha: h.sha,
+                thumb_sha: thumbSha
+              };
+            });
+          }
+        }
+      } catch (err) {
+        console.warn('GitHub API contents 조회 실패, 로컬 manifest 폴백 시도:', err);
+      }
+    }
+
+    // 3차 폴백: GitHub API 실패 시 저장소의 saved/manifest.json 조회
     if (items.length === 0) {
       try {
         const manifestRes = await fetch(`./${cfg.folder}/manifest.json?_t=${Date.now()}`, {

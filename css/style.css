@@ -215,14 +215,17 @@ html, body {
   cursor: default;
 }
 
-.movable {
+.movable,
+.editor-gizmo-group {
   cursor: grab;
+  transform-box: fill-box;
   transform-origin: center;
 }
 
 /* 직교좌표계는 원점(붉은색 점, 로컬 0,0)을 회전 피벗 중심으로 회전 */
 .axes-wrap,
 #axes-handle-group {
+  transform-box: view-box !important;
   transform-origin: 0 0 !important;
 }
 

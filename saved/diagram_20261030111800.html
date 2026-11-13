@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>diagram_20261030111800</title>
+</head>
+<body>
+<svg xmlns="http://www.w3.org/2000/svg" id="svg-editor" viewBox="0 0 1040 820" class="select-mode" width="100%" height="100%">
+  <rect width="100%" height="100%" fill="#FFFFFF"/>
+  <defs>
+    <!-- 화살표 마커 정의 -->
+    <marker id="arrow-end" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M 0 1.5 L 9 5 L 0 8.5 Z" fill="#000000"/>
+    </marker>
+    <marker id="arrow-start" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M 9 1.5 L 0 5 L 9 8.5 Z" fill="#000000"/>
+    </marker>
+    <marker id="arrow-dim-start" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 9 2 L 1 5 L 9 8 Z" fill="#000000"/>
+    </marker>
+    <marker id="arrow-dim-end" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 1 2 L 9 5 L 1 8 Z" fill="#000000"/>
+    </marker>
+
+    <!-- 그림 1 금속판 점 패턴 (Stipple) -->
+    <pattern id="stipple" width="4" height="4" patternUnits="userSpaceOnUse">
+      <circle cx="1.5" cy="1.5" r="0.6" fill="#666666"/>
+    </pattern>
+  </defs>
+
+  <style>
+    .math { font-family: 'Times New Roman', serif; font-style: italic; font-size: 20px; fill: #000000; text-anchor: middle; dominant-baseline: middle; }
+    .roman { font-family: 'Times New Roman', serif; font-style: normal; font-size: 20px; fill: #000000; text-anchor: middle; dominant-baseline: middle; }
+    .korean { font-family: 'KoPubWorld Dotum', 'Malgun Gothic', 'Noto Sans KR', sans-serif; font-size: 17px; fill: #000000; text-anchor: middle; dominant-baseline: middle; }
+    .caption { font-family: 'KoPubWorld Dotum', 'Malgun Gothic', 'Noto Sans KR', sans-serif; font-size: 20px; font-weight: bold; fill: #000000; text-anchor: middle; dominant-baseline: middle; }
+    .line-thick { stroke: #000000; stroke-width: 2.2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+    .line-thin { stroke: #000000; stroke-width: 1.0; fill: none; }
+    .line-dashed { stroke: #000000; stroke-width: 1.5; stroke-dasharray: 4,4; fill: none; }
+    .arrow-line { stroke: #000000; stroke-width: 1.1; fill: none; }
+    .dim-tick { stroke: #000000; stroke-width: 1.0; fill: none; }
+  </style>
+
+  <!-- ========================================== -->
+  <!-- FIGURE 1 (그림 1)                          -->
+  <!-- ========================================== -->
+  <g class="main-diagram" id="fig1">
+    <!-- 바닥 지지 평면 (반드시 fill="none" 명시) -->
+    <path class="movable" d="M 305 175 L 55 345 L 770 345 L 1015 175" fill="none" stroke="#000000" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+
+    <!-- 후면 극판 B -->
+    <polygon class="movable" points="436,97 676,97 676,261 436,261" fill="#FFFFFF" stroke="#000000" stroke-width="2"/>
+
+    <!-- 금속판 윗면 -->
+    <polygon class="movable" points="342,125 363,106 521,106 500,125" fill="#EAEAEA" stroke="#000000" stroke-width="1.8"/>
+    <polygon class="movable" points="342,125 363,106 521,106 500,125" fill="url(#stipple)" stroke="#000000" stroke-width="1.8"/>
+
+    <!-- 금속판 좌측면 -->
+    <polygon class="movable" points="342,125 363,106 363,270 342,289" fill="#E0E0E0" stroke="#000000" stroke-width="1.8"/>
+    <polygon class="movable" points="342,125 363,106 363,270 342,289" fill="url(#stipple)" stroke="#000000" stroke-width="1.8"/>
+
+    <!-- 윗면 우측 모서리선 -->
+    <line class="movable" x1="500" y1="125" x2="500" y2="142" fill="none" stroke="#000000" stroke-width="1.8"/>
+    <line class="movable" x1="521" y1="106" x2="521" y2="130" fill="none" stroke="#000000" stroke-width="1.8"/>
+
+    <!-- 전면 극판 A -->
+    <rect class="movable" x="388" y="142" width="240" height="164" fill="#FFFFFF" stroke="#000000" stroke-width="2"/>
+
+    <!-- 금속판 전면 노출 구간 (극판 A 좌측) -->
+    <polygon class="movable" points="342,125 388,125 388,289 342,289" fill="#FFFFFF" stroke="#000000" stroke-width="1.8"/>
+
+    <!-- 금속판 높이 치수 w -->
+    <line class="movable" x1="352.5" y1="131" x2="352.5" y2="283" fill="none" stroke="#000000" stroke-width="1.2" marker-start="url(#arrow-dim-start)" marker-end="url(#arrow-dim-end)"/>
+    <rect class="movable" x="344" y="197" width="17" height="20" fill="#E0E0E0" stroke="none"/>
+
+    <!-- 극판 A 높이 치수 w -->
+    <line class="movable" x1="545" y1="147" x2="545" y2="301" fill="none" stroke="#000000" stroke-width="1.2" marker-start="url(#arrow-dim-start)" marker-end="url(#arrow-dim-end)"/>
+    <rect class="movable" x="535" y="214" width="20" height="20" fill="#FFFFFF" stroke="none"/>
+
+    <!-- 극판 B 가로 치수 ℓ -->
+    <line class="movable" x1="436" y1="65" x2="436" y2="97" fill="none" stroke="#000000" stroke-width="1.0"/>
+    <line class="movable" x1="676" y1="65" x2="676" y2="97" fill="none" stroke="#000000" stroke-width="1.0"/>
+    <line class="movable" x1="442" y1="75" x2="670" y2="75" fill="none" stroke="#000000" stroke-width="1.2" marker-start="url(#arrow-dim-start)" marker-end="url(#arrow-dim-end)"/>
+    <rect class="movable" x="545" y="65" width="22" height="20" fill="#FFFFFF" stroke="none"/>
+
+    <!-- 두 극판 간격 치수 d -->
+    <line class="movable" x1="545" y1="137" x2="588" y2="102" fill="none" stroke="#000000" stroke-width="1.2" marker-start="url(#arrow-dim-start)" marker-end="url(#arrow-dim-end)"/>
+    <rect class="movable" x="552" y="106" width="18" height="20" fill="#FFFFFF" stroke="none"/>
+
+    <!-- 지시선: 금속판 -->
+    <line class="movable" x1="295" y1="95" x2="340" y2="123" fill="none" stroke="#000000" stroke-width="1.2" marker-end="url(#arrow-dim-end)"/>
+
+    <!-- 회로 배선 -->
+    <circle class="movable" cx="635" cy="115" r="3.5" fill="#000000" stroke="none"/>
+    <line class="movable" x1="635" y1="115" x2="676" y2="90" fill="none" stroke="#000000" stroke-width="1.5" stroke-dasharray="4,4"/>
+    <line class="movable" x1="676" y1="90" x2="745" y2="90" fill="none" stroke="#000000" stroke-width="1.4"/>
+
+    <!-- 직류 전원 V -->
+    <line class="movable" x1="745" y1="80" x2="745" y2="100" fill="none" stroke="#000000" stroke-width="3.8" stroke-linecap="square"/>
+    <line class="movable" x1="757" y1="70" x2="757" y2="110" fill="none" stroke="#000000" stroke-width="1.6" stroke-linecap="square"/>
+
+    <!-- 배선 연결 루프 -->
+    <line class="movable" x1="757" y1="90" x2="855" y2="90" fill="none" stroke="#000000" stroke-width="1.4"/>
+    <line class="movable" x1="855" y1="90" x2="730" y2="180" fill="none" stroke="#000000" stroke-width="1.4"/>
+    <circle class="movable" cx="590" cy="160" r="3.5" fill="#000000" stroke="none"/>
+    <line class="movable" x1="590" y1="160" x2="565" y2="180" fill="none" stroke="#000000" stroke-width="1.4"/>
+    <line class="movable" x1="565" y1="180" x2="730" y2="180" fill="none" stroke="#000000" stroke-width="1.4"/>
+
+    <!-- ========================================== -->
+    <!-- FIGURE 2 (그림 2)                          -->
+    <!-- ========================================== -->
+    <!-- 상단 극판 B -->
+    <line class="movable" x1="208" y1="465" x2="618" y2="465" fill="none" stroke="#000000" stroke-width="2.8"/>
+
+    <!-- 하단 극판 A -->
+    <line class="movable" x1="208" y1="593" x2="618" y2="593" fill="none" stroke="#000000" stroke-width="2.8"/>
+
+    <!-- 극판 가로 치수 ℓ -->
+    <line class="movable" x1="208" y1="443" x2="208" y2="465" fill="none" stroke="#000000" stroke-width="1.0"/>
+    <line class="movable" x1="618" y1="443" x2="618" y2="465" fill="none" stroke="#000000" stroke-width="1.0"/>
+    <line class="movable" x1="214" y1="447" x2="612" y2="447" fill="none" stroke="#000000" stroke-width="1.2" marker-start="url(#arrow-dim-start)" marker-end="url(#arrow-dim-end)"/>
+    <rect class="movable" x="403" y="437" width="20" height="20" fill="#FFFFFF" stroke="none"/>
+
+    <!-- 금속판 (단면) -->
+    <rect class="movable" x="140" y="489" width="263" height="64" fill="#E5E5E5" stroke="#000000" stroke-width="2.0"/>
+
+    <!-- 치수 c, b 인출선 -->
+    <line class="movable" x1="403" y1="489" x2="445" y2="489" fill="none" stroke="#000000" stroke-width="1.0"/>
+    <line class="movable" x1="403" y1="553" x2="445" y2="553" fill="none" stroke="#000000" stroke-width="1.0"/>
+
+    <!-- 금속판 두께 c -->
+    <line class="movable" x1="430" y1="495" x2="430" y2="547" fill="none" stroke="#000000" stroke-width="1.2" marker-start="url(#arrow-dim-start)" marker-end="url(#arrow-dim-end)"/>
+
+    <!-- 극판 A와의 간격 b -->
+    <line class="movable" x1="430" y1="559" x2="430" y2="587" fill="none" stroke="#000000" stroke-width="1.2" marker-start="url(#arrow-dim-start)" marker-end="url(#arrow-dim-end)"/>
+
+    <!-- 극판 간격 d (부분 Ⅰ 내부) -->
+    <line class="movable" x1="515" y1="471" x2="515" y2="587" fill="none" stroke="#000000" stroke-width="1.2" marker-start="url(#arrow-dim-start)" marker-end="url(#arrow-dim-end)"/>
+    <rect class="movable" x="505" y="520" width="20" height="20" fill="#FFFFFF" stroke="none"/>
+
+    <!-- 금속판 좌측 기준선 -->
+    <line class="movable" x1="140" y1="553" x2="140" y2="620" fill="none" stroke="#000000" stroke-width="1.0"/>
+
+    <!-- 금속판 전체 길이 L -->
+    <line class="movable" x1="146" y1="612" x2="397" y2="612" fill="none" stroke="#000000" stroke-width="1.2" marker-start="url(#arrow-dim-start)" marker-end="url(#arrow-dim-end)"/>
+    <rect class="movable" x="261" y="602" width="20" height="20" fill="#FFFFFF" stroke="none"/>
+
+    <!-- 극판 A 좌측 기준선 -->
+    <line class="movable" x1="208" y1="593" x2="208" y2="705" fill="none" stroke="#000000" stroke-width="1.0"/>
+
+    <!-- 금속판 우측 기준선 -->
+    <line class="movable" x1="403" y1="553" x2="403" y2="705" fill="none" stroke="#000000" stroke-width="1.0"/>
+
+    <!-- 극판 내 삽입 길이 X -->
+    <line class="movable" x1="214" y1="638" x2="397" y2="638" fill="none" stroke="#000000" stroke-width="1.2" marker-start="url(#arrow-dim-start)" marker-end="url(#arrow-dim-end)"/>
+    <rect class="movable" x="295" y="628" width="20" height="20" fill="#FFFFFF" stroke="none"/>
+
+    <!-- 극판 우측 기준선 -->
+    <line class="movable" x1="618" y1="593" x2="618" y2="705" fill="none" stroke="#000000" stroke-width="1.0"/>
+
+    <!-- 부분 Ⅱ 영역 치수 -->
+    <line class="movable" x1="208" y1="676" x2="208" y2="692" fill="none" stroke="#000000" stroke-width="1.0"/>
+    <line class="movable" x1="403" y1="676" x2="403" y2="692" fill="none" stroke="#000000" stroke-width="1.0"/>
+    <line class="movable" x1="214" y1="684" x2="397" y2="684" fill="none" stroke="#000000" stroke-width="1.2" marker-start="url(#arrow-dim-start)" marker-end="url(#arrow-dim-end)"/>
+
+    <!-- 부분 Ⅰ 영역 치수 -->
+    <line class="movable" x1="618" y1="676" x2="618" y2="692" fill="none" stroke="#000000" stroke-width="1.0"/>
+    <line class="movable" x1="409" y1="684" x2="612" y2="684" fill="none" stroke="#000000" stroke-width="1.2" marker-start="url(#arrow-dim-start)" marker-end="url(#arrow-dim-end)"/>
+
+    <!-- 외부 회로 (극판 B -> 전원 V -> 극판 A) -->
+    <circle class="movable" cx="563" cy="465" r="3.5" fill="#000000" stroke="none"/>
+    <line class="movable" x1="563" y1="465" x2="563" y2="425" fill="none" stroke="#000000" stroke-width="1.5"/>
+    <line class="movable" x1="563" y1="425" x2="675" y2="425" fill="none" stroke="#000000" stroke-width="1.5"/>
+
+    <!-- 직류 전원 V -->
+    <line class="movable" x1="675" y1="415" x2="675" y2="435" fill="none" stroke="#000000" stroke-width="3.8" stroke-linecap="square"/>
+    <line class="movable" x1="695" y1="405" x2="695" y2="445" fill="none" stroke="#000000" stroke-width="1.6" stroke-linecap="square"/>
+
+    <!-- 루프 배선 -->
+    <line class="movable" x1="695" y1="425" x2="755" y2="425" fill="none" stroke="#000000" stroke-width="1.5"/>
+    <line class="movable" x1="755" y1="425" x2="755" y2="630" fill="none" stroke="#000000" stroke-width="1.5"/>
+    <line class="movable" x1="755" y1="630" x2="563" y2="630" fill="none" stroke="#000000" stroke-width="1.5"/>
+    <line class="movable" x1="563" y1="630" x2="563" y2="593" fill="none" stroke="#000000" stroke-width="1.5"/>
+    <circle class="movable" cx="563" cy="593" r="3.5" fill="#000000" stroke="none"/>
+
+    <!-- 직교 좌표계 -->
+    <line class="movable" x1="812" y1="593" x2="900" y2="593" fill="none" stroke="#000000" stroke-width="1.5" marker-end="url(#arrow-end)"/>
+    <line class="movable" x1="812" y1="593" x2="812" y2="505" fill="none" stroke="#000000" stroke-width="1.5" marker-end="url(#arrow-end)"/>
+  </g>
+
+  <!-- ========================================== -->
+  <!-- TEXT LAYER (텍스트 이동/수정 레이어)       -->
+  <!-- ========================================== -->
+  <g class="text-layer">
+    <!-- 그림 1 텍스트 -->
+    <g class="movable text-wrap" transform="translate(0,0)"><rect class="text-bg-rect" rx="2" fill="#ffffff" stroke="none" stroke-width="0"/><text class="text-el" x="608" y="290" fill="#000000" font-family="'Times New Roman', serif" font-size="22" text-anchor="middle">A</text></g>
+    <g class="movable text-wrap" transform="translate(0,0)"><rect class="text-bg-rect" rx="2" fill="#ffffff" stroke="none" stroke-width="0"/><text class="text-el" x="656" y="238" fill="#000000" font-family="'Times New Roman', serif" font-size="22" text-anchor="middle">B</text></g>
+    <g class="movable text-wrap" transform="translate(0,0)"><rect class="text-bg-rect" rx="2" fill="#ffffff" stroke="none" stroke-width="0"/><text class="text-el" x="352.5" y="208" fill="#000000" font-family="'Times New Roman', serif" font-style="italic" font-size="20" text-anchor="middle">w</text></g>
+    <g class="movable text-wrap" transform="translate(0,0)"><rect class="text-bg-rect" rx="2" fill="#ffffff" stroke="none" stroke-width="0"/><text class="text-el" x="545" y="225" fill="#000000" font-family="'Times New Roman', serif" font-style="italic" font-size="20" text-anchor="middle">w</text></g>
+    <g class="movable text-wrap" transform="translate(0,0)"><rect class="text-bg-rect" rx="2" fill="#ffffff" stroke="none" stroke-width="0"/><text class="text-el" x="556" y="74" fill="#000000" font-family="'Times New Roman', serif" font-style="italic" font-size="20" text-anchor="middle">ℓ</text></g>
+    <g class="movable text-wrap" transform="translate(0,0)"><rect class="text-bg-rect" rx="2" fill="#ffffff" stroke="none" stroke-width="0"/><text class="text-el" x="560" y="116" fill="#000000" font-family="'Times New Roman', serif" font-style="italic" font-size="20" text-anchor="middle">d</text></g>
+    <g class="movable text-wrap" transform="translate(0,0)"><rect class="text-bg-rect" rx="2" fill="#ffffff" stroke="none" stroke-width="0"/><text class="text-el" x="751" y="58" fill="#000000" font-family="'Times New Roman', serif" font-style="italic" font-size="20" text-anchor="middle">V</text></g>
+    <g class="movable text-wrap" transform="translate(0,0)"><rect class="text-bg-rect" rx="2" fill="#ffffff" stroke="none" stroke-width="0"/><text class="text-el" x="255" y="95" fill="#000000" font-family="'KoPubWorld Dotum', 'Malgun Gothic', 'Noto Sans KR', sans-serif" font-size="18" text-anchor="middle">금속판</text></g>
+    <g class="movable text-wrap" transform="translate(0,0)"><rect class="text-bg-rect" rx="2" fill="#ffffff" stroke="none" stroke-width="0"/><text class="text-el" x="510" y="395" fill="#000000" font-family="'KoPubWorld Dotum', 'Malgun Gothic', 'Noto Sans KR', sans-serif" font-weight="bold" font-size="20" text-anchor="middle">그림 1</text></g>
+
+    <!-- 그림 2 텍스트 -->
+    <g class="movable text-wrap" transform="translate(0,0)"><rect class="text-bg-rect" rx="2" fill="#ffffff" stroke="none" stroke-width="0"/><text class="text-el" x="188" y="465" fill="#000000" font-family="'Times New Roman', serif" font-size="22" text-anchor="middle">B</text></g>
+    <g class="movable text-wrap" transform="translate(0,0)"><rect class="text-bg-rect" rx="2" fill="#ffffff" stroke="none" stroke-width="0"/><text class="text-el" x="188" y="593" fill="#000000" font-family="'Times New Roman', serif" font-size="22" text-anchor="middle">A</text></g>
+    <g class="movable text-wrap" transform="translate(0,0)"><rect class="text-bg-rect" rx="2" fill="#ffffff" stroke="none" stroke-width="0"/><text class="text-el" x="413" y="446" fill="#000000" font-family="'Times New Roman', serif" font-style="italic" font-size="20" text-anchor="middle">ℓ</text></g>
+    <g class="movable text-wrap" transform="translate(0,0)"><rect class="text-bg-rect" rx="2" fill="#ffffff" stroke="none" stroke-width="0"/><text class="text-el" x="271.5" y="522" fill="#000000" font-family="'KoPubWorld Dotum', 'Malgun Gothic', 'Noto Sans KR', sans-serif" font-size="18" text-anchor="middle">금속판</text></g>
+    <g class="movable text-wrap" transform="translate(0,0)"><rect class="text-bg-rect" rx="2" fill="#ffffff" stroke="none" stroke-width="0"/><text class="text-el" x="452" y="521" fill="#000000" font-family="'Times New Roman', serif" font-style="italic" font-size="20" text-anchor="middle">c</text></g>
+    <g class="movable text-wrap" transform="translate(0,0)"><rect class="text-bg-rect" rx="2" fill="#ffffff" stroke="none" stroke-width="0"/><text class="text-el" x="452" y="574" fill="#000000" font-family="'Times New Roman', serif" font-style="italic" font-size="20" text-anchor="middle">b</text></g>
+    <g class="movable text-wrap" transform="translate(0,0)"><rect class="text-bg-rect" rx="2" fill="#ffffff" stroke="none" stroke-width="0"/><text class="text-el" x="515" y="530" fill="#000000" font-family="'Times New Roman', serif" font-style="italic" font-size="20" text-anchor="middle">d</text></g>
+    <g class="movable text-wrap" transform="translate(0,0)"><rect class="text-bg-rect" rx="2" fill="#ffffff" stroke="none" stroke-width="0"/><text class="text-el" x="271.5" y="611" fill="#000000" font-family="'Times New Roman', serif" font-style="italic" font-size="20" text-anchor="middle">L</text></g>
+    <g class="movable text-wrap" transform="translate(0,0)"><rect class="text-bg-rect" rx="2" fill="#ffffff" stroke="none" stroke-width="0"/><text class="text-el" x="305.5" y="637" fill="#000000" font-family="'Times New Roman', serif" font-style="italic" font-size="20" text-anchor="middle">X</text></g>
+    <g class="movable text-wrap" transform="translate(0,0)"><rect class="text-bg-rect" rx="2" fill="#ffffff" stroke="none" stroke-width="0"/><text class="text-el" x="305.5" y="715" fill="#000000" font-family="'KoPubWorld Dotum', 'Malgun Gothic', 'Noto Sans KR', sans-serif" font-size="18" text-anchor="middle">부분 Ⅱ</text></g>
+    <g class="movable text-wrap" transform="translate(0,0)"><rect class="text-bg-rect" rx="2" fill="#ffffff" stroke="none" stroke-width="0"/><text class="text-el" x="510.5" y="715" fill="#000000" font-family="'KoPubWorld Dotum', 'Malgun Gothic', 'Noto Sans KR', sans-serif" font-size="18" text-anchor="middle">부분 Ⅰ</text></g>
+    <g class="movable text-wrap" transform="translate(0,0)"><rect class="text-bg-rect" rx="2" fill="#ffffff" stroke="none" stroke-width="0"/><text class="text-el" x="685" y="393" fill="#000000" font-family="'Times New Roman', serif" font-style="italic" font-size="20" text-anchor="middle">V</text></g>
+    <g class="movable text-wrap" transform="translate(0,0)"><rect class="text-bg-rect" rx="2" fill="#ffffff" stroke="none" stroke-width="0"/><text class="text-el" x="920" y="593" fill="#000000" font-family="'Times New Roman', serif" font-style="italic" font-size="20" text-anchor="middle">x</text></g>
+    <g class="movable text-wrap" transform="translate(0,0)"><rect class="text-bg-rect" rx="2" fill="#ffffff" stroke="none" stroke-width="0"/><text class="text-el" x="812" y="490" fill="#000000" font-family="'Times New Roman', serif" font-style="italic" font-size="20" text-anchor="middle">y</text></g>
+    <g class="movable text-wrap" transform="translate(0,0)"><rect class="text-bg-rect" rx="2" fill="#ffffff" stroke="none" stroke-width="0"/><text class="text-el" x="510" y="770" fill="#000000" font-family="'KoPubWorld Dotum', 'Malgun Gothic', 'Noto Sans KR', sans-serif" font-weight="bold" font-size="20" text-anchor="middle">그림 2</text></g>
+  </g>
+</svg>
+</body>
+</html>
