@@ -31,16 +31,31 @@ window.PicEditor.canvas = {
 
       try {
         let bbox = null;
-        try {
-          bbox = textEl.getBBox();
-        } catch (e) {
-          bbox = null;
+        const allTexts = wrap.querySelectorAll('text');
+        if (allTexts.length > 0) {
+          let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+          let hasValidBox = false;
+          allTexts.forEach(t => {
+            try {
+              const b = t.getBBox();
+              if (b.width > 0 || b.height > 0) {
+                minX = Math.min(minX, b.x);
+                minY = Math.min(minY, b.y);
+                maxX = Math.max(maxX, b.x + b.width);
+                maxY = Math.max(maxY, b.y + b.height);
+                hasValidBox = true;
+              }
+            } catch (err) {}
+          });
+          if (hasValidBox) {
+            bbox = { x: minX, y: minY, width: maxX - minX, height: maxY - minY };
+          }
         }
 
         const padX = 6;
         const padY = 4;
         const fs = parseInt(textEl.style.fontSize) || parseInt(textEl.getAttribute('font-size')) || 24;
-        const txt = textEl.textContent || '';
+        const txt = Array.from(allTexts).map(t => t.textContent).join(' ') || textEl.textContent || '';
         const fallbackW = Math.max(16, txt.length * (fs * 0.55));
         const fallbackH = fs * 1.15;
 

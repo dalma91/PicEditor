@@ -31,6 +31,92 @@ window.PicEditor.interaction = {
   },
 
   /**
+   * 상하좌우 각각 +5px 확장된 영역 내의 .movable 요소 탐색
+   */
+  findMovableNearPoint(svg, clientX, clientY, margin = 5) {
+    if (!svg || clientX === undefined || clientY === undefined) return null;
+    const movables = Array.from(svg.querySelectorAll('.movable'));
+    let bestEl = null;
+    let minDistance = Infinity;
+
+    // DOM 최상단에 렌더링된 요소(나중에 그려진 요소)가 우선 선택되도록 역순 탐색
+    for (let i = movables.length - 1; i >= 0; i--) {
+      const el = movables[i];
+      if (el.closest('.editor-gizmo-group') || (el.id && el.id.includes('handle'))) continue;
+
+      const rect = el.getBoundingClientRect();
+      if (rect.width === 0 && rect.height === 0) continue;
+
+      // 상하좌우 각각 +5px 확장 영역 검사
+      const expLeft = rect.left - margin;
+      const expRight = rect.right + margin;
+      const expTop = rect.top - margin;
+      const expBottom = rect.bottom + margin;
+
+      if (clientX >= expLeft && clientX <= expRight &&
+          clientY >= expTop && clientY <= expBottom) {
+        
+        const cx = (rect.left + rect.right) / 2;
+        const cy = (rect.top + rect.bottom) / 2;
+        const dist = Math.hypot(clientX - cx, clientY - cy);
+        if (dist < minDistance) {
+          minDistance = dist;
+          bestEl = el;
+        }
+      }
+    }
+    return bestEl;
+  },
+
+  /**
+   * 특정 객체를 선택하고 드래그 상태를 시작하는 공통 함수
+   */
+  selectAndStartDragElement(targetEl, e) {
+    const state = window.PicEditor.state;
+    const svg = window.PicEditor.utils.getActiveSvg();
+    if (!svg || !targetEl) return;
+
+    let wrap = targetEl.closest('.axes-wrap') || targetEl.closest('.text-wrap') || targetEl.closest('.mid-arrow') || (targetEl.classList && targetEl.classList.contains('movable') ? targetEl : targetEl.closest('.movable')) || targetEl;
+
+    const textTarget = window.PicEditor.inspector ? (window.PicEditor.inspector.getTextElement(targetEl) || (e.target && window.PicEditor.inspector.getTextElement(e.target))) : null;
+    if (textTarget) {
+      wrap = (window.PicEditor.inspector && window.PicEditor.inspector.getTextWrap) ? window.PicEditor.inspector.getTextWrap(textTarget) : wrap;
+    }
+
+    if (state.selectedElement && state.selectedElement !== wrap) {
+      window.PicEditor.utils.deselectAll();
+    }
+
+    state.selectedElement = wrap;
+
+    svg.querySelectorAll('.movable').forEach(elem => {
+      const w = elem.closest('.axes-wrap') || elem.closest('.text-wrap') || elem.closest('.mid-arrow') || elem;
+      w.classList.remove('selected');
+    });
+    if (wrap && wrap.classList) wrap.classList.add('selected');
+
+    window.PicEditor.inspector.syncUItoSelected();
+
+    if (window.PicEditor.tools && window.PicEditor.tools.hideAllGizmos) {
+      window.PicEditor.tools.hideAllGizmos();
+      if (window.PicEditor.tools.isArcElement(wrap)) window.PicEditor.tools.showArcCenterHandle(wrap);
+      else if (window.PicEditor.tools.isLineElement(wrap)) window.PicEditor.tools.showLineHandles(wrap);
+      else if (window.PicEditor.tools.isCircleElement(wrap)) window.PicEditor.tools.showCircleHandles(wrap);
+      else if (window.PicEditor.tools.isTriangleElement(wrap)) window.PicEditor.tools.showTriangleHandles(wrap);
+      else if (window.PicEditor.tools.isRectElement(wrap)) window.PicEditor.tools.showRectHandles(wrap);
+      else if (window.PicEditor.tools.isParabolaElement(wrap)) window.PicEditor.tools.showParabolaHandles(wrap);
+      else if (window.PicEditor.tools.isAxesElement(wrap)) window.PicEditor.tools.showAxesHandles(wrap);
+      else if (window.PicEditor.tools.isCurveElement(wrap)) window.PicEditor.tools.showCurveHandles(wrap);
+    }
+
+    state.isDragging = true;
+    state.hasDragged = false;
+    const pt = window.PicEditor.utils.getSvgPoint(e, svg);
+    state.startX = pt.x;
+    state.startY = pt.y;
+  },
+
+  /**
    * 이동 가능(.movable) 요소들에 마우스 이벤트(선택 및 드래그) 등록
    */
   initMovableEvents() {
@@ -46,62 +132,8 @@ window.PicEditor.interaction = {
       const selectAndStartDrag = (e) => {
         if (state.isDrawMode) return;
         if (e.touches && e.touches.length > 1) return;
-
-        const textTarget = window.PicEditor.inspector ? (window.PicEditor.inspector.getTextElement(el) || window.PicEditor.inspector.getTextElement(e.target)) : null;
-        let wrap = el.closest('.axes-wrap') || el.closest('.text-wrap') || el.closest('.mid-arrow') || el;
-
-        if (textTarget) {
-          wrap = (window.PicEditor.inspector && window.PicEditor.inspector.getTextWrap) ? window.PicEditor.inspector.getTextWrap(textTarget) : wrap;
-          if (wrap && wrap.classList && !wrap.classList.contains('text-wrap') && wrap.tagName && wrap.tagName.toLowerCase() === 'g') {
-            wrap.classList.add('text-wrap');
-          }
-        }
-
-        const targetEl = (wrap && wrap.classList && wrap.classList.contains('axes-wrap')) ? wrap : (textTarget || el);
-
-        // 기존에 다른 객체가 선택되어 있다면 자연스럽게 선택 해제하고 신규 객체 선택
-        if (state.selectedElement && state.selectedElement !== targetEl && state.selectedElement !== wrap) {
-          window.PicEditor.utils.deselectAll();
-        }
-
         e.stopPropagation();
-
-        state.selectedElement = targetEl;
-
-        svg.querySelectorAll('.movable').forEach(elem => {
-          const w = elem.closest('.axes-wrap') || elem.closest('.text-wrap') || elem.closest('.mid-arrow') || elem;
-          w.classList.remove('selected');
-        });
-        if (wrap && wrap.classList) wrap.classList.add('selected');
-        
-        window.PicEditor.inspector.syncUItoSelected();
-
-        if (window.PicEditor.tools && window.PicEditor.tools.hideAllGizmos) {
-          window.PicEditor.tools.hideAllGizmos();
-          if (window.PicEditor.tools.isArcElement(targetEl)) {
-            window.PicEditor.tools.showArcCenterHandle(targetEl);
-          } else if (window.PicEditor.tools.isLineElement(targetEl)) {
-            window.PicEditor.tools.showLineHandles(targetEl);
-          } else if (window.PicEditor.tools.isCircleElement(targetEl)) {
-            window.PicEditor.tools.showCircleHandles(targetEl);
-          } else if (window.PicEditor.tools.isTriangleElement(targetEl)) {
-            window.PicEditor.tools.showTriangleHandles(targetEl);
-          } else if (window.PicEditor.tools.isRectElement(targetEl)) {
-            window.PicEditor.tools.showRectHandles(targetEl);
-          } else if (window.PicEditor.tools.isParabolaElement(targetEl)) {
-            window.PicEditor.tools.showParabolaHandles(targetEl);
-          } else if (window.PicEditor.tools.isAxesElement(targetEl)) {
-            window.PicEditor.tools.showAxesHandles(targetEl);
-          } else if (window.PicEditor.tools.isCurveElement(targetEl)) {
-            window.PicEditor.tools.showCurveHandles(targetEl);
-          }
-        }
-
-        state.isDragging = true;
-        state.hasDragged = false;
-        const pt = window.PicEditor.utils.getSvgPoint(e, svg);
-        state.startX = pt.x;
-        state.startY = pt.y;
+        window.PicEditor.interaction.selectAndStartDragElement(el, e);
       };
 
       el.onmousedown = selectAndStartDrag;
@@ -115,13 +147,14 @@ window.PicEditor.interaction = {
       el.ondblclick = (e) => {
         if (state.isDrawMode) return;
         e.stopPropagation();
-        const textEl = window.PicEditor.inspector ? (window.PicEditor.inspector.getTextElement(el) || window.PicEditor.inspector.getTextElement(e.target)) : null;
-        const wrap = textEl ? (window.PicEditor.inspector.getTextWrap(textEl) || el) : (el.closest('.axes-wrap') || el.closest('.text-wrap') || el.closest('.mid-arrow') || el);
-        if (textEl) {
-          state.selectedElement = textEl;
+        const textTarget = window.PicEditor.inspector ? (window.PicEditor.inspector.getTextElement(el) || window.PicEditor.inspector.getTextElement(e.target)) : null;
+        let wrap = el.closest('.axes-wrap') || el.closest('.text-wrap') || el.closest('.mid-arrow') || (el.classList && el.classList.contains('movable') ? el : el.closest('.movable')) || el;
+        if (textTarget) {
+          wrap = (window.PicEditor.inspector && window.PicEditor.inspector.getTextWrap) ? window.PicEditor.inspector.getTextWrap(textTarget) : wrap;
+          state.selectedElement = wrap;
           if (wrap && wrap.classList) wrap.classList.add('selected');
           window.PicEditor.inspector.syncUItoSelected();
-          window.PicEditor.inspector.startInlineTextEdit(textEl);
+          window.PicEditor.inspector.startInlineTextEdit(textTarget);
         }
       };
 
@@ -179,10 +212,24 @@ window.PicEditor.interaction = {
             return;
           }
 
-          // 이동 가능한 객체(.movable)가 아닌 빈 캔버스/배경 클릭 시 선택 해제
-          if (!e.target.closest || !e.target.closest('.movable')) {
-            window.PicEditor.utils.deselectAll();
+          // 이동 가능한 객체(.movable)를 직접 클릭한 경우 (selectAndStartDrag가 이미 처리)
+          if (e.target.closest && e.target.closest('.movable')) {
+            return;
           }
+
+          // 직접 클릭되지 않은 경우: 상하좌우 각각 +5px 확장 영역 내 객체 탐색
+          const clientX = (e.touches && e.touches[0] ? e.touches[0].clientX : e.clientX);
+          const clientY = (e.touches && e.touches[0] ? e.touches[0].clientY : e.clientY);
+          const nearbyEl = window.PicEditor.interaction.findMovableNearPoint(svg, clientX, clientY, 5);
+
+          if (nearbyEl) {
+            e.stopPropagation();
+            window.PicEditor.interaction.selectAndStartDragElement(nearbyEl, e);
+            return;
+          }
+
+          // 5px 이내에도 객체가 없을 때만 선택 해제
+          window.PicEditor.utils.deselectAll();
           return;
         }
         state.isDrawing = true;
@@ -1079,6 +1126,16 @@ window.PicEditor.interaction = {
               window.PicEditor.utils.setTransform(midG, mt);
             }
           }
+        }
+      }
+
+      // 선택 모드에서 마우스 호버 시 상하좌우 +5px 범위 내 객체가 있으면 포인터/grab 커서 피드백
+      if (!state.isDrawMode && !state.isDragging && e.clientX !== undefined) {
+        const nearby = window.PicEditor.interaction.findMovableNearPoint(svg, e.clientX, e.clientY, 5);
+        if (nearby) {
+          svg.style.cursor = 'grab';
+        } else {
+          svg.style.cursor = '';
         }
       }
     };
