@@ -59,19 +59,148 @@ window.PicEditor.inspector = {
 
     const textInspector = document.getElementById('textInspector');
     const imageInspector = document.getElementById('imageInspector');
+    const shapeInspector = document.getElementById('shapeInspector');
+
+    const isShape = window.PicEditor.tools && window.PicEditor.tools.isShapeElement(target);
 
     if (tag === 'image') {
       if (imageInspector) imageInspector.classList.add('active');
       if (textInspector) textInspector.classList.remove('active');
+      if (shapeInspector) shapeInspector.classList.remove('active');
       this.syncImageInspector(target);
     } else if (textEl || target.classList.contains('text-wrap') || this.getTextElement(target)) {
       if (textInspector) textInspector.classList.add('active');
       if (imageInspector) imageInspector.classList.remove('active');
+      if (shapeInspector) shapeInspector.classList.remove('active');
       this.syncTextInspector();
+    } else if (isShape) {
+      if (shapeInspector) shapeInspector.classList.add('active');
+      if (textInspector) textInspector.classList.remove('active');
+      if (imageInspector) imageInspector.classList.remove('active');
+      this.syncShapeInspector(target);
     } else {
       if (textInspector) textInspector.classList.remove('active');
       if (imageInspector) imageInspector.classList.remove('active');
+      if (shapeInspector) shapeInspector.classList.remove('active');
     }
+
+    // 선/화살표 선택 시 양쪽 머리크기 일치 옵션 표시 연동
+    const arrowGrp = document.getElementById('arrowOptionGroup');
+    const equalOpt = document.getElementById('arrowHeadEqualOption');
+    if (tag === 'line') {
+      const ms = target.getAttribute('marker-start');
+      const me = target.getAttribute('marker-end');
+      if (ms && me) {
+        if (arrowGrp) arrowGrp.style.display = 'flex';
+        if (equalOpt) equalOpt.style.display = 'flex';
+        const isEq = ms.includes('arrow-equal') && me.includes('arrow-equal');
+        const eqCheck = document.getElementById('arrowHeadEqualCheck');
+        if (eqCheck) eqCheck.checked = isEq;
+      }
+    }
+  },
+
+  /**
+   * 도형 채우기 및 옵션 인스펙터 동기화
+   */
+  syncShapeInspector(target) {
+    if (!target) return;
+    const fillTransparentCheck = document.getElementById('shapeFillTransparent');
+    const fillColorInput = document.getElementById('shapeFillColor');
+    const fillColorHex = document.getElementById('shapeFillColorHex');
+    const patternSelect = document.getElementById('shapePatternSelect');
+    const fillColorRow = document.getElementById('shapeFillColorRow');
+
+    const curFill = target.getAttribute('fill') || '';
+    const curOpacity = target.getAttribute('fill-opacity');
+    const isTransparent = (curFill === 'none' || curOpacity === '0');
+
+    if (fillTransparentCheck) fillTransparentCheck.checked = isTransparent;
+    if (fillColorRow) fillColorRow.style.opacity = isTransparent ? '0.5' : '1';
+
+    if (curFill.startsWith('url(#pattern-')) {
+      const match = curFill.match(/url\(#pattern-([^)]+)\)/);
+      if (match && patternSelect) {
+        patternSelect.value = match[1];
+      }
+    } else {
+      if (patternSelect) patternSelect.value = 'none';
+      if (curFill.startsWith('#') && fillColorInput) {
+        fillColorInput.value = curFill;
+        if (fillColorHex) fillColorHex.textContent = curFill;
+      }
+    }
+  },
+
+  onShapeFillTransparent(isTransparent) {
+    const state = window.PicEditor.state;
+    if (!state.selectedElement) return;
+    const target = state.selectedElement.closest ? (state.selectedElement.closest('polygon, rect, circle, ellipse, path') || state.selectedElement) : state.selectedElement;
+
+    const fillColorRow = document.getElementById('shapeFillColorRow');
+    if (fillColorRow) fillColorRow.style.opacity = isTransparent ? '0.5' : '1';
+
+    if (isTransparent) {
+      const curFill = target.getAttribute('fill');
+      if (curFill && curFill !== 'none') target.setAttribute('data-prev-fill', curFill);
+      target.setAttribute('fill', 'none');
+    } else {
+      const patternSelect = document.getElementById('shapePatternSelect');
+      const pattern = patternSelect ? patternSelect.value : 'none';
+      if (pattern !== 'none') {
+        target.setAttribute('fill', `url(#pattern-${pattern})`);
+      } else {
+        const prevFill = target.getAttribute('data-prev-fill');
+        const color = document.getElementById('shapeFillColor') ? document.getElementById('shapeFillColor').value : '#e2e8f0';
+        target.setAttribute('fill', prevFill && prevFill !== 'none' ? prevFill : color);
+      }
+    }
+    if (window.PicEditor.sync) window.PicEditor.sync.markModified();
+  },
+
+  onShapeFillColor(color) {
+    const state = window.PicEditor.state;
+    if (!state.selectedElement) return;
+    const target = state.selectedElement.closest ? (state.selectedElement.closest('polygon, rect, circle, ellipse, path') || state.selectedElement) : state.selectedElement;
+
+    const fillTransparentCheck = document.getElementById('shapeFillTransparent');
+    if (fillTransparentCheck) fillTransparentCheck.checked = false;
+    const fillColorRow = document.getElementById('shapeFillColorRow');
+    if (fillColorRow) fillColorRow.style.opacity = '1';
+
+    const hexLabel = document.getElementById('shapeFillColorHex');
+    if (hexLabel) hexLabel.textContent = color;
+
+    const patternSelect = document.getElementById('shapePatternSelect');
+    if (patternSelect) patternSelect.value = 'none';
+
+    target.setAttribute('fill', color);
+    target.removeAttribute('fill-opacity');
+    if (window.PicEditor.sync) window.PicEditor.sync.markModified();
+  },
+
+  onShapePattern(patternName) {
+    const state = window.PicEditor.state;
+    if (!state.selectedElement) return;
+    const target = state.selectedElement.closest ? (state.selectedElement.closest('polygon, rect, circle, ellipse, path') || state.selectedElement) : state.selectedElement;
+
+    const fillTransparentCheck = document.getElementById('shapeFillTransparent');
+    if (fillTransparentCheck) fillTransparentCheck.checked = false;
+    const fillColorRow = document.getElementById('shapeFillColorRow');
+    if (fillColorRow) fillColorRow.style.opacity = '1';
+
+    if (patternName === 'none') {
+      const color = document.getElementById('shapeFillColor') ? document.getElementById('shapeFillColor').value : '#e2e8f0';
+      target.setAttribute('fill', color);
+    } else {
+      const svg = target.closest('svg') || window.PicEditor.utils.getActiveSvg();
+      if (window.PicEditor.tools && window.PicEditor.tools.ensurePatternDefs) {
+        window.PicEditor.tools.ensurePatternDefs(svg);
+      }
+      target.setAttribute('fill', `url(#pattern-${patternName})`);
+    }
+    target.removeAttribute('fill-opacity');
+    if (window.PicEditor.sync) window.PicEditor.sync.markModified();
   },
 
   /**
@@ -329,7 +458,7 @@ window.PicEditor.inspector = {
   },
 
   /**
-   * 텍스트 래퍼 중심 보존 스케일링 (텍스트 튀는 현상 원천 차단 및 모든 하위 텍스트 동시 크기 조절)
+   * 텍스트 래퍼 좌측 상단 고정 스케일링 (위치 이동 없이 좌측 상단 기준으로 크기 조절)
    */
   scaleWrapCenter(wrap, targetScale, baseFs) {
     if (!wrap) return;
@@ -338,7 +467,7 @@ window.PicEditor.inspector = {
     const signY = t.sy < 0 ? -1 : 1;
     const curScale = Math.abs(t.sx) || 1;
 
-    // wrap의 BBox 계산 (화면상 중심 고정)
+    // wrap의 BBox 계산 (좌측 상단 고정 기준점 설정)
     let bbox = { x: 0, y: 0, width: 40, height: 20 };
     try {
       bbox = wrap.getBBox();
@@ -347,12 +476,18 @@ window.PicEditor.inspector = {
       if (firstT) try { bbox = firstT.getBBox(); } catch(err) {}
     }
 
-    const cx = bbox.x + bbox.width / 2;
-    const cy = bbox.y + bbox.height / 2;
+    let anchorX = parseFloat(wrap.getAttribute('data-anchor-x'));
+    let anchorY = parseFloat(wrap.getAttribute('data-anchor-y'));
+    if (isNaN(anchorX) || isNaN(anchorY)) {
+      anchorX = bbox.x;
+      anchorY = bbox.y;
+      wrap.setAttribute('data-anchor-x', anchorX);
+      wrap.setAttribute('data-anchor-y', anchorY);
+    }
 
     const rad = (t.r || 0) * Math.PI / 180;
-    const rx = cx * Math.cos(rad) - cy * Math.sin(rad);
-    const ry = cx * Math.sin(rad) + cy * Math.cos(rad);
+    const rx = anchorX * Math.cos(rad) - anchorY * Math.sin(rad);
+    const ry = anchorX * Math.sin(rad) + anchorY * Math.cos(rad);
 
     t.x = t.x + (curScale - targetScale) * rx;
     t.y = t.y + (curScale - targetScale) * ry;
@@ -400,8 +535,12 @@ window.PicEditor.inspector = {
       textEl.textContent = val;
     }
 
-    if (wrap && window.PicEditor.canvas) {
-      window.PicEditor.canvas.updateSingleTextBgBox(wrap);
+    if (wrap) {
+      wrap.removeAttribute('data-anchor-x');
+      wrap.removeAttribute('data-anchor-y');
+      if (window.PicEditor.canvas) {
+        window.PicEditor.canvas.updateSingleTextBgBox(wrap);
+      }
     }
     this.syncDimensionsToUI(wrap);
     if (window.PicEditor.sync) window.PicEditor.sync.markModified();
@@ -464,8 +603,12 @@ window.PicEditor.inspector = {
       el.style.fontFamily = family;
     });
 
-    if (wrap && window.PicEditor.canvas) {
-      window.PicEditor.canvas.updateSingleTextBgBox(wrap);
+    if (wrap) {
+      wrap.removeAttribute('data-anchor-x');
+      wrap.removeAttribute('data-anchor-y');
+      if (window.PicEditor.canvas) {
+        window.PicEditor.canvas.updateSingleTextBgBox(wrap);
+      }
     }
     this.syncDimensionsToUI(wrap || textEl);
     if (window.PicEditor.sync) window.PicEditor.sync.markModified();
@@ -495,8 +638,12 @@ window.PicEditor.inspector = {
     const btn = document.getElementById('textItalicBtn');
     if (btn) btn.classList.toggle('active', next === 'italic');
 
-    if (wrap && window.PicEditor.canvas) {
-      window.PicEditor.canvas.updateSingleTextBgBox(wrap);
+    if (wrap) {
+      wrap.removeAttribute('data-anchor-x');
+      wrap.removeAttribute('data-anchor-y');
+      if (window.PicEditor.canvas) {
+        window.PicEditor.canvas.updateSingleTextBgBox(wrap);
+      }
     }
     this.syncDimensionsToUI(wrap || textEl);
     if (window.PicEditor.sync) window.PicEditor.sync.markModified();
@@ -527,8 +674,12 @@ window.PicEditor.inspector = {
     const btn = document.getElementById('textBoldBtn');
     if (btn) btn.classList.toggle('active', next === 'bold');
 
-    if (wrap && window.PicEditor.canvas) {
-      window.PicEditor.canvas.updateSingleTextBgBox(wrap);
+    if (wrap) {
+      wrap.removeAttribute('data-anchor-x');
+      wrap.removeAttribute('data-anchor-y');
+      if (window.PicEditor.canvas) {
+        window.PicEditor.canvas.updateSingleTextBgBox(wrap);
+      }
     }
     this.syncDimensionsToUI(wrap || textEl);
     if (window.PicEditor.sync) window.PicEditor.sync.markModified();
@@ -959,3 +1110,6 @@ window.onRotateSlider = (v) => window.PicEditor.inspector.onRotateSlider(v);
 window.onRotateNumber = (v) => window.PicEditor.inspector.onRotateNumber(v);
 window.flipElement = (d) => window.PicEditor.inspector.flipElement(d);
 window.deleteSelected = () => window.PicEditor.inspector.deleteSelected();
+window.onShapeFillTransparent = (c) => window.PicEditor.inspector.onShapeFillTransparent(c);
+window.onShapeFillColor = (c) => window.PicEditor.inspector.onShapeFillColor(c);
+window.onShapePattern = (p) => window.PicEditor.inspector.onShapePattern(p);

@@ -494,6 +494,27 @@ button.github-accent-btn:hover { background: #4338ca; }
   color: #1a73e8;
 }
 
+/* 7. 도형 전용 인스펙터 패널 (사각형, 평행사변형, 삼각형, 원 등 채우기 옵션) */
+.shape-inspector {
+  background: #fdf4ff;
+  border: 1.5px solid #a855f7;
+  padding: 10px;
+  border-radius: 8px;
+  display: none;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.shape-inspector.active {
+  display: flex;
+}
+
+.shape-inspector-title {
+  font-size: 12px;
+  font-weight: bold;
+  color: #9333ea;
+}
+
 /* 기호 버튼 및 서식 버튼 */
 .sym-btn {
   border: 1px solid #cbd5e1;

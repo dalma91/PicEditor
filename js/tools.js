@@ -33,6 +33,7 @@ window.PicEditor.tools = {
       line: '직선',
       arrow: '화살표',
       rect: '사각형',
+      parallelogram: '평행사변형',
       triangle: '삼각형',
       circle: '원',
       arc: '호',
@@ -61,6 +62,7 @@ window.PicEditor.tools = {
       line: '💡 <b>직선</b>: 마우스로 드래그하여 시점부터 종점까지 직선을 그립니다.',
       arrow: '💡 <b>화살표</b>: 드래그하여 벡터 화살표를 작도합니다. (하단에서 방향 선택 가능)',
       rect: '💡 <b>직사각형</b>: 드래그하여 작도합니다. (선택 시 4개 꼭짓점(파란 점)을 드래그하면 직사각형의 정의를 유지하며 점 한 쌍이 함께 조절됩니다)',
+      parallelogram: '💡 <b>평행사변형</b>: 드래그하여 작도합니다. (선택 시 4개 꼭짓점을 드래그하여 자유롭게 조절할 수 있습니다)',
       triangle: '💡 <b>삼각형</b>: 드래그하여 작도합니다. (선택 시 3개 꼭짓점(파란 점)을 각각 자유롭게 이동할 수 있습니다)',
       circle: '💡 <b>원</b>: 중심점을 클릭하고 바깥으로 드래그하여 원을 그립니다. (선택 시 원 중심에 빨간 점이 표시되며 드래그하여 이동할 수 있습니다)',
       arc: '💡 <b>원호</b>: 드래그 후 나타나는 🔴호의 중심이나 🔵끝점을 당겨 곡률을 조절합니다.',
@@ -205,7 +207,7 @@ window.PicEditor.tools = {
   },
 
   /**
-   * 화살표 방향 설정
+   * 화살표 방향 설정 및 양쪽 머리크기 일치 옵션 제어
    */
   setArrowDir(dir) {
     const sel = document.getElementById('arrowDirSelect');
@@ -213,6 +215,37 @@ window.PicEditor.tools = {
     document.querySelectorAll('.arrow-dir-btn').forEach(btn => {
       btn.classList.toggle('active', btn.dataset.dir === dir);
     });
+
+    const equalOpt = document.getElementById('arrowHeadEqualOption');
+    if (equalOpt) {
+      equalOpt.style.display = (dir === 'both') ? 'flex' : 'none';
+    }
+
+    const state = window.PicEditor.state;
+    if (state.selectedElement && (state.selectedElement.tagName === 'line' || state.selectedElement.tagName === 'path')) {
+      this.applyArrowMarkers(state.selectedElement, dir, state.activeTab || 1);
+      if (window.PicEditor.sync) window.PicEditor.sync.markModified();
+    }
+  },
+
+  toggleArrowHeadEqual(checked) {
+    const state = window.PicEditor.state;
+    if (state.selectedElement && (state.selectedElement.tagName === 'line' || state.selectedElement.tagName === 'path')) {
+      const sel = document.getElementById('arrowDirSelect');
+      const dir = sel ? sel.value : 'both';
+      this.applyArrowMarkers(state.selectedElement, dir, state.activeTab || 1);
+      if (window.PicEditor.sync) window.PicEditor.sync.markModified();
+    }
+  },
+
+  setArrowHeadSize(size) {
+    const state = window.PicEditor.state;
+    if (state.selectedElement && (state.selectedElement.tagName === 'line' || state.selectedElement.tagName === 'path')) {
+      const sel = document.getElementById('arrowDirSelect');
+      const dir = sel ? sel.value : 'both';
+      this.applyArrowMarkers(state.selectedElement, dir, state.activeTab || 1);
+      if (window.PicEditor.sync) window.PicEditor.sync.markModified();
+    }
   },
   /**
    * W3C 표준 SVG 타원 호(Arc) 엔드포인트 파라미터로부터 실제 원의 중심 좌표(cx, cy) 산출
@@ -938,6 +971,151 @@ window.PicEditor.tools = {
 
   updateTriangleGizmoTransform(triEl) {
     this.showTriangleHandles(triEl);
+  },
+
+  /**
+   * 요소가 평행사변형(Parallelogram)인지 여부 판별
+   */
+  isParallelogramElement(el) {
+    if (!el) return false;
+    const tag = (el.tagName || '').toLowerCase();
+    if (tag !== 'polygon') return false;
+    if (el.classList && el.classList.contains('mid-arrow')) return false;
+    if (el.classList && el.classList.contains('triangle-shape')) return false;
+    if (el.classList && el.classList.contains('parallelogram-shape')) return true;
+    const pts = this.getParallelogramPoints(el);
+    return pts && pts.length === 4;
+  },
+
+  /**
+   * 평행사변형의 4개 꼭짓점 좌표 배열 [{x,y}, {x,y}, {x,y}, {x,y}] 추출
+   */
+  getParallelogramPoints(polyEl) {
+    if (!polyEl) return null;
+    const ptsAttr = polyEl.getAttribute('points');
+    if (!ptsAttr) return null;
+    const pairs = ptsAttr.trim().split(/[\s,]+/);
+    if (pairs.length >= 8) {
+      return [
+        { x: parseFloat(pairs[0]) || 0, y: parseFloat(pairs[1]) || 0 },
+        { x: parseFloat(pairs[2]) || 0, y: parseFloat(pairs[3]) || 0 },
+        { x: parseFloat(pairs[4]) || 0, y: parseFloat(pairs[5]) || 0 },
+        { x: parseFloat(pairs[6]) || 0, y: parseFloat(pairs[7]) || 0 }
+      ];
+    }
+    return null;
+  },
+
+  /**
+   * 평행사변형(Parallelogram) 4개 꼭짓점 조작 핸들 보장 및 이벤트 바인딩
+   */
+  ensureParallelogramGizmo(svg) {
+    let gizmo = svg.querySelector('#parallelogram-handle-group');
+    if (!gizmo) {
+      gizmo = document.createElementNS("http://www.w3.org/2000/svg", "g");
+      gizmo.setAttribute('id', 'parallelogram-handle-group');
+      gizmo.setAttribute('class', 'editor-gizmo-group');
+      gizmo.setAttribute('style', 'display:none; pointer-events:none;');
+      gizmo.innerHTML = `
+        <g id="parallelogram-p1-handle-wrap" style="cursor:grab; pointer-events:all;">
+          <circle r="22" fill="#000000" opacity="0.001" style="cursor:grab; pointer-events:all;" />
+          <circle r="6.5" fill="#a855f7" stroke="#ffffff" stroke-width="2.5" style="filter:drop-shadow(0 2px 4px rgba(0,0,0,0.35)); pointer-events:none;" />
+          <circle r="2" fill="#ffffff" style="pointer-events:none;" />
+          <text font-size="10" font-weight="700" fill="#9333ea" x="10" y="-8" style="user-select:none; pointer-events:none; text-shadow:0 1px 2px #ffffff;">P1</text>
+        </g>
+        <g id="parallelogram-p2-handle-wrap" style="cursor:grab; pointer-events:all;">
+          <circle r="22" fill="#000000" opacity="0.001" style="cursor:grab; pointer-events:all;" />
+          <circle r="6.5" fill="#a855f7" stroke="#ffffff" stroke-width="2.5" style="filter:drop-shadow(0 2px 4px rgba(0,0,0,0.35)); pointer-events:none;" />
+          <circle r="2" fill="#ffffff" style="pointer-events:none;" />
+          <text font-size="10" font-weight="700" fill="#9333ea" x="10" y="-8" style="user-select:none; pointer-events:none; text-shadow:0 1px 2px #ffffff;">P2</text>
+        </g>
+        <g id="parallelogram-p3-handle-wrap" style="cursor:grab; pointer-events:all;">
+          <circle r="22" fill="#000000" opacity="0.001" style="cursor:grab; pointer-events:all;" />
+          <circle r="6.5" fill="#a855f7" stroke="#ffffff" stroke-width="2.5" style="filter:drop-shadow(0 2px 4px rgba(0,0,0,0.35)); pointer-events:none;" />
+          <circle r="2" fill="#ffffff" style="pointer-events:none;" />
+          <text font-size="10" font-weight="700" fill="#9333ea" x="10" y="16" style="user-select:none; pointer-events:none; text-shadow:0 1px 2px #ffffff;">P3</text>
+        </g>
+        <g id="parallelogram-p4-handle-wrap" style="cursor:grab; pointer-events:all;">
+          <circle r="22" fill="#000000" opacity="0.001" style="cursor:grab; pointer-events:all;" />
+          <circle r="6.5" fill="#a855f7" stroke="#ffffff" stroke-width="2.5" style="filter:drop-shadow(0 2px 4px rgba(0,0,0,0.35)); pointer-events:none;" />
+          <circle r="2" fill="#ffffff" style="pointer-events:none;" />
+          <text font-size="10" font-weight="700" fill="#9333ea" x="-24" y="16" style="user-select:none; pointer-events:none; text-shadow:0 1px 2px #ffffff;">P4</text>
+        </g>
+      `;
+      svg.appendChild(gizmo);
+
+      [1, 2, 3, 4].forEach(idx => {
+        const h = gizmo.querySelector(`#parallelogram-p${idx}-handle-wrap`);
+        const startDrag = (e) => {
+          e.stopPropagation();
+          if (e.cancelable && e.type === 'touchstart') e.preventDefault();
+          const state = window.PicEditor.state;
+          state[`isDraggingParallelogramP${idx}`] = true;
+          state.hasDragged = false;
+          h.style.cursor = 'grabbing';
+        };
+        h.addEventListener('mousedown', startDrag);
+        h.addEventListener('touchstart', startDrag, { passive: false });
+      });
+    }
+    return gizmo;
+  },
+
+  showParallelogramHandles(el) {
+    if (!el) return;
+    const svg = window.PicEditor.utils.getActiveSvg();
+    if (!svg) return;
+
+    const gizmo = this.ensureParallelogramGizmo(svg);
+    const pts = this.getParallelogramPoints(el);
+    if (!pts || pts.length < 4) {
+      gizmo.style.display = 'none';
+      return;
+    }
+
+    const p1 = gizmo.querySelector('#parallelogram-p1-handle-wrap');
+    const p2 = gizmo.querySelector('#parallelogram-p2-handle-wrap');
+    const p3 = gizmo.querySelector('#parallelogram-p3-handle-wrap');
+    const p4 = gizmo.querySelector('#parallelogram-p4-handle-wrap');
+
+    try {
+      const m = svg.getScreenCTM().inverse().multiply(el.getScreenCTM());
+      const getPt = (p) => {
+        const pt = svg.createSVGPoint();
+        pt.x = p.x;
+        pt.y = p.y;
+        return pt.matrixTransform(m);
+      };
+      const tp1 = getPt(pts[0]);
+      const tp2 = getPt(pts[1]);
+      const tp3 = getPt(pts[2]);
+      const tp4 = getPt(pts[3]);
+
+      gizmo.setAttribute('transform', 'translate(0,0) scale(1,1) rotate(0)');
+      if (p1) p1.setAttribute('transform', `translate(${tp1.x}, ${tp1.y})`);
+      if (p2) p2.setAttribute('transform', `translate(${tp2.x}, ${tp2.y})`);
+      if (p3) p3.setAttribute('transform', `translate(${tp3.x}, ${tp3.y})`);
+      if (p4) p4.setAttribute('transform', `translate(${tp4.x}, ${tp4.y})`);
+    } catch (e) {
+      gizmo.setAttribute('transform', el.getAttribute('transform') || 'translate(0,0) scale(1,1) rotate(0)');
+      if (p1) p1.setAttribute('transform', `translate(${pts[0].x}, ${pts[0].y})`);
+      if (p2) p2.setAttribute('transform', `translate(${pts[1].x}, ${pts[1].y})`);
+      if (p3) p3.setAttribute('transform', `translate(${pts[2].x}, ${pts[2].y})`);
+      if (p4) p4.setAttribute('transform', `translate(${pts[3].x}, ${pts[3].y})`);
+    }
+
+    gizmo.style.display = 'block';
+  },
+
+  hideParallelogramHandles() {
+    const svg = window.PicEditor.utils.getActiveSvg();
+    if (!svg) return;
+    const gizmo = svg.querySelector('#parallelogram-handle-group');
+    if (gizmo) gizmo.style.display = 'none';
+  },
+
+  updateParallelogramGizmoTransform(el) {
+    this.showParallelogramHandles(el);
   },
 
   /**
@@ -1692,6 +1870,7 @@ window.PicEditor.tools = {
     this.hideLineHandles();
     this.hideCircleHandles();
     this.hideTriangleHandles();
+    this.hideParallelogramHandles();
     this.hideRectHandles();
     this.hideParabolaHandles();
     this.hideAxesHandles();
@@ -1707,10 +1886,100 @@ window.PicEditor.tools = {
     else if (this.isLineElement(el)) this.updateLineGizmoTransform(el);
     else if (this.isCircleElement(el)) this.updateCircleGizmoTransform(el);
     else if (this.isTriangleElement(el)) this.updateTriangleGizmoTransform(el);
+    else if (this.isParallelogramElement(el)) this.updateParallelogramGizmoTransform(el);
     else if (this.isRectElement(el)) this.updateRectGizmoTransform(el);
     else if (this.isParabolaElement(el)) this.updateParabolaGizmoTransform(el);
     else if (this.isAxesElement(el)) this.updateAxesGizmoTransform(el);
     else if (this.isCurveElement(el)) this.updateCurveGizmoTransform(el);
+  },
+
+  /**
+   * 요소가 채우기(내부 투명, 색선택, 패턴) 옵션을 지원하는 도형인지 판별
+   */
+  isShapeElement(el) {
+    if (!el) return false;
+    const tag = (el.tagName || '').toLowerCase();
+    if (tag === 'rect') {
+      return !el.classList || !el.classList.contains('text-bg-rect');
+    }
+    if (tag === 'circle' || tag === 'ellipse') {
+      return !el.id || !el.id.includes('handle');
+    }
+    if (tag === 'polygon') {
+      return !el.classList || !el.classList.contains('mid-arrow');
+    }
+    if (tag === 'path') {
+      const d = el.getAttribute('d') || '';
+      return /[Zz]/.test(d);
+    }
+    return false;
+  },
+
+  /**
+   * 양쪽 화살표의 좌우 머리크기 완전 일치 마커 생성/보장
+   */
+  ensureEqualArrowMarkers(svg, size = 6) {
+    if (!svg) return;
+    let defs = svg.querySelector('defs');
+    if (!defs) {
+      defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
+      svg.insertBefore(defs, svg.firstChild);
+    }
+    const endId = `arrow-equal-end-${size}`;
+    const startId = `arrow-equal-start-${size}`;
+
+    if (!defs.querySelector(`#${endId}`)) {
+      const mEnd = document.createElementNS("http://www.w3.org/2000/svg", "marker");
+      mEnd.setAttribute('id', endId);
+      mEnd.setAttribute('viewBox', '0 0 10 10');
+      mEnd.setAttribute('refX', '5');
+      mEnd.setAttribute('refY', '5');
+      mEnd.setAttribute('markerWidth', size);
+      mEnd.setAttribute('markerHeight', size);
+      mEnd.setAttribute('orient', 'auto-start-reverse');
+      mEnd.innerHTML = '<path d="M 0 0 L 10 5 L 0 10 z" fill="#000000" />';
+      defs.appendChild(mEnd);
+    }
+
+    if (!defs.querySelector(`#${startId}`)) {
+      const mStart = document.createElementNS("http://www.w3.org/2000/svg", "marker");
+      mStart.setAttribute('id', startId);
+      mStart.setAttribute('viewBox', '0 0 10 10');
+      mStart.setAttribute('refX', '5');
+      mStart.setAttribute('refY', '5');
+      mStart.setAttribute('markerWidth', size);
+      mStart.setAttribute('markerHeight', size);
+      mStart.setAttribute('orient', 'auto');
+      mStart.innerHTML = '<path d="M 10 0 L 0 5 L 10 10 z" fill="#000000" />';
+      defs.appendChild(mStart);
+    }
+  },
+
+  /**
+   * 도형 채우기용 SVG 패턴 정의 보장
+   */
+  ensurePatternDefs(svg) {
+    if (!svg) return;
+    let defs = svg.querySelector('defs');
+    if (!defs) {
+      defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
+      svg.insertBefore(defs, svg.firstChild);
+    }
+    const patterns = [
+      { id: 'pattern-hatch-right', xml: '<pattern id="pattern-hatch-right" width="10" height="10" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse"><line x1="0" y1="0" x2="0" y2="10" stroke="#000000" stroke-width="1.5"/></pattern>' },
+      { id: 'pattern-hatch-left', xml: '<pattern id="pattern-hatch-left" width="10" height="10" patternTransform="rotate(-45 0 0)" patternUnits="userSpaceOnUse"><line x1="0" y1="0" x2="0" y2="10" stroke="#000000" stroke-width="1.5"/></pattern>' },
+      { id: 'pattern-crosshatch', xml: '<pattern id="pattern-crosshatch" width="10" height="10" patternUnits="userSpaceOnUse"><line x1="0" y1="0" x2="10" y2="10" stroke="#000000" stroke-width="1"/><line x1="10" y1="0" x2="0" y2="10" stroke="#000000" stroke-width="1"/></pattern>' },
+      { id: 'pattern-dots', xml: '<pattern id="pattern-dots" width="10" height="10" patternUnits="userSpaceOnUse"><circle cx="5" cy="5" r="1.5" fill="#000000"/></pattern>' },
+      { id: 'pattern-horizontal', xml: '<pattern id="pattern-horizontal" width="8" height="8" patternUnits="userSpaceOnUse"><line x1="0" y1="4" x2="8" y2="4" stroke="#000000" stroke-width="1.5"/></pattern>' },
+      { id: 'pattern-vertical', xml: '<pattern id="pattern-vertical" width="8" height="8" patternUnits="userSpaceOnUse"><line x1="4" y1="0" x2="4" y2="8" stroke="#000000" stroke-width="1.5"/></pattern>' }
+    ];
+    patterns.forEach(p => {
+      if (!defs.querySelector(`#${p.id}`)) {
+        const dummy = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        dummy.innerHTML = p.xml;
+        if (dummy.firstChild) defs.appendChild(dummy.firstChild);
+      }
+    });
   },
 
 
@@ -1755,8 +2024,20 @@ window.PicEditor.tools = {
     } else if (dir === 'start') {
       el.setAttribute("marker-start", `url(#arrow-start-${num})`);
     } else if (dir === 'both') {
-      el.setAttribute("marker-end", `url(#arrow-${num})`);
-      el.setAttribute("marker-start", `url(#arrow-start-${num})`);
+      const equalHeadCheck = document.getElementById('arrowHeadEqualCheck');
+      const isEqual = equalHeadCheck ? equalHeadCheck.checked : true;
+      const sizeInput = document.getElementById('arrowHeadSizeInput');
+      const size = sizeInput ? (parseInt(sizeInput.value) || 6) : 6;
+
+      if (isEqual) {
+        const svg = el.closest('svg') || window.PicEditor.utils.getActiveSvg();
+        this.ensureEqualArrowMarkers(svg, size);
+        el.setAttribute("marker-start", `url(#arrow-equal-start-${size})`);
+        el.setAttribute("marker-end", `url(#arrow-equal-end-${size})`);
+      } else {
+        el.setAttribute("marker-end", `url(#arrow-${num})`);
+        el.setAttribute("marker-start", `url(#arrow-start-${num})`);
+      }
     } else if (dir === 'mid-right' || dir === 'mid-left') {
       if (!el.id) el.id = 'line_' + Math.random().toString(36).substr(2, 9);
       this.addMidArrow(el, dir, num);
@@ -1819,3 +2100,5 @@ window.convertToArrow = () => window.PicEditor.tools.convertToArrow();
 window.setTool = (t) => window.PicEditor.tools.setTool(t);
 window.setStrokeStyle = (s) => window.PicEditor.tools.setStrokeStyle(s);
 window.setArrowDir = (d) => window.PicEditor.tools.setArrowDir(d);
+window.toggleArrowHeadEqual = (c) => window.PicEditor.tools.toggleArrowHeadEqual(c);
+window.setArrowHeadSize = (s) => window.PicEditor.tools.setArrowHeadSize(s);

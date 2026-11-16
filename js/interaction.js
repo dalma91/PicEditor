@@ -103,6 +103,7 @@ window.PicEditor.interaction = {
       else if (window.PicEditor.tools.isLineElement(wrap)) window.PicEditor.tools.showLineHandles(wrap);
       else if (window.PicEditor.tools.isCircleElement(wrap)) window.PicEditor.tools.showCircleHandles(wrap);
       else if (window.PicEditor.tools.isTriangleElement(wrap)) window.PicEditor.tools.showTriangleHandles(wrap);
+      else if (window.PicEditor.tools.isParallelogramElement && window.PicEditor.tools.isParallelogramElement(wrap)) window.PicEditor.tools.showParallelogramHandles(wrap);
       else if (window.PicEditor.tools.isRectElement(wrap)) window.PicEditor.tools.showRectHandles(wrap);
       else if (window.PicEditor.tools.isParabolaElement(wrap)) window.PicEditor.tools.showParabolaHandles(wrap);
       else if (window.PicEditor.tools.isAxesElement(wrap)) window.PicEditor.tools.showAxesHandles(wrap);
@@ -205,6 +206,7 @@ window.PicEditor.interaction = {
             e.target.closest('#line-handle-group') ||
             e.target.closest('#circle-handle-group') ||
             e.target.closest('#triangle-handle-group') ||
+            e.target.closest('#parallelogram-handle-group') ||
             e.target.closest('#rect-handle-group') ||
             e.target.closest('#parabola-handle-group') ||
             e.target.closest('.editor-gizmo-group')
@@ -329,6 +331,14 @@ window.PicEditor.interaction = {
           state.tempShape = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
           state.tempShape.setAttribute("class", "movable triangle-shape");
           state.tempShape.setAttribute("points", `${pt.x},${pt.y} ${pt.x},${pt.y} ${pt.x},${pt.y}`);
+          state.tempShape.setAttribute("fill", "none");
+          state.tempShape.setAttribute("stroke", "#000000");
+          state.tempShape.setAttribute("stroke-width", "2");
+          if (strokeStyle === 'dashed') state.tempShape.setAttribute("stroke-dasharray", "6,4");
+        } else if (tool === 'parallelogram') {
+          state.tempShape = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+          state.tempShape.setAttribute("class", "movable parallelogram-shape");
+          state.tempShape.setAttribute("points", `${pt.x},${pt.y} ${pt.x},${pt.y} ${pt.x},${pt.y} ${pt.x},${pt.y}`);
           state.tempShape.setAttribute("fill", "none");
           state.tempShape.setAttribute("stroke", "#000000");
           state.tempShape.setAttribute("stroke-width", "2");
@@ -761,6 +771,44 @@ window.PicEditor.interaction = {
         return;
       }
 
+      // 1-PL. 평행사변형(Parallelogram) 꼭짓점(보라색 점) 드래그 이동 (평행사변형 성질 엄격 유지)
+      if ((state.isDraggingParallelogramP1 || state.isDraggingParallelogramP2 || state.isDraggingParallelogramP3 || state.isDraggingParallelogramP4) && state.selectedElement) {
+        state.hasDragged = true;
+        if (e.cancelable) e.preventDefault();
+        const paraEl = state.selectedElement;
+        const pts = window.PicEditor.tools.getParallelogramPoints(paraEl);
+        if (pts && pts.length >= 4) {
+          const t = window.PicEditor.utils.parseTransform(paraEl);
+          const rad = (t.r || 0) * Math.PI / 180;
+          const cos = Math.cos(-rad);
+          const sin = Math.sin(-rad);
+          const lx = (pt.x - t.x) / (t.sx || 1);
+          const ly = (pt.y - t.y) / (t.sy || 1);
+          const localX = lx * cos - ly * sin;
+          const localY = lx * sin + ly * cos;
+
+          // P1 + P3 = P2 + P4 성질 유지 (대각선 중점 불변 원리)
+          if (state.isDraggingParallelogramP1) {
+            pts[0] = { x: localX, y: localY };
+            pts[3] = { x: pts[0].x + pts[2].x - pts[1].x, y: pts[0].y + pts[2].y - pts[1].y };
+          } else if (state.isDraggingParallelogramP2) {
+            pts[1] = { x: localX, y: localY };
+            pts[2] = { x: pts[1].x + pts[3].x - pts[0].x, y: pts[1].y + pts[3].y - pts[0].y };
+          } else if (state.isDraggingParallelogramP3) {
+            pts[2] = { x: localX, y: localY };
+            pts[1] = { x: pts[0].x + pts[2].x - pts[3].x, y: pts[0].y + pts[2].y - pts[3].y };
+          } else if (state.isDraggingParallelogramP4) {
+            pts[3] = { x: localX, y: localY };
+            pts[0] = { x: pts[1].x + pts[3].x - pts[2].x, y: pts[1].y + pts[3].y - pts[2].y };
+          }
+
+          paraEl.setAttribute('points', `${pts[0].x.toFixed(1)},${pts[0].y.toFixed(1)} ${pts[1].x.toFixed(1)},${pts[1].y.toFixed(1)} ${pts[2].x.toFixed(1)},${pts[2].y.toFixed(1)} ${pts[3].x.toFixed(1)},${pts[3].y.toFixed(1)}`);
+          if (window.PicEditor.tools) window.PicEditor.tools.showParallelogramHandles(paraEl);
+          if (window.PicEditor.inspector) window.PicEditor.inspector.syncUItoSelected();
+        }
+        return;
+      }
+
       // 1-R. 직사각형(Rectangle) 꼭짓점(파란 점) 드래그 이동 (직사각형 정의 유지, 점 한 쌍 함께 이동)
       if (state.isDraggingRectCorner && state.selectedElement) {
         state.hasDragged = true;
@@ -992,6 +1040,26 @@ window.PicEditor.interaction = {
           const p3x = Math.max(x0, x1).toFixed(1);
           const p3y = Math.max(y0, y1).toFixed(1);
           state.tempShape.setAttribute("points", `${p1x},${p1y} ${p2x},${p2y} ${p3x},${p3y}`);
+        } else if (tool === 'parallelogram') {
+          const x0 = state.drawStart.x;
+          const y0 = state.drawStart.y;
+          const x1 = pt.x;
+          const y1 = pt.y;
+          const minX = Math.min(x0, x1);
+          const maxX = Math.max(x0, x1);
+          const minY = Math.min(y0, y1);
+          const maxY = Math.max(y0, y1);
+          const w = maxX - minX;
+          const skew = Math.min(w * 0.25, 30);
+          const p1x = (minX + skew).toFixed(1);
+          const p1y = minY.toFixed(1);
+          const p2x = maxX.toFixed(1);
+          const p2y = minY.toFixed(1);
+          const p3x = (maxX - skew).toFixed(1);
+          const p3y = maxY.toFixed(1);
+          const p4x = minX.toFixed(1);
+          const p4y = maxY.toFixed(1);
+          state.tempShape.setAttribute("points", `${p1x},${p1y} ${p2x},${p2y} ${p3x},${p3y} ${p4x},${p4y}`);
         } else if (tool === 'rect') {
           const x = Math.min(state.drawStart.x, pt.x);
           const y = Math.min(state.drawStart.y, pt.y);
@@ -1233,6 +1301,22 @@ window.PicEditor.interaction = {
         return;
       }
 
+      // 평행사변형 꼭짓점 드래그 종료
+      if (state.isDraggingParallelogramP1 || state.isDraggingParallelogramP2 || state.isDraggingParallelogramP3 || state.isDraggingParallelogramP4) {
+        state.isDraggingParallelogramP1 = false;
+        state.isDraggingParallelogramP2 = false;
+        state.isDraggingParallelogramP3 = false;
+        state.isDraggingParallelogramP4 = false;
+        if (svg) {
+          [1, 2, 3, 4].forEach(idx => {
+            const h = svg.querySelector(`#parallelogram-p${idx}-handle-wrap`);
+            if (h) h.style.cursor = 'grab';
+          });
+        }
+        if (state.hasDragged && window.PicEditor.sync) window.PicEditor.sync.markModified();
+        return;
+      }
+
       // 직사각형 꼭짓점 드래그 종료
       if (state.isDraggingRectCorner) {
         state.isDraggingRectCorner = false;
@@ -1346,6 +1430,13 @@ window.PicEditor.interaction = {
             state.selectedElement = created;
             created.classList.add('selected');
             window.PicEditor.tools.showTriangleHandles(created);
+            window.PicEditor.inspector.syncUItoSelected();
+          } else if (tool === 'parallelogram') {
+            window.PicEditor.interaction.toggleMode();
+            window.PicEditor.utils.deselectAll();
+            state.selectedElement = created;
+            created.classList.add('selected');
+            window.PicEditor.tools.showParallelogramHandles(created);
             window.PicEditor.inspector.syncUItoSelected();
           } else if (tool === 'rect') {
             window.PicEditor.interaction.toggleMode();

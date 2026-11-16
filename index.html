@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>물리 그래픽 편집 스튜디오 V1.0</title>
-  <link rel="stylesheet" href="css/style.css?v=20261116_4">
+  <link rel="stylesheet" href="css/style.css?v=20261116_5">
   <style>
     /* 브라우저 100vh 고정 뷰포트 및 2열 그리드 레이아웃 */
     html, body {
@@ -76,6 +76,33 @@
             <marker id="arrow-start" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto">
               <path d="M 10 0 L 0 5 L 10 10 z" fill="#000000" />
             </marker>
+            <!-- 대칭형 좌우 머리크기 일치 마커 -->
+            <marker id="arrow-equal-end" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="#000000" />
+            </marker>
+            <marker id="arrow-equal-start" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+              <path d="M 10 0 L 0 5 L 10 10 z" fill="#000000" />
+            </marker>
+            <!-- 도형 채우기용 패턴 정의 -->
+            <pattern id="pattern-hatch-right" width="10" height="10" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
+              <line x1="0" y1="0" x2="0" y2="10" stroke="#000000" stroke-width="1.5" />
+            </pattern>
+            <pattern id="pattern-hatch-left" width="10" height="10" patternTransform="rotate(-45 0 0)" patternUnits="userSpaceOnUse">
+              <line x1="0" y1="0" x2="0" y2="10" stroke="#000000" stroke-width="1.5" />
+            </pattern>
+            <pattern id="pattern-crosshatch" width="10" height="10" patternUnits="userSpaceOnUse">
+              <line x1="0" y1="0" x2="10" y2="10" stroke="#000000" stroke-width="1" />
+              <line x1="10" y1="0" x2="0" y2="10" stroke="#000000" stroke-width="1" />
+            </pattern>
+            <pattern id="pattern-dots" width="10" height="10" patternUnits="userSpaceOnUse">
+              <circle cx="5" cy="5" r="1.5" fill="#000000" />
+            </pattern>
+            <pattern id="pattern-horizontal" width="8" height="8" patternUnits="userSpaceOnUse">
+              <line x1="0" y1="4" x2="8" y2="4" stroke="#000000" stroke-width="1.5" />
+            </pattern>
+            <pattern id="pattern-vertical" width="8" height="8" patternUnits="userSpaceOnUse">
+              <line x1="4" y1="0" x2="4" y2="8" stroke="#000000" stroke-width="1.5" />
+            </pattern>
           </defs>
           <g class="main-diagram"></g>
           <g class="text-layer"></g>
@@ -149,6 +176,7 @@
           <option value="line">직선</option>
           <option value="arrow">화살표</option>
           <option value="rect">사각형</option>
+          <option value="parallelogram">평행사변형</option>
           <option value="triangle">삼각형</option>
           <option value="circle">원</option>
           <option value="arc">호</option>
@@ -185,6 +213,10 @@
           <button type="button" class="tool-btn" data-tool="rect" onclick="setTool('rect')" title="사각형 (Rectangle)">
             <svg viewBox="0 0 24 24"><rect x="3.5" y="5.5" width="17" height="13" rx="1.5" fill="none" stroke="currentColor" stroke-width="2.3"/></svg>
             <span class="btn-sublabel">사각형</span>
+          </button>
+          <button type="button" class="tool-btn" data-tool="parallelogram" onclick="setTool('parallelogram')" title="평행사변형 (Parallelogram)">
+            <svg viewBox="0 0 24 24"><polygon points="7,5 21,5 17,19 3,19" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linejoin="round"/></svg>
+            <span class="btn-sublabel">평행사변형</span>
           </button>
           <button type="button" class="tool-btn" data-tool="triangle" onclick="setTool('triangle')" title="삼각형 (Triangle)">
             <svg viewBox="0 0 24 24"><polygon points="12,3.5 3.5,20.5 20.5,20.5" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linejoin="round"/></svg>
@@ -254,6 +286,17 @@
             <button type="button" class="arrow-dir-btn" data-dir="both" onclick="setArrowDir('both')" title="양쪽 (↔)">↔ 양쪽</button>
             <button type="button" class="arrow-dir-btn" data-dir="mid-right" onclick="setArrowDir('mid-right')" title="중앙 오른쪽 (→)">중앙→</button>
             <button type="button" class="arrow-dir-btn" data-dir="mid-left" onclick="setArrowDir('mid-left')" title="중앙 왼쪽 (←)">←중앙</button>
+          </div>
+          <!-- 양쪽 머리크기 일치 옵션 -->
+          <div id="arrowHeadEqualOption" style="display:none; align-items:center; justify-content:space-between; margin-top:4px; padding-top:4px; border-top:1px dashed #bfdbfe; font-size:11px; color:#1e40af;">
+            <label style="cursor:pointer; display:flex; align-items:center; gap:4px; font-weight:600;">
+              <input type="checkbox" id="arrowHeadEqualCheck" checked onchange="toggleArrowHeadEqual(this.checked)"> 양쪽 머리크기 일치
+            </label>
+            <div style="display:flex; align-items:center; gap:3px;">
+              <span style="font-size:10px;">크기:</span>
+              <input type="number" id="arrowHeadSizeInput" min="3" max="24" value="6" style="width:38px; padding:1px 3px; font-size:11px; border:1px solid #93c5fd; border-radius:3px;" title="화살표 머리 크기(px)" oninput="setArrowHeadSize(this.value)">
+              <span>px</span>
+            </div>
           </div>
         </div>
 
@@ -347,7 +390,40 @@
         </button>
       </section>
 
-      <!-- 6. 글자 전용 인스펙터 (선택 시 노출) -->
+      <!-- 6. 도형 전용 인스펙터 (사각형, 평행사변형, 삼각형, 원 등 채우기 옵션) -->
+      <section id="shapeInspector" class="shape-inspector">
+        <span class="shape-inspector-title">🔷 도형 채우기 및 옵션</span>
+
+        <div class="control-group">
+          <label for="shapeFillTransparent">내부 투명:</label>
+          <label style="font-size:12px; font-weight:normal; cursor:pointer;">
+            <input type="checkbox" id="shapeFillTransparent" onchange="onShapeFillTransparent(this.checked)"> 투명하게 (선만 표시)
+          </label>
+        </div>
+
+        <div class="control-group" id="shapeFillColorRow">
+          <label for="shapeFillColor">채우기 색상:</label>
+          <div class="inputs-wrap" style="align-items:center; gap:8px;">
+            <input type="color" id="shapeFillColor" value="#e2e8f0" oninput="onShapeFillColor(this.value)">
+            <span id="shapeFillColorHex" style="font-size:11px; color:#64748b; font-family:monospace;">#e2e8f0</span>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <label for="shapePatternSelect">채우기 패턴:</label>
+          <select id="shapePatternSelect" onchange="onShapePattern(this.value)" style="width:100%; padding:4px 6px; font-size:12px;">
+            <option value="none">단색 채우기 (Solid)</option>
+            <option value="hatch-right">사선 빗금 ↗ (Hatch Right)</option>
+            <option value="hatch-left">역사선 빗금 ↖ (Hatch Left)</option>
+            <option value="crosshatch">격자 빗금 ╳ (Crosshatch)</option>
+            <option value="dots">점박이 (Dots)</option>
+            <option value="horizontal">가로줄 (Horizontal)</option>
+            <option value="vertical">세로줄 (Vertical)</option>
+          </select>
+        </div>
+      </section>
+
+      <!-- 7. 글자 전용 인스펙터 (선택 시 노출) -->
       <section id="textInspector" class="text-inspector">
         <div style="display:flex; justify-content:space-between; align-items:center;">
           <span class="text-inspector-title">🔤 글자 편집 및 옵션</span>
@@ -634,14 +710,14 @@
   </div>
 
   <!-- 자바스크립트 모듈 로드 (강제 캐시 갱신 파라미터 적용) -->
-  <script src="js/state.js?v=20261116_4"></script>
-  <script src="js/utils.js?v=20261116_4"></script>
-  <script src="js/canvas.js?v=20261116_4"></script>
-  <script src="js/tools.js?v=20261116_4"></script>
-  <script src="js/inspector.js?v=20261116_4"></script>
-  <script src="js/interaction.js?v=20261116_4"></script>
-  <script src="js/export-import.js?v=20261116_4"></script>
-  <script src="js/github.js?v=20261116_4"></script>
-  <script src="js/app.js?v=20261116_4"></script>
+  <script src="js/state.js?v=20261116_5"></script>
+  <script src="js/utils.js?v=20261116_5"></script>
+  <script src="js/canvas.js?v=20261116_5"></script>
+  <script src="js/tools.js?v=20261116_5"></script>
+  <script src="js/inspector.js?v=20261116_5"></script>
+  <script src="js/interaction.js?v=20261116_5"></script>
+  <script src="js/export-import.js?v=20261116_5"></script>
+  <script src="js/github.js?v=20261116_5"></script>
+  <script src="js/app.js?v=20261116_5"></script>
 </body>
 </html>
