@@ -11,13 +11,24 @@ window.PicEditor.inspector = {
     const state = window.PicEditor.state;
     if (!state.selectedElement) return;
 
-    const target = state.selectedElement.closest('.axes-wrap') || state.selectedElement.closest('.text-wrap') || state.selectedElement;
-    const tag = target.tagName.toLowerCase();
-    const bbox = target.getBBox();
+    // 만약 선택된 대상이 텍스트 관련이면 textEl와 wrap을 정확히 결정
+    const textEl = this.getTextElement(state.selectedElement);
+    const wrap = textEl ? this.getTextWrap(textEl) : (state.selectedElement.closest('.axes-wrap') || state.selectedElement.closest('.text-wrap') || state.selectedElement);
+    const target = wrap;
+    const tag = target.tagName ? target.tagName.toLowerCase() : '';
+
+    let bbox = { width: 40, height: 20 };
+    try {
+      bbox = target.getBBox();
+    } catch (e) {
+      if (textEl) {
+        try { bbox = textEl.getBBox(); } catch (err) {}
+      }
+    }
+
     const t = window.PicEditor.utils.parseTransform(target);
-    
-    const realW = Math.round(bbox.width * Math.abs(t.sx));
-    const realH = Math.round(bbox.height * Math.abs(t.sy));
+    const realW = Math.round((bbox.width || 40) * Math.abs(t.sx || 1));
+    const realH = Math.round((bbox.height || 20) * Math.abs(t.sy || 1));
 
     const wNum = document.getElementById('objWidthNum');
     const hNum = document.getElementById('objHeightNum');
@@ -53,7 +64,7 @@ window.PicEditor.inspector = {
       if (imageInspector) imageInspector.classList.add('active');
       if (textInspector) textInspector.classList.remove('active');
       this.syncImageInspector(target);
-    } else if (target.classList.contains('text-wrap') || state.selectedElement.classList.contains('text-el')) {
+    } else if (textEl || target.classList.contains('text-wrap') || this.getTextElement(target)) {
       if (textInspector) textInspector.classList.add('active');
       if (imageInspector) imageInspector.classList.remove('active');
       this.syncTextInspector();
@@ -150,13 +161,59 @@ window.PicEditor.inspector = {
    * 텍스트 전용 인스펙터 동기화
    */
   /**
-   * 텍스트 요소 추출 (text-el 또는 text-wrap 호환)
+   * 상단 인스펙터 W, H 치수 동기화 헬퍼
+   */
+  syncDimensionsToUI(target) {
+    if (!target) return;
+    try {
+      const bbox = target.getBBox();
+      const t = window.PicEditor.utils.parseTransform(target);
+      const realW = Math.round(bbox.width * Math.abs(t.sx));
+      const realH = Math.round(bbox.height * Math.abs(t.sy));
+      const wNum = document.getElementById('objWidthNum');
+      const hNum = document.getElementById('objHeightNum');
+      if (wNum && realW > 0) wNum.value = realW;
+      if (hNum && realH > 0) hNum.value = realH;
+    } catch (e) {}
+  },
+
+  /**
+   * 텍스트 요소 추출 (text-el, 일반 text 태그 또는 text-wrap 호환)
    */
   getTextElement(el) {
     if (!el) return null;
+    if (el.tagName && el.tagName.toLowerCase() === 'text') return el;
     if (el.classList && el.classList.contains('text-el')) return el;
-    if (el.querySelector) return el.querySelector('.text-el');
+    if (el.querySelector) {
+      const found = el.querySelector('.text-el') || el.querySelector('text');
+      if (found) return found;
+    }
+    // el이 rect(배경 상자) 등 자식인 경우 부모 컨테이너(g)에서 text 찾기
+    if (el.parentElement) {
+      const p = el.closest('.text-wrap') || el.closest('g');
+      if (p && p !== el) {
+        const found = p.querySelector('.text-el') || p.querySelector('text');
+        if (found) return found;
+      }
+    }
     return null;
+  },
+
+  /**
+   * 텍스트를 감싸는 부모 래퍼 그룹(g) 추출 및 자동 보정
+   */
+  getTextWrap(el) {
+    if (!el) return null;
+    const textEl = this.getTextElement(el);
+    if (textEl) {
+      const p = textEl.closest('.text-wrap') || textEl.closest('g');
+      if (p && p.tagName && p.tagName.toLowerCase() === 'g') {
+        if (!p.classList.contains('text-wrap')) p.classList.add('text-wrap');
+        return p;
+      }
+      return textEl;
+    }
+    return el.closest ? (el.closest('.text-wrap') || el.closest('g') || el) : el;
   },
 
   /**
@@ -168,27 +225,61 @@ window.PicEditor.inspector = {
 
     const textEl = this.getTextElement(state.selectedElement);
     if (!textEl) return;
-    const wrap = textEl.closest('.text-wrap') || textEl;
+    const wrap = this.getTextWrap(textEl) || textEl;
 
-    // 1. 글자 내용 (Text Content)
+    // 1. 글자 내용 (Text Content) - 텍스트 상자 선택 시 내용 완벽 주입
     const contentInput = document.getElementById('textContentInput');
     if (contentInput) {
-      contentInput.value = textEl.textContent || '';
+      contentInput.value = textEl.textContent.trim() || textEl.textContent || '';
     }
 
-    // 2. 글꼴 크기 (Font Size in px)
+    // 2. 글꼴 크기 (Font Size in px) 및 스케일 정규화
+    const t = window.PicEditor.utils.parseTransform(wrap);
+    const signX = t.sx < 0 ? -1 : 1;
+    const signY = t.sy < 0 ? -1 : 1;
+    const curScale = Math.abs(t.sx) || 1;
+
+    let fs = parseInt(textEl.style.fontSize) || parseInt(textEl.getAttribute('font-size'));
+    if (!fs || isNaN(fs)) {
+      try {
+        fs = parseInt(window.getComputedStyle(textEl).fontSize) || 24;
+      } catch (e) {
+        fs = 24;
+      }
+    }
+
+    // 만약 wrap에 scale이 걸려있었다면 (예: 1.5), scale을 font-size에 흡수하고 scale을 1로 정규화
+    // 이렇게 해야 SVG 내부 텍스트 좌표가 (0,0) 기준으로 밀려나거나 엉뚱한 곳으로 튀는 현상 원천 차단
+    if (Math.abs(curScale - 1) > 0.02) {
+      fs = Math.max(6, Math.round(fs * curScale));
+      textEl.setAttribute('font-size', fs);
+      textEl.style.fontSize = fs + 'px';
+      t.sx = 1 * signX;
+      t.sy = 1 * signY;
+      window.PicEditor.utils.setTransform(wrap, t);
+      if (window.PicEditor.canvas) {
+        window.PicEditor.canvas.updateSingleTextBgBox(wrap);
+      }
+    }
+
+    // data-base-size 설정 (배율 슬라이더의 100% 기준 크기)
+    let baseFs = parseInt(textEl.getAttribute('data-base-size'));
+    if (!baseFs || isNaN(baseFs)) {
+      baseFs = fs;
+      textEl.setAttribute('data-base-size', baseFs);
+    }
+
     const sizeInput = document.getElementById('textFontSizeNum');
     if (sizeInput) {
-      let fs = parseInt(textEl.getAttribute('font-size'));
-      if (!fs || isNaN(fs)) {
-        try {
-          fs = parseInt(window.getComputedStyle(textEl).fontSize) || 24;
-        } catch (e) {
-          fs = 24;
-        }
-      }
       sizeInput.value = fs;
     }
+
+    // 6. 스케일 배율 UI 동기화 (baseFs 대비 현재 폰트 크기의 비율)
+    const pct = Math.max(10, Math.round((fs / baseFs) * 100));
+    const scaleRange = document.getElementById('textScaleRange');
+    const scaleNum = document.getElementById('textScaleNum');
+    if (scaleRange) scaleRange.value = Math.min(200, Math.max(10, pct));
+    if (scaleNum) scaleNum.value = pct;
 
     // 3. 글꼴 서체 (Font Family)
     const familySelect = document.getElementById('textFontFamilySelect');
@@ -242,14 +333,6 @@ window.PicEditor.inspector = {
       }
     }
 
-    // 6. 스케일 배율 (Transform Scale %)
-    const t = window.PicEditor.utils.parseTransform(wrap);
-    const pct = Math.round(Math.abs(t.sx) * 100);
-    const scaleRange = document.getElementById('textScaleRange');
-    const scaleNum = document.getElementById('textScaleNum');
-    if (scaleRange) scaleRange.value = Math.min(200, Math.max(0, pct));
-    if (scaleNum) scaleNum.value = pct;
-
     // 7. 배경 모드 (투명, 흰색 박스, 외곽선 흰색)
     const bgSelect = document.getElementById('textBgModeSelect');
     let mode = 'transparent';
@@ -259,7 +342,7 @@ window.PicEditor.inspector = {
   },
 
   /**
-   * 텍스트 내용 실시간 수정
+   * 텍스트 내용 실시간 수정 (텍스트 상자 실시간 자동 확장/축소)
    */
   onTextInput(val) {
     const state = window.PicEditor.state;
@@ -268,10 +351,11 @@ window.PicEditor.inspector = {
     if (!textEl) return;
 
     textEl.textContent = val;
-    const wrap = textEl.closest('.text-wrap');
+    const wrap = this.getTextWrap(textEl) || textEl;
     if (wrap && window.PicEditor.canvas) {
       window.PicEditor.canvas.updateSingleTextBgBox(wrap);
     }
+    this.syncDimensionsToUI(wrap);
     if (window.PicEditor.sync) window.PicEditor.sync.markModified();
   },
 
@@ -301,10 +385,35 @@ window.PicEditor.inspector = {
 
     const num = Math.max(6, parseInt(size) || 24);
     textEl.setAttribute('font-size', num);
-    const wrap = textEl.closest('.text-wrap');
-    if (wrap && window.PicEditor.canvas) {
-      window.PicEditor.canvas.updateSingleTextBgBox(wrap);
+    textEl.style.fontSize = num + 'px'; // CSS 클래스(.math, .korean 등)의 font-size를 인라인 스타일로 오버라이드
+
+    // baseFs 대비 배율 계산 후 슬라이더와 % 숫자 동기화
+    let baseFs = parseInt(textEl.getAttribute('data-base-size'));
+    if (!baseFs || isNaN(baseFs)) {
+      baseFs = num;
+      textEl.setAttribute('data-base-size', baseFs);
     }
+    const pct = Math.max(10, Math.round((num / baseFs) * 100));
+    const scaleRange = document.getElementById('textScaleRange');
+    const scaleNum = document.getElementById('textScaleNum');
+    if (scaleRange) scaleRange.value = Math.min(200, Math.max(10, pct));
+    if (scaleNum) scaleNum.value = pct;
+
+    const wrap = textEl.closest('.text-wrap');
+    if (wrap) {
+      // transform scale 정규화 (좌표 튕김 방지)
+      const t = window.PicEditor.utils.parseTransform(wrap);
+      const signX = t.sx < 0 ? -1 : 1;
+      const signY = t.sy < 0 ? -1 : 1;
+      t.sx = 1 * signX;
+      t.sy = 1 * signY;
+      window.PicEditor.utils.setTransform(wrap, t);
+
+      if (window.PicEditor.canvas) {
+        window.PicEditor.canvas.updateSingleTextBgBox(wrap);
+      }
+    }
+    this.syncDimensionsToUI(wrap || textEl);
     if (window.PicEditor.sync) window.PicEditor.sync.markModified();
   },
 
@@ -318,10 +427,12 @@ window.PicEditor.inspector = {
     if (!textEl) return;
 
     textEl.setAttribute('font-family', family);
+    textEl.style.fontFamily = family; // CSS 클래스 스타일 오버라이드
     const wrap = textEl.closest('.text-wrap');
     if (wrap && window.PicEditor.canvas) {
       window.PicEditor.canvas.updateSingleTextBgBox(wrap);
     }
+    this.syncDimensionsToUI(wrap || textEl);
     if (window.PicEditor.sync) window.PicEditor.sync.markModified();
   },
 
@@ -334,9 +445,13 @@ window.PicEditor.inspector = {
     const textEl = this.getTextElement(state.selectedElement);
     if (!textEl) return;
 
-    const cur = textEl.getAttribute('font-style') || 'normal';
+    let cur = textEl.style.fontStyle || textEl.getAttribute('font-style');
+    if (!cur) {
+      try { cur = window.getComputedStyle(textEl).fontStyle; } catch (e) {}
+    }
     const next = (cur === 'italic') ? 'normal' : 'italic';
     textEl.setAttribute('font-style', next);
+    textEl.style.fontStyle = next;
 
     const btn = document.getElementById('textItalicBtn');
     if (btn) btn.classList.toggle('active', next === 'italic');
@@ -345,6 +460,7 @@ window.PicEditor.inspector = {
     if (wrap && window.PicEditor.canvas) {
       window.PicEditor.canvas.updateSingleTextBgBox(wrap);
     }
+    this.syncDimensionsToUI(wrap || textEl);
     if (window.PicEditor.sync) window.PicEditor.sync.markModified();
   },
 
@@ -357,10 +473,14 @@ window.PicEditor.inspector = {
     const textEl = this.getTextElement(state.selectedElement);
     if (!textEl) return;
 
-    const cur = textEl.getAttribute('font-weight') || 'normal';
-    const isBold = (cur === 'bold' || cur === '700' || parseInt(cur) >= 600);
+    let fw = textEl.style.fontWeight || textEl.getAttribute('font-weight');
+    if (!fw) {
+      try { fw = window.getComputedStyle(textEl).fontWeight; } catch (e) {}
+    }
+    const isBold = (fw === 'bold' || fw === '700' || parseInt(fw) >= 600);
     const next = isBold ? 'normal' : 'bold';
     textEl.setAttribute('font-weight', next);
+    textEl.style.fontWeight = next;
 
     const btn = document.getElementById('textBoldBtn');
     if (btn) btn.classList.toggle('active', next === 'bold');
@@ -369,6 +489,7 @@ window.PicEditor.inspector = {
     if (wrap && window.PicEditor.canvas) {
       window.PicEditor.canvas.updateSingleTextBgBox(wrap);
     }
+    this.syncDimensionsToUI(wrap || textEl);
     if (window.PicEditor.sync) window.PicEditor.sync.markModified();
   },
 
@@ -382,6 +503,7 @@ window.PicEditor.inspector = {
     if (!textEl) return;
 
     textEl.setAttribute('fill', color);
+    textEl.style.fill = color; // CSS 클래스 스타일 오버라이드
     if (window.PicEditor.sync) window.PicEditor.sync.markModified();
   },
 
@@ -429,9 +551,13 @@ window.PicEditor.inspector = {
 
     const finish = () => {
       editor.style.display = 'none';
+      const contentInput = document.getElementById('textContentInput');
+      if (contentInput) contentInput.value = textEl.textContent || '';
       if (wrap && window.PicEditor.canvas) {
         window.PicEditor.canvas.updateSingleTextBgBox(wrap);
       }
+      this.syncDimensionsToUI(wrap);
+      this.syncUItoSelected();
       if (window.PicEditor.sync) window.PicEditor.sync.markModified();
     };
 
@@ -462,23 +588,52 @@ window.PicEditor.inspector = {
     if (val === '') return;
     const num = parseFloat(val);
     const rangeEl = document.getElementById('textScaleRange');
-    if (rangeEl) rangeEl.value = Math.min(200, Math.max(0, num));
+    if (rangeEl) rangeEl.value = Math.min(200, Math.max(10, num));
     this.applyTextScale(num);
   },
+
   applyTextScale(val) {
     const state = window.PicEditor.state;
-    if (!state.selectedElement || !state.selectedElement.classList.contains('text-el')) return;
+    if (!state.selectedElement) return;
+    const textEl = this.getTextElement(state.selectedElement);
+    if (!textEl) return;
 
-    const pct = Math.max(10, parseInt(val) || 100);
-    const scale = pct / 100;
-    const wrap = state.selectedElement.closest('.text-wrap');
-    const t = window.PicEditor.utils.parseTransform(wrap);
+    const rawPct = parseFloat(val);
+    const pct = (isNaN(rawPct) || rawPct <= 0) ? 100 : Math.max(10, rawPct);
     
+    let baseFs = parseInt(textEl.getAttribute('data-base-size'));
+    if (!baseFs || isNaN(baseFs)) {
+      baseFs = parseInt(textEl.style.fontSize) || parseInt(textEl.getAttribute('font-size')) || 24;
+      textEl.setAttribute('data-base-size', baseFs);
+    }
+
+    // 슬라이더 배율에 맞게 픽셀 크기 실시간 계산
+    const targetFs = Math.max(6, Math.round(baseFs * (pct / 100)));
+
+    // 1) 텍스트 폰트 크기 직접 적용 (CSS 오버라이드)
+    textEl.setAttribute('font-size', targetFs);
+    textEl.style.fontSize = targetFs + 'px';
+
+    // 2) ★★★ 슬라이더를 움직이면 픽셀 크기(px) 인풋도 실시간 동기화! ★★★
+    const sizeInput = document.getElementById('textFontSizeNum');
+    if (sizeInput) {
+      sizeInput.value = targetFs;
+    }
+
+    // 3) transform scale 정규화 (텍스트 좌표가 (0,0) 원점 기준으로 튕겨나가지 않도록 방지)
+    const wrap = textEl.closest('.text-wrap') || textEl;
+    const t = window.PicEditor.utils.parseTransform(wrap);
     const signX = t.sx < 0 ? -1 : 1;
     const signY = t.sy < 0 ? -1 : 1;
-    t.sx = scale * signX;
-    t.sy = scale * signY;
+    t.sx = 1 * signX;
+    t.sy = 1 * signY;
     window.PicEditor.utils.setTransform(wrap, t);
+
+    // 4) 배경 박스 및 상단 치수 동기화
+    if (wrap && window.PicEditor.canvas) {
+      window.PicEditor.canvas.updateSingleTextBgBox(wrap);
+    }
+    this.syncDimensionsToUI(wrap);
 
     if (window.PicEditor.sync) window.PicEditor.sync.markModified();
   },
@@ -526,6 +681,7 @@ window.PicEditor.inspector = {
 
     // 기존 스타일 초기화
     wrap.classList.remove('bg-box-white');
+    wrap.classList.remove('bg-transparent');
     textEl.classList.remove('bg-stroke-white');
     textEl.removeAttribute('paint-order');
     textEl.removeAttribute('stroke');
@@ -560,6 +716,7 @@ window.PicEditor.inspector = {
         window.PicEditor.canvas.updateSingleTextBgBox(wrap);
       }
     } else if (mode === 'stroke-white') {
+      wrap.classList.add('bg-transparent');
       if (bgRect) {
         bgRect.setAttribute('display', 'none');
         bgRect.style.display = 'none';
@@ -570,6 +727,7 @@ window.PicEditor.inspector = {
       textEl.setAttribute('stroke-width', '5px');
     } else {
       // transparent (투명)
+      wrap.classList.add('bg-transparent');
       if (bgRect) {
         bgRect.setAttribute('display', 'none');
         bgRect.style.display = 'none';
@@ -595,10 +753,22 @@ window.PicEditor.inspector = {
     const bbox = target.getBBox();
     if (bbox.width === 0) return;
     
+    const textEl = this.getTextElement(target);
+    if (textEl) {
+      const curFs = parseInt(textEl.style.fontSize) || parseInt(textEl.getAttribute('font-size')) || 24;
+      const ratio = targetW / bbox.width;
+      const newFs = Math.max(6, Math.round(curFs * ratio));
+      this.onTextFontSize(newFs);
+      const sizeInput = document.getElementById('textFontSizeNum');
+      if (sizeInput) sizeInput.value = newFs;
+      return;
+    }
+
     const t = window.PicEditor.utils.parseTransform(target);
     const signX = t.sx < 0 ? -1 : 1;
     t.sx = (targetW / bbox.width) * signX;
     window.PicEditor.utils.setTransform(target, t);
+
     if (window.PicEditor.sync) window.PicEditor.sync.markModified();
   },
 
@@ -611,10 +781,22 @@ window.PicEditor.inspector = {
     const bbox = target.getBBox();
     if (bbox.height === 0) return;
     
+    const textEl = this.getTextElement(target);
+    if (textEl) {
+      const curFs = parseInt(textEl.style.fontSize) || parseInt(textEl.getAttribute('font-size')) || 24;
+      const ratio = targetH / bbox.height;
+      const newFs = Math.max(6, Math.round(curFs * ratio));
+      this.onTextFontSize(newFs);
+      const sizeInput = document.getElementById('textFontSizeNum');
+      if (sizeInput) sizeInput.value = newFs;
+      return;
+    }
+
     const t = window.PicEditor.utils.parseTransform(target);
     const signY = t.sy < 0 ? -1 : 1;
     t.sy = (targetH / bbox.height) * signY;
     window.PicEditor.utils.setTransform(target, t);
+
     if (window.PicEditor.sync) window.PicEditor.sync.markModified();
   },
 

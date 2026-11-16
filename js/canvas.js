@@ -39,7 +39,7 @@ window.PicEditor.canvas = {
 
         const padX = 6;
         const padY = 4;
-        const fs = parseInt(textEl.getAttribute('font-size')) || 24;
+        const fs = parseInt(textEl.style.fontSize) || parseInt(textEl.getAttribute('font-size')) || 24;
         const txt = textEl.textContent || '';
         const fallbackW = Math.max(16, txt.length * (fs * 0.55));
         const fallbackH = fs * 1.15;
@@ -60,7 +60,11 @@ window.PicEditor.canvas = {
         bgRect.setAttribute('rx', '3');
         bgRect.setAttribute('ry', '3');
 
-        if (wrap.classList.contains('bg-box-white')) {
+        const isBoxWhite = wrap.classList.contains('bg-box-white') ||
+                           (!wrap.classList.contains('bg-transparent') && bgRect.getAttribute('display') !== 'none' && bgRect.style.display !== 'none' && !bgRect.classList.contains('hidden'));
+
+        if (isBoxWhite) {
+          if (!wrap.classList.contains('bg-box-white')) wrap.classList.add('bg-box-white');
           bgRect.removeAttribute('display');
           bgRect.style.display = 'inline';
         } else {

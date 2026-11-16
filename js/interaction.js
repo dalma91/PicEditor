@@ -47,8 +47,17 @@ window.PicEditor.interaction = {
         if (state.isDrawMode) return;
         if (e.touches && e.touches.length > 1) return;
 
-        const wrap = el.closest('.axes-wrap') || el.closest('.text-wrap') || el.closest('.mid-arrow') || el;
-        const targetEl = wrap.classList.contains('axes-wrap') ? wrap : (wrap.querySelector('.text-el') || el);
+        const textTarget = window.PicEditor.inspector ? (window.PicEditor.inspector.getTextElement(el) || window.PicEditor.inspector.getTextElement(e.target)) : null;
+        let wrap = el.closest('.axes-wrap') || el.closest('.text-wrap') || el.closest('.mid-arrow') || el;
+
+        if (textTarget) {
+          wrap = (window.PicEditor.inspector && window.PicEditor.inspector.getTextWrap) ? window.PicEditor.inspector.getTextWrap(textTarget) : wrap;
+          if (wrap && wrap.classList && !wrap.classList.contains('text-wrap') && wrap.tagName && wrap.tagName.toLowerCase() === 'g') {
+            wrap.classList.add('text-wrap');
+          }
+        }
+
+        const targetEl = (wrap && wrap.classList && wrap.classList.contains('axes-wrap')) ? wrap : (textTarget || el);
 
         // 기존에 다른 객체가 선택되어 있다면 자연스럽게 선택 해제하고 신규 객체 선택
         if (state.selectedElement && state.selectedElement !== targetEl && state.selectedElement !== wrap) {
@@ -63,7 +72,7 @@ window.PicEditor.interaction = {
           const w = elem.closest('.axes-wrap') || elem.closest('.text-wrap') || elem.closest('.mid-arrow') || elem;
           w.classList.remove('selected');
         });
-        wrap.classList.add('selected');
+        if (wrap && wrap.classList) wrap.classList.add('selected');
         
         window.PicEditor.inspector.syncUItoSelected();
 
@@ -106,11 +115,11 @@ window.PicEditor.interaction = {
       el.ondblclick = (e) => {
         if (state.isDrawMode) return;
         e.stopPropagation();
-        const wrap = el.closest('.axes-wrap') || el.closest('.text-wrap') || el.closest('.mid-arrow') || el;
-        const textEl = wrap.querySelector ? (wrap.querySelector('.text-el') || (el.classList.contains('text-el') ? el : null)) : null;
+        const textEl = window.PicEditor.inspector ? (window.PicEditor.inspector.getTextElement(el) || window.PicEditor.inspector.getTextElement(e.target)) : null;
+        const wrap = textEl ? (window.PicEditor.inspector.getTextWrap(textEl) || el) : (el.closest('.axes-wrap') || el.closest('.text-wrap') || el.closest('.mid-arrow') || el);
         if (textEl) {
           state.selectedElement = textEl;
-          wrap.classList.add('selected');
+          if (wrap && wrap.classList) wrap.classList.add('selected');
           window.PicEditor.inspector.syncUItoSelected();
           window.PicEditor.inspector.startInlineTextEdit(textEl);
         }

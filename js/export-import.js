@@ -185,6 +185,9 @@ window.PicEditor.storage = {
             const clone = node.cloneNode(true);
             clone.classList.add('movable');
             const textEl = clone.querySelector('.text-el') || clone.querySelector('text');
+            if (textEl && !textEl.classList.contains('text-el')) {
+              textEl.classList.add('text-el');
+            }
             let bgRect = clone.querySelector('.text-bg-rect');
             if (textEl && !bgRect) {
               bgRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");

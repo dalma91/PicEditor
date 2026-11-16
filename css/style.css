@@ -555,7 +555,6 @@ button.github-accent-btn:hover { background: #4338ca; }
 
 /* 7. 텍스트 배경 사각형 스타일 */
 .text-bg-rect {
-  display: none;
   fill: #ffffff;
   stroke: none;
   stroke-width: 0;
@@ -569,6 +568,12 @@ button.github-accent-btn:hover { background: #4338ca; }
   visibility: visible !important;
   stroke: none;
   stroke-width: 0;
+}
+
+.text-wrap.bg-transparent .text-bg-rect,
+.text-bg-rect[display="none"],
+.text-bg-rect.hidden {
+  display: none !important;
 }
 
 .hint-box {
