@@ -5,33 +5,76 @@ window.PicEditor = window.PicEditor || {};
 
 window.PicEditor.interaction = {
   /**
-   * 모드 토글 (작도 모드 ↔ 선택/편집 모드)
+   * 명시적 모드 설정 (true: 작도 모드, false: 선택/편집 모드)
    */
-  toggleMode() {
+  setMode(isDraw) {
     const state = window.PicEditor.state;
-    state.isDrawMode = !state.isDrawMode;
+    state.isDrawMode = !!isDraw;
     
-    const svg = window.PicEditor.utils.getActiveSvg();
-    const modeBtn = document.getElementById('modeBtn');
+    const svgs = document.querySelectorAll('svg');
+    const modeBtn = document.getElementById('modeBtn') || document.getElementById('modeToggleBtn');
     
     if (state.isDrawMode) {
       if (modeBtn) {
         modeBtn.textContent = "✏️ 작도 모드 중";
         modeBtn.classList.add('active-mode');
       }
-      if (svg) svg.classList.remove('select-mode');
+      svgs.forEach(svg => {
+        svg.classList.remove('select-mode');
+        svg.classList.add('draw-mode');
+      });
       window.PicEditor.utils.deselectAll();
     } else {
       if (modeBtn) {
         modeBtn.textContent = "🖱️ 모드: 선택/편집";
         modeBtn.classList.remove('active-mode');
       }
-      if (svg) svg.classList.add('select-mode');
+      svgs.forEach(svg => {
+        svg.classList.remove('draw-mode');
+        svg.classList.add('select-mode');
+      });
     }
   },
 
   /**
-   * 상하좌우 각각 +5px 확장된 영역 내의 .movable 요소 탐색
+   * 캔버스 내 사용자 객체 존재 여부 확인
+   */
+  hasAnyObjects() {
+    const svg = window.PicEditor.utils.getActiveSvg();
+    if (!svg) return false;
+    const movables = Array.from(svg.querySelectorAll('.movable, image, polygon, circle, line, path, text'))
+      .filter(el => {
+        if (el.closest('.editor-gizmo-group')) return false;
+        if (el.id && el.id.includes('handle')) return false;
+        if (el.classList.contains('axis-hit-line') || el.classList.contains('axis-arrow-hit') || el.classList.contains('axis-origin-dot')) return false;
+        if (el.classList.contains('axis-line') || el.classList.contains('axis-label')) return false;
+        if (el.classList.contains('text-bg-rect') || el.classList.contains('text-bg-box')) return false;
+        if (el.id === 'arc-chord-guide' || el.id === 'arc-axis-guide') return false;
+        return true;
+      });
+    return movables.length > 0;
+  },
+
+  /**
+   * 캔버스 내 객체 유무에 따라 자동 모드 설정
+   * - 객체가 하나라도 있으면 '선택/편집 모드'
+   * - 객체가 하나도 없으면 '작도 모드'
+   */
+  updateModeByObjectCount() {
+    const hasObj = this.hasAnyObjects();
+    this.setMode(!hasObj);
+  },
+
+  /**
+   * 모드 토글 (작도 모드 ↔ 선택/편집 모드)
+   */
+  toggleMode() {
+    const state = window.PicEditor.state;
+    this.setMode(!state.isDrawMode);
+  },
+
+  /**
+   * 상하좌우 각각 +5px 확장된 영역 내의 .movable 요소 탐색 (테두리 최근접 거리 기준)
    */
   findMovableNearPoint(svg, clientX, clientY, margin = 5) {
     if (!svg || clientX === undefined || clientY === undefined) return null;
@@ -47,7 +90,7 @@ window.PicEditor.interaction = {
       const rect = el.getBoundingClientRect();
       if (rect.width === 0 && rect.height === 0) continue;
 
-      // 상하좌우 각각 +5px 확장 영역 검사
+      // 상하좌우 각각 +margin 확장 영역 검사
       const expLeft = rect.left - margin;
       const expRight = rect.right + margin;
       const expTop = rect.top - margin;
@@ -56,11 +99,13 @@ window.PicEditor.interaction = {
       if (clientX >= expLeft && clientX <= expRight &&
           clientY >= expTop && clientY <= expBottom) {
         
-        const cx = (rect.left + rect.right) / 2;
-        const cy = (rect.top + rect.bottom) / 2;
-        const dist = Math.hypot(clientX - cx, clientY - cy);
-        if (dist < minDistance) {
-          minDistance = dist;
+        // 클릭 지점과 객체의 테두리(boundary) 간의 최단 거리 계산
+        const dx = Math.max(0, rect.left - clientX, clientX - rect.right);
+        const dy = Math.max(0, rect.top - clientY, clientY - rect.bottom);
+        const edgeDist = Math.hypot(dx, dy);
+
+        if (edgeDist < minDistance) {
+          minDistance = edgeDist;
           bestEl = el;
         }
       }
@@ -78,9 +123,16 @@ window.PicEditor.interaction = {
 
     let wrap = targetEl.closest('.axes-wrap') || targetEl.closest('.text-wrap') || targetEl.closest('.mid-arrow') || (targetEl.classList && targetEl.classList.contains('movable') ? targetEl : targetEl.closest('.movable')) || targetEl;
 
-    const textTarget = window.PicEditor.inspector ? (window.PicEditor.inspector.getTextElement(targetEl) || (e.target && window.PicEditor.inspector.getTextElement(e.target))) : null;
-    if (textTarget) {
-      wrap = (window.PicEditor.inspector && window.PicEditor.inspector.getTextWrap) ? window.PicEditor.inspector.getTextWrap(textTarget) : wrap;
+    // 타겟이 텍스트 관련일 때만 textTarget을 확인하여 사각형/도형 클릭이 텍스트로 오인되는 문제 원천 차단
+    const isTextRelated = (targetEl.tagName && targetEl.tagName.toLowerCase() === 'text') ||
+      (targetEl.classList && (targetEl.classList.contains('text-el') || targetEl.classList.contains('text-wrap') || targetEl.classList.contains('text-bg-rect') || targetEl.classList.contains('text-bg-box'))) ||
+      (targetEl.closest && targetEl.closest('.text-wrap'));
+
+    if (isTextRelated && window.PicEditor.inspector) {
+      const textTarget = window.PicEditor.inspector.getTextElement(targetEl);
+      if (textTarget) {
+        wrap = (window.PicEditor.inspector.getTextWrap ? window.PicEditor.inspector.getTextWrap(textTarget) : null) || wrap;
+      }
     }
 
     if (state.selectedElement && state.selectedElement !== wrap) {
@@ -148,14 +200,18 @@ window.PicEditor.interaction = {
       el.ondblclick = (e) => {
         if (state.isDrawMode) return;
         e.stopPropagation();
-        const textTarget = window.PicEditor.inspector ? (window.PicEditor.inspector.getTextElement(el) || window.PicEditor.inspector.getTextElement(e.target)) : null;
-        let wrap = el.closest('.axes-wrap') || el.closest('.text-wrap') || el.closest('.mid-arrow') || (el.classList && el.classList.contains('movable') ? el : el.closest('.movable')) || el;
-        if (textTarget) {
-          wrap = (window.PicEditor.inspector && window.PicEditor.inspector.getTextWrap) ? window.PicEditor.inspector.getTextWrap(textTarget) : wrap;
-          state.selectedElement = wrap;
-          if (wrap && wrap.classList) wrap.classList.add('selected');
-          window.PicEditor.inspector.syncUItoSelected();
-          window.PicEditor.inspector.startInlineTextEdit(textTarget);
+        const isTextRelated = (el.tagName && el.tagName.toLowerCase() === 'text') ||
+          (el.classList && (el.classList.contains('text-el') || el.classList.contains('text-wrap') || el.classList.contains('text-bg-rect') || el.classList.contains('text-bg-box'))) ||
+          (el.closest && el.closest('.text-wrap'));
+        if (isTextRelated && window.PicEditor.inspector) {
+          const textTarget = window.PicEditor.inspector.getTextElement(el) || window.PicEditor.inspector.getTextElement(e.target);
+          if (textTarget) {
+            let wrap = (window.PicEditor.inspector && window.PicEditor.inspector.getTextWrap) ? window.PicEditor.inspector.getTextWrap(textTarget) : el;
+            state.selectedElement = wrap;
+            if (wrap && wrap.classList) wrap.classList.add('selected');
+            window.PicEditor.inspector.syncUItoSelected();
+            window.PicEditor.inspector.startInlineTextEdit(textTarget);
+          }
         }
       };
 

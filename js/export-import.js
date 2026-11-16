@@ -87,6 +87,9 @@ window.PicEditor.storage = {
         window.PicEditor.utils.deselectAll();
         window.PicEditor.state.selectedElement = svgImg;
         svgImg.classList.add('selected');
+        if (window.PicEditor.interaction && window.PicEditor.interaction.updateModeByObjectCount) {
+          window.PicEditor.interaction.updateModeByObjectCount();
+        }
         window.PicEditor.inspector.syncUItoSelected();
 
         console.log(`그림 파일 로드 성공: ${imgW}x${imgH}px`);
@@ -294,6 +297,9 @@ window.PicEditor.storage = {
       window.PicEditor.interaction.initMovableEvents();
       setTimeout(window.PicEditor.canvas.updateAllTextBgBoxes, 80);
       window.PicEditor.utils.deselectAll();
+      if (window.PicEditor.interaction && window.PicEditor.interaction.updateModeByObjectCount) {
+        window.PicEditor.interaction.updateModeByObjectCount();
+      }
 
       return true;
     } catch (err) {
@@ -372,6 +378,9 @@ window.PicEditor.storage = {
       if (mainGrp) mainGrp.innerHTML = '';
       if (textLayer) textLayer.innerHTML = '';
       window.PicEditor.utils.deselectAll();
+      if (window.PicEditor.interaction && window.PicEditor.interaction.updateModeByObjectCount) {
+        window.PicEditor.interaction.updateModeByObjectCount();
+      }
     }
   },
 

@@ -10,18 +10,15 @@ window.addEventListener('DOMContentLoaded', () => {
   window.PicEditor.interaction.initMovableEvents();
   window.PicEditor.interaction.initGlobalEvents();
 
-  // 기본 모드를 '선택/편집' 모드로 보장
-  if (window.PicEditor.state) {
-    window.PicEditor.state.isDrawMode = false;
+  // 캔버스 내 객체 유무에 따라 자동 모드 설정 (객체가 있으면 선택/편집 모드, 없으면 작도 모드)
+  if (window.PicEditor.interaction && window.PicEditor.interaction.updateModeByObjectCount) {
+    window.PicEditor.interaction.updateModeByObjectCount();
+  } else {
+    document.querySelectorAll('svg').forEach(svg => {
+      svg.classList.add('select-mode');
+    });
   }
-  document.querySelectorAll('svg').forEach(svg => {
-    svg.classList.remove('draw-mode');
-    svg.classList.add('select-mode');
-  });
-  const modeBtn = document.getElementById('modeToggleBtn');
-  if (modeBtn) {
-    modeBtn.textContent = '🖱️ 모드: 선택/편집';
-  }
+
   if (window.PicEditor.utils && window.PicEditor.utils.deselectAll) {
     window.PicEditor.utils.deselectAll();
   }
@@ -36,5 +33,5 @@ window.addEventListener('DOMContentLoaded', () => {
     window.PicEditor.sync.checkAutoSaveOnLoad();
   }
 
-  console.log('물리 마스터 에디터 스튜디오가 성공적으로 초기화되었습니다.');
+  console.log('물리 그래픽 편집 스튜디오 V1.1이 성공적으로 초기화되었습니다.');
 });

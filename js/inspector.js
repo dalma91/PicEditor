@@ -307,42 +307,72 @@ window.PicEditor.inspector = {
   },
 
   /**
-   * 텍스트 요소 추출 (text-el, 일반 text 태그 또는 text-wrap 호환)
+   * 텍스트 요소 추출 (text-el, 일반 text 태그 또는 text-wrap 내부 text)
    */
   getTextElement(el) {
     if (!el) return null;
+    
+    // 1. el 자체가 text 태그이거나 .text-el 인 경우
     if (el.tagName && el.tagName.toLowerCase() === 'text') return el;
     if (el.classList && el.classList.contains('text-el')) return el;
-    if (el.querySelector) {
-      const found = el.querySelector('.text-el') || el.querySelector('text');
-      if (found) return found;
+
+    // 2. 만약 axes-wrap, 기즈모, 또는 독립 도형(polygon, circle, line, path, ellipse, image, 일반 rect)이면 텍스트 아님
+    if (el.classList && (el.classList.contains('axes-wrap') || el.classList.contains('editor-gizmo-group'))) return null;
+    const tag = (el.tagName || '').toLowerCase();
+    if (['polygon', 'circle', 'line', 'path', 'ellipse', 'image'].includes(tag)) {
+      return null;
     }
-    // el이 rect(배경 상자) 등 자식인 경우 부모 컨테이너(g)에서 text 찾기
-    if (el.parentElement) {
-      const p = el.closest('.text-wrap') || el.closest('g');
-      if (p && p !== el) {
-        const found = p.querySelector('.text-el') || p.querySelector('text');
-        if (found) return found;
+    if (tag === 'rect') {
+      // 오직 .text-wrap 내부의 텍스트 배경 상자인 경우에만 그 text-wrap의 텍스트 반환
+      const parentWrap = el.closest ? el.closest('.text-wrap') : null;
+      if (parentWrap && (el.classList.contains('text-bg-rect') || el.classList.contains('text-bg-box'))) {
+        return parentWrap.querySelector('.text-el') || parentWrap.querySelector('text');
+      }
+      return null;
+    }
+
+    // 3. el이 .text-wrap 요소인 경우 내부 text 반환
+    if (el.classList && el.classList.contains('text-wrap')) {
+      return el.querySelector('.text-el') || el.querySelector('text');
+    }
+
+    // 4. el이 .text-wrap 부모 내부에 속해 있는 경우
+    const textWrap = el.closest ? el.closest('.text-wrap') : null;
+    if (textWrap) {
+      return textWrap.querySelector('.text-el') || textWrap.querySelector('text');
+    }
+
+    // 5. el이 독립된 소형 그룹(g)이고 직속으로 text를 보유하며 도형이 없는 텍스트 전용 그룹인 경우
+    if (tag === 'g' && !el.classList.contains('main-diagram') && !el.classList.contains('text-layer') && !el.classList.contains('editor-gizmo-group') && !(el.id && el.id.includes('handle'))) {
+      const hasShapes = el.querySelector('polygon, circle, line, path, rect:not(.text-bg-rect):not(.text-bg-box)');
+      if (!hasShapes) {
+        return el.querySelector('.text-el') || el.querySelector('text');
       }
     }
+
     return null;
   },
 
   /**
-   * 텍스트를 감싸는 부모 래퍼 그룹(g) 추출 및 자동 보정
+   * 텍스트를 감싸는 부모 래퍼 그룹(g.text-wrap) 추출
    */
   getTextWrap(el) {
     if (!el) return null;
     const textEl = this.getTextElement(el);
-    if (textEl) {
-      const p = textEl.closest('.text-wrap') || textEl.closest('g');
-      if (p && p.tagName && p.tagName.toLowerCase() === 'g') {
-        if (!p.classList.contains('text-wrap')) p.classList.add('text-wrap');
-        return p;
-      }
-      return textEl;
+    if (!textEl) return null;
+
+    const p = textEl.closest('.text-wrap');
+    if (p) return p;
+
+    const parentG = textEl.parentElement;
+    if (parentG && parentG.tagName && parentG.tagName.toLowerCase() === 'g' &&
+        !parentG.classList.contains('main-diagram') &&
+        !parentG.classList.contains('text-layer') &&
+        !parentG.classList.contains('editor-gizmo-group')) {
+      parentG.classList.add('text-wrap');
+      return parentG;
     }
-    return el.closest ? (el.closest('.text-wrap') || el.closest('g') || el) : el;
+    return textEl;
   },
 
   /**
@@ -1078,6 +1108,9 @@ window.PicEditor.inspector = {
       }
       target.remove();
       window.PicEditor.utils.deselectAll();
+      if (window.PicEditor.interaction && window.PicEditor.interaction.updateModeByObjectCount) {
+        window.PicEditor.interaction.updateModeByObjectCount();
+      }
       if (window.PicEditor.sync) window.PicEditor.sync.markModified();
     } else {
       alert('삭제할 요소를 먼저 클릭하여 선택해 주세요.');

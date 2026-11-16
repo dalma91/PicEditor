@@ -1900,7 +1900,7 @@ window.PicEditor.tools = {
     if (!el) return false;
     const tag = (el.tagName || '').toLowerCase();
     if (tag === 'rect') {
-      return !el.classList || !el.classList.contains('text-bg-rect');
+      return !el.classList || (!el.classList.contains('text-bg-rect') && !el.classList.contains('text-bg-box'));
     }
     if (tag === 'circle' || tag === 'ellipse') {
       return !el.id || !el.id.includes('handle');
