@@ -2,30 +2,77 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <title>2003.092.2.전자기_그림</title>
+  <title>KAIST_2003.092.2.전자기_그림</title>
 </head>
 <body>
-<svg xmlns="http://www.w3.org/2000/svg" id="svg-editor" viewBox="0 0 840 900" class="select-mode" width="100%" height="100%">
-  <!-- 배경 백색 사각형 -->
-  <rect width="100%" height="100%" fill="#FFFFFF"/>
-
-  <defs>
-    <!-- 화살표 마커 -->
-    <marker id="arrow-end" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+<svg xmlns="http://www.w3.org/2000/svg" id="svg-editor" viewBox="0 0 840 900" class="select-mode">
+          <rect width="100%" height="100%" fill="#FFFFFF"/>
+          <defs>
+            <marker id="arrow-1" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="#000000"/>
+            </marker>
+            <marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="#000000"/>
+            </marker>
+            <marker id="arrow-start-1" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+              <path d="M 10 0 L 0 5 L 10 10 z" fill="#000000"/>
+            </marker>
+            <marker id="arrow-start" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+              <path d="M 10 0 L 0 5 L 10 10 z" fill="#000000"/>
+            </marker>
+          <marker id="arrow-1" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="#000000"/>
+            </marker><marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="#000000"/>
+            </marker><marker id="arrow-start-1" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+              <path d="M 10 0 L 0 5 L 10 10 z" fill="#000000"/>
+            </marker><marker id="arrow-start" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+              <path d="M 10 0 L 0 5 L 10 10 z" fill="#000000"/>
+            </marker><marker id="arrow-end" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M 0 1.5 L 9 5 L 0 8.5 Z" fill="#000000"/>
+    </marker><marker id="arrow-start" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M 9 1.5 L 0 5 L 9 8.5 Z" fill="#000000"/>
+    </marker><marker id="arrow-dim-start" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 9 2 L 1 5 L 9 8 Z" fill="#000000"/>
+    </marker><marker id="arrow-dim-end" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 1 2 L 9 5 L 1 8 Z" fill="#000000"/>
+    </marker><pattern id="stipple-bg" width="12" height="12" patternUnits="userSpaceOnUse">
+      <circle cx="3" cy="3" r="1.0" fill="#888888"/>
+      <circle cx="9" cy="3" r="1.0" fill="#888888"/>
+      <circle cx="6" cy="6" r="1.0" fill="#888888"/>
+      <circle cx="3" cy="9" r="1.0" fill="#888888"/>
+      <circle cx="9" cy="9" r="1.0" fill="#888888"/>
+    </pattern><marker id="arrow-end" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
       <path d="M 0 1.5 L 8 5 L 0 8.5 Z" fill="#000000"/>
-    </marker>
-    <marker id="arrow-start" viewBox="0 0 10 10" refX="2" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+    </marker><marker id="arrow-end" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 Z" fill="#000000"/>
+    </marker><marker id="arrow-start" viewBox="0 0 10 10" refX="2" refY="5" markerWidth="6" markerHeight="6" orient="auto">
       <path d="M 8 1.5 L 0 5 L 8 8.5 Z" fill="#000000"/>
-    </marker>
-    <marker id="flow-arrow" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="8" markerHeight="8" orient="auto">
+    </marker><marker id="flow-arrow" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="8" markerHeight="8" orient="auto">
       <path d="M 0 1 L 10 6 L 0 11 Z" fill="#000000"/>
-    </marker>
-    <marker id="b-arrow" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="8" markerHeight="8" orient="auto">
+    </marker><marker id="b-arrow" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="8" markerHeight="8" orient="auto">
       <path d="M 0 1 L 10 6 L 0 11 Z" fill="#000000"/>
-    </marker>
-  </defs>
-
-  <style>
+    </marker></defs>
+          <g class="main-diagram"><polygon class="movable frame-line" points="80,520 270,520 270,840 80,840" transform="translate(0,0) scale(1,1) rotate(0)"/><line class="movable frame-line" x1="610" y1="210" x2="800" y2="210" transform="translate(0,0) scale(1,1) rotate(0)"/><line class="movable frame-line" x1="800" y1="210" x2="800" y2="530" transform="translate(0,0) scale(1,1) rotate(0)"/><line class="movable frame-line" x1="610" y1="210" x2="610" y2="530" transform="translate(0,0) scale(1,1) rotate(0)"/><line class="movable frame-line" x1="610" y1="530" x2="800" y2="530" transform="translate(0,0) scale(1,1) rotate(0)"/><line class="movable frame-line" x1="80" y1="520" x2="610" y2="210" transform="translate(0,0) scale(1,1) rotate(0)"/><line class="movable frame-line" x1="270" y1="520" x2="800" y2="210" transform="translate(0,0) scale(1,1) rotate(0)"/><line class="movable frame-line" x1="270" y1="840" x2="800" y2="530" transform="translate(0,0) scale(1,1) rotate(0)"/><line class="movable frame-line" x1="80" y1="840" x2="610" y2="530" transform="translate(0,0) scale(1,1) rotate(0)"/><line class="movable" x1="10" y1="770" x2="180" y2="670" stroke="#000000" stroke-width="4.5" marker-end="url(#flow-arrow)" transform="translate(0,0) scale(1,1) rotate(0)"/><polygon class="movable" points="215,440 480,285 480,605 215,760" fill="#B0B0B0" stroke="#000000" stroke-width="2.2" transform="translate(0,0) scale(1,1) rotate(0)"/><line class="movable" x1="215" y1="440" x2="480" y2="285" stroke="#000000" stroke-width="5.0" transform="translate(0,0) scale(1,1) rotate(0)"/><g class="movable text-wrap" transform="translate(-28.08502197265625, -10.212721347808838) scale(1, 1) rotate(0)">
+      <text class="roman" x="380" y="525" style="font-size: 36px; font-weight: bold;" data-base-size="36">P<tspan class="sub" dy="8">L</tspan></text>
+    </g><polygon class="movable" points="425,440 690,285 690,605 425,760" fill="#B0B0B0" stroke="#000000" stroke-width="2.2" transform="translate(0,0) scale(1,1) rotate(0)"/><line class="movable" x1="425" y1="440" x2="690" y2="285" stroke="#000000" stroke-width="5.0" transform="translate(0,0) scale(1,1) rotate(0)"/><g class="movable" transform="translate(0,0) scale(1,1) rotate(0)">
+      <text class="roman" x="590" y="525" style="font-size: 36px; font-weight: bold;">P<tspan class="sub" dy="8">R</tspan></text>
+    </g><line class="movable dim-line" x1="450" y1="775" x2="685" y2="635" marker-start="url(#arrow-start)" marker-end="url(#arrow-end)" transform="translate(0,0) scale(1,1) rotate(0)"/><line class="movable" x1="440" y1="410" x2="440" y2="195" stroke="#000000" stroke-width="3.5" marker-end="url(#b-arrow)" transform="translate(0,0) scale(1,1) rotate(0)"/><circle class="movable" cx="340" cy="365" r="5" fill="#000000" transform="translate(0,0) scale(1,1) rotate(0)"/><line class="movable wire" x1="340" y1="365" x2="340" y2="290" transform="translate(0,0) scale(1,1) rotate(0)"/><circle class="movable" cx="340" cy="285" r="5" fill="#FFFFFF" stroke="#000000" stroke-width="2.0" transform="translate(0,0) scale(1,1) rotate(0)"/><line class="movable" x1="340" y1="285" x2="315" y2="215" stroke="#000000" stroke-width="3.0" stroke-linecap="round" transform="translate(0,0) scale(1,1) rotate(0)"/><circle class="movable" cx="340" cy="210" r="5" fill="#FFFFFF" stroke="#000000" stroke-width="2.0" transform="translate(0,0) scale(1,1) rotate(0)"/><polyline class="movable wire" points="340,205 340,95 415,95" transform="translate(0,0) scale(1,1) rotate(0)"/><polyline class="movable" points="415,95 423,85 435,105 447,85 459,105 471,85 483,105 491,95" fill="none" stroke="#000000" stroke-width="2.5" stroke-linejoin="round" transform="translate(0,0) scale(1,1) rotate(0)"/><polyline class="movable wire" points="491,95 565,95 565,350" transform="translate(0,0) scale(1,1) rotate(0)"/><circle class="movable" cx="565" cy="350" r="5" fill="#000000" transform="translate(0,0) scale(1,1) rotate(0)"/><line class="movable" x1="80" y1="520" x2="80" y2="435" stroke="#000000" stroke-width="2.2" marker-end="url(#arrow-end)" transform="translate(0,0) scale(1,1) rotate(0)"/><line class="movable" x1="270" y1="840" x2="520" y2="840" stroke="#000000" stroke-width="2.2" marker-end="url(#arrow-end)" transform="translate(0,0) scale(1,1) rotate(0)"/><line class="movable dim-line" x1="70" y1="525" x2="70" y2="835" marker-start="url(#arrow-start)" marker-end="url(#arrow-end)" transform="translate(0,0) scale(1,1) rotate(0)"/><line class="movable dim-line" x1="85" y1="865" x2="265" y2="865" marker-start="url(#arrow-start)" marker-end="url(#arrow-end)" transform="translate(0,0) scale(1,1) rotate(0)"/></g>
+          <g class="text-layer"><g class="movable text-wrap bg-box-white" transform="translate(0,0) scale(1,1) rotate(0)"><rect class="text-bg-rect" rx="3" fill="#ffffff" stroke="none" stroke-width="0" x="579" y="702" width="23" height="46" fill-opacity="1" ry="3" style="display: inline;"/><text class="movable math text-el" x="590" y="725" transform="translate(0,0) scale(1,1) rotate(0)" data-base-size="34">l</text></g><g class="movable text-wrap bg-box-white" transform="translate(0,0) scale(1,1) rotate(0)"><rect class="text-bg-rect" rx="3" fill="#ffffff" stroke="none" stroke-width="0" x="392" y="247" width="35" height="46" fill-opacity="1" ry="3" style="display: inline;"/><text class="movable math text-el" x="410" y="270" transform="translate(0,0) scale(1,1) rotate(0)">B</text></g><g class="movable text-wrap bg-box-white" transform="translate(0,0) scale(1,1) rotate(0)"><rect class="text-bg-rect" rx="3" fill="#ffffff" stroke="none" stroke-width="0" x="280" y="254" width="30" height="42" fill-opacity="1" ry="3" style="display: inline;"/><text class="movable roman text-el" x="295" y="275" transform="translate(0,0) scale(1,1) rotate(0)">S</text></g><g class="movable text-wrap bg-box-white" transform="translate(0,0) scale(1,1) rotate(0)"><rect class="text-bg-rect" rx="3" fill="#ffffff" stroke="none" stroke-width="0" x="437" y="32" width="34" height="46" fill-opacity="1" ry="3" style="display: inline;"/><text class="movable math text-el" x="455" y="55" transform="translate(0,0) scale(1,1) rotate(0)">R</text></g><g class="movable text-wrap bg-box-white" transform="translate(0,0) scale(1,1) rotate(0)"><rect class="text-bg-rect" rx="3" fill="#ffffff" stroke="none" stroke-width="0" x="41" y="417" width="27" height="46" fill-opacity="1" ry="3" style="display: inline;"/><text class="movable math text-el" x="55" y="440" transform="translate(0,0) scale(1,1) rotate(0)">z</text></g><g class="movable text-wrap bg-box-white" transform="translate(0,0) scale(1,1) rotate(0)"><rect class="text-bg-rect" rx="3" fill="#ffffff" stroke="none" stroke-width="0" x="534" y="817" width="31" height="46" fill-opacity="1" ry="3" style="display: inline;"/><text class="movable math text-el" x="550" y="840" transform="translate(0,0) scale(1,1) rotate(0)">x</text></g><g class="movable text-wrap bg-box-white" transform="translate(0,0) scale(1,1) rotate(0)"><rect class="text-bg-rect" rx="3" fill="#ffffff" stroke="none" stroke-width="0" x="20" y="657" width="29" height="46" fill-opacity="1" ry="3" style="display: inline;"/><text class="movable math text-el" x="35" y="680" transform="translate(0,0) scale(1,1) rotate(0)">h</text></g><g class="movable text-wrap bg-box-white" transform="translate(0,0) scale(1,1) rotate(0)"><rect class="text-bg-rect" rx="3" fill="#ffffff" stroke="none" stroke-width="0" x="160" y="867" width="32" height="46" fill-opacity="1" ry="3" style="display: inline;"/><text class="movable math text-el" x="175" y="890" transform="translate(0,0) scale(1,1) rotate(0)" data-base-size="34">d</text></g></g>
+        <style>
+    .math { font-family: 'Times New Roman', serif; font-style: italic; font-size: 36px; fill: #000000; text-anchor: middle; dominant-baseline: central; }
+    .roman { font-family: 'Times New Roman', serif; font-style: normal; font-size: 32px; fill: #000000; text-anchor: middle; dominant-baseline: central; }
+    .korean { font-family: 'KoPubWorld Dotum', 'Malgun Gothic', 'Noto Sans KR', sans-serif; font-size: 26px; fill: #000000; text-anchor: start; dominant-baseline: central; }
+    .caption { font-family: 'KoPubWorld Dotum', 'Malgun Gothic', 'Noto Sans KR', sans-serif; font-size: 34px; font-weight: bold; fill: #000000; text-anchor: middle; dominant-baseline: central; }
+  </style><style>
+    .math { font-family: 'Times New Roman', serif; font-style: italic; font-size: 32px; fill: #000000; text-anchor: middle; dominant-baseline: central; }
+    .roman { font-family: 'Times New Roman', serif; font-style: normal; font-size: 32px; fill: #000000; text-anchor: middle; dominant-baseline: central; }
+    .sub { font-family: 'Times New Roman', serif; font-style: normal; font-size: 22px; fill: #000000; }
+    .korean { font-family: 'KoPubWorld Dotum', 'Malgun Gothic', 'Noto Sans KR', sans-serif; font-size: 28px; fill: #000000; text-anchor: middle; dominant-baseline: central; }
+    .boundary-line { stroke: #000000; stroke-width: 3.5; fill: none; }
+    .normal-line { stroke: #000000; stroke-width: 2.0; stroke-dasharray: 4,4; fill: none; }
+    .wave-line { stroke: #000000; stroke-width: 2.5; fill: none; }
+  </style><style>
     .math { font-family: 'Times New Roman', serif; font-style: italic; font-size: 34px; fill: #000000; text-anchor: middle; dominant-baseline: central; }
     .roman { font-family: 'Times New Roman', serif; font-style: normal; font-size: 32px; fill: #000000; text-anchor: middle; dominant-baseline: central; }
     .sub { font-family: 'Times New Roman', serif; font-style: normal; font-size: 22px; fill: #000000; }
@@ -33,93 +80,6 @@
     .hidden-line { stroke: #000000; stroke-width: 1.8; stroke-dasharray: 5,4; fill: none; }
     .wire { stroke: #000000; stroke-width: 2.2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
     .dim-line { stroke: #000000; stroke-width: 1.8; fill: none; }
-  </style>
-
-  <g class="main-diagram">
-    <!-- 1. 통로 외곽 프레임 (3D 직육면체 덕트) -->
-    <!-- 전면 입구 사각형: (80, 520) - (270, 520) - (270, 840) - (80, 840) -->
-    <polygon class="movable frame-line" points="80,520 270,520 270,840 80,840" transform="translate(0,0) scale(1,1) rotate(0)"/>
-
-    <!-- 후면 프레임 -->
-    <line class="movable frame-line" x1="610" y1="210" x2="800" y2="210" transform="translate(0,0) scale(1,1) rotate(0)"/>
-    <line class="movable frame-line" x1="800" y1="210" x2="800" y2="530" transform="translate(0,0) scale(1,1) rotate(0)"/>
-    <line class="movable frame-line" x1="610" y1="210" x2="610" y2="530" transform="translate(0,0) scale(1,1) rotate(0)"/>
-    <line class="movable frame-line" x1="610" y1="530" x2="800" y2="530" transform="translate(0,0) scale(1,1) rotate(0)"/>
-
-    <!-- 길이 방향 모서리들 -->
-    <line class="movable frame-line" x1="80" y1="520" x2="610" y2="210" transform="translate(0,0) scale(1,1) rotate(0)"/>
-    <line class="movable frame-line" x1="270" y1="520" x2="800" y2="210" transform="translate(0,0) scale(1,1) rotate(0)"/>
-    <line class="movable frame-line" x1="270" y1="840" x2="800" y2="530" transform="translate(0,0) scale(1,1) rotate(0)"/>
-    <line class="movable frame-line" x1="80" y1="840" x2="610" y2="530" transform="translate(0,0) scale(1,1) rotate(0)"/>
-
-    <!-- 유입 흐름 화살표 (입구 중심 관통) -->
-    <line class="movable" x1="10" y1="770" x2="180" y2="670" stroke="#000000" stroke-width="4.5" marker-end="url(#flow-arrow)" transform="translate(0,0) scale(1,1) rotate(0)"/>
-
-    <!-- 2. 전극판 PL (좌측 전극판, 점박이 회색) -->
-    <!-- (215, 440) -> (480, 285) -> (480, 605) -> (215, 760) -->
-    <polygon class="movable" points="215,440 480,285 480,605 215,760" fill="#B0B0B0" stroke="#000000" stroke-width="2.2" transform="translate(0,0) scale(1,1) rotate(0)"/>
-    <!-- 상단/하단 보조 테두리 -->
-    <line class="movable" x1="215" y1="440" x2="480" y2="285" stroke="#000000" stroke-width="5.0" transform="translate(0,0) scale(1,1) rotate(0)"/>
-    <g class="movable" transform="translate(0,0) scale(1,1) rotate(0)">
-      <text class="roman" x="380" y="525" style="font-size: 36px; font-weight: bold;">P<tspan class="sub" dy="8">L</tspan></text>
-    </g>
-
-    <!-- 3. 전극판 PR (우측 전극판, 점박이 회색) -->
-    <!-- (425, 440) -> (690, 285) -> (690, 605) -> (425, 760) -->
-    <polygon class="movable" points="425,440 690,285 690,605 425,760" fill="#B0B0B0" stroke="#000000" stroke-width="2.2" transform="translate(0,0) scale(1,1) rotate(0)"/>
-    <!-- 상단/하단 보조 테두리 -->
-    <line class="movable" x1="425" y1="440" x2="690" y2="285" stroke="#000000" stroke-width="5.0" transform="translate(0,0) scale(1,1) rotate(0)"/>
-    <g class="movable" transform="translate(0,0) scale(1,1) rotate(0)">
-      <text class="roman" x="590" y="525" style="font-size: 36px; font-weight: bold;">P<tspan class="sub" dy="8">R</tspan></text>
-    </g>
-
-    <!-- 우측판 길이 l 치수선 -->
-    <line class="movable dim-line" x1="450" y1="775" x2="685" y2="635" marker-start="url(#arrow-start)" marker-end="url(#arrow-end)" transform="translate(0,0) scale(1,1) rotate(0)"/>
-    <text class="movable math" x="590" y="725" transform="translate(0,0) scale(1,1) rotate(0)">l</text>
-
-    <!-- 4. 자기장 B (두 전극판 사이 수직 상향) -->
-    <line class="movable" x1="440" y1="410" x2="440" y2="195" stroke="#000000" stroke-width="3.5" marker-end="url(#b-arrow)" transform="translate(0,0) scale(1,1) rotate(0)"/>
-    <text class="movable math" x="410" y="270" transform="translate(0,0) scale(1,1) rotate(0)">B</text>
-
-    <!-- 5. 상단 회로 및 스위치 S, 저항 R -->
-    <!-- PL 상단 접속점 -->
-    <circle class="movable" cx="340" cy="365" r="5" fill="#000000" transform="translate(0,0) scale(1,1) rotate(0)"/>
-    <line class="movable wire" x1="340" y1="365" x2="340" y2="290" transform="translate(0,0) scale(1,1) rotate(0)"/>
-    <!-- 스위치 하단 단자 -->
-    <circle class="movable" cx="340" cy="285" r="5" fill="#FFFFFF" stroke="#000000" stroke-width="2.0" transform="translate(0,0) scale(1,1) rotate(0)"/>
-    <!-- 스위치 레버 (열림) -->
-    <line class="movable" x1="340" y1="285" x2="315" y2="215" stroke="#000000" stroke-width="3.0" stroke-linecap="round" transform="translate(0,0) scale(1,1) rotate(0)"/>
-    <!-- 스위치 상단 단자 -->
-    <circle class="movable" cx="340" cy="210" r="5" fill="#FFFFFF" stroke="#000000" stroke-width="2.0" transform="translate(0,0) scale(1,1) rotate(0)"/>
-    <text class="movable roman" x="295" y="275" transform="translate(0,0) scale(1,1) rotate(0)">S</text>
-
-    <!-- 스위치에서 상단 모서리 및 저항 R -->
-    <polyline class="movable wire" points="340,205 340,95 415,95" transform="translate(0,0) scale(1,1) rotate(0)"/>
-    <!-- 저항 R 지그재그 -->
-    <polyline class="movable" points="415,95 423,85 435,105 447,85 459,105 471,85 483,105 491,95" fill="none" stroke="#000000" stroke-width="2.5" stroke-linejoin="round" transform="translate(0,0) scale(1,1) rotate(0)"/>
-    <text class="movable math" x="455" y="55" transform="translate(0,0) scale(1,1) rotate(0)">R</text>
-
-    <!-- 저항에서 PR 상단 접속점까지 -->
-    <polyline class="movable wire" points="491,95 565,95 565,350" transform="translate(0,0) scale(1,1) rotate(0)"/>
-    <circle class="movable" cx="565" cy="350" r="5" fill="#000000" transform="translate(0,0) scale(1,1) rotate(0)"/>
-
-    <!-- 6. 좌표축 및 치수선 -->
-    <!-- z축 (수직 상향) -->
-    <line class="movable" x1="80" y1="520" x2="80" y2="435" stroke="#000000" stroke-width="2.2" marker-end="url(#arrow-end)" transform="translate(0,0) scale(1,1) rotate(0)"/>
-    <text class="movable math" x="55" y="440" transform="translate(0,0) scale(1,1) rotate(0)">z</text>
-
-    <!-- x축 (수평 우향) -->
-    <line class="movable" x1="270" y1="840" x2="520" y2="840" stroke="#000000" stroke-width="2.2" marker-end="url(#arrow-end)" transform="translate(0,0) scale(1,1) rotate(0)"/>
-    <text class="movable math" x="550" y="840" transform="translate(0,0) scale(1,1) rotate(0)">x</text>
-
-    <!-- 높이 h 치수선 (좌측) -->
-    <line class="movable dim-line" x1="70" y1="525" x2="70" y2="835" marker-start="url(#arrow-start)" marker-end="url(#arrow-end)" transform="translate(0,0) scale(1,1) rotate(0)"/>
-    <text class="movable math" x="35" y="680" transform="translate(0,0) scale(1,1) rotate(0)">h</text>
-
-    <!-- 폭 l 치수선 (하단 입구) -->
-    <line class="movable dim-line" x1="85" y1="865" x2="265" y2="865" marker-start="url(#arrow-start)" marker-end="url(#arrow-end)" transform="translate(0,0) scale(1,1) rotate(0)"/>
-    <text class="movable math" x="175" y="890" transform="translate(0,0) scale(1,1) rotate(0)">l</text>
-  </g>
-</svg>
+  </style></svg>
 </body>
 </html>
