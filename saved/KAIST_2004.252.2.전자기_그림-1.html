@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>2004.252.2.전자기_그림-1</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      background: #f0f2f5;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+    .canvas-container {
+      background: #ffffff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    svg {
+      display: block;
+      user-select: none;
+    }
+    .movable {
+      cursor: move;
+    }
+    .text-el {
+      font-family: "Times New Roman", "Batang", serif;
+      user-select: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="canvas-container">
+    <svg id="canvas" viewBox="0 0 580 520" width="580" height="520" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#000000"/>
+        </marker>
+        <marker id="arrow-open" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 1 2 L 7 5 L 1 8" fill="none" stroke="#000000" stroke-width="1.5" stroke-linecap="round"/>
+        </marker>
+        <pattern id="hatch" width="10" height="10" patternUnits="userSpaceOnUse">
+          <path d="M-1,1 l2,-2 M0,10 l10,-10 M9,11 l2,-2" stroke="#666666" stroke-width="1"/>
+        </pattern>
+        <pattern id="dense-hatch" width="6" height="6" patternUnits="userSpaceOnUse">
+          <path d="M0,6 l6,-6" stroke="#444444" stroke-width="1"/>
+        </pattern>
+      </defs>
+      <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+        <rect class="text-bg-rect" x="256.5" y="225.0" width="47.0" height="28.0" fill="#FFFFFF" fill-opacity="0.85"/>
+        <text class="text-el" x="280" y="245" font-size="20" font-weight="bold" font-style="normal" text-anchor="middle" fill="#000000">입체도</text>
+      </g>
+      <polygon class="movable" points="140,215 200,165 470,165 410,215" fill="#FFFFFF" stroke="#000000" stroke-width="2" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <polygon class="movable" points="140,215 140,225 410,225 410,215" fill="#CCCCCC" stroke="#000000" stroke-width="1.5" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+        <rect class="text-bg-rect" x="264.0" y="183.5" width="22.0" height="30.0" fill="#FFFFFF" fill-opacity="0.85"/>
+        <text class="text-el" x="275" y="205" font-size="22" font-weight="normal" font-style="normal" text-anchor="middle" fill="#000000">B</text>
+      </g>
+      <line class="movable" x1="155" y1="225" x2="155" y2="245" stroke="#000000" stroke-width="1.5" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="145" y1="245" x2="165" y2="245" stroke="#000000" stroke-width="2" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <circle class="movable" cx="138" cy="180" r="4" fill="#FFFFFF" stroke="#000000" stroke-width="1.8" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+        <rect class="text-bg-rect" x="62.5" y="216.5" width="45.0" height="26.0" fill="#FFFFFF" fill-opacity="0.85"/>
+        <text class="text-el" x="85" y="235" font-size="19" font-weight="normal" font-style="normal" text-anchor="middle" fill="#000000">회전축</text>
+      </g>
+      <line class="movable" x1="95" y1="220" x2="135" y2="185" stroke="#000000" stroke-width="1.5" marker-end="url(#arrow)" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <polygon class="movable" points="140,180 200,130 470,140 410,190" fill="#FFFFFF" stroke="#000000" stroke-width="2" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <polygon class="movable" points="140,180 140,190 410,200 410,190" fill="#CCCCCC" stroke="#000000" stroke-width="1.5" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+        <rect class="text-bg-rect" x="264.0" y="143.5" width="22.0" height="30.0" fill="#FFFFFF" fill-opacity="0.85"/>
+        <text class="text-el" x="275" y="165" font-size="22" font-weight="normal" font-style="normal" text-anchor="middle" fill="#000000">A</text>
+      </g>
+      <path class="movable" d="M 430 155 C 420 165, 440 175, 430 185 C 420 195, 440 205, 430 215" fill="none" stroke="#000000" stroke-width="2" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+        <rect class="text-bg-rect" x="472.5" y="156.5" width="45.0" height="26.0" fill="#FFFFFF" fill-opacity="0.85"/>
+        <text class="text-el" x="495" y="175" font-size="19" font-weight="normal" font-style="normal" text-anchor="middle" fill="#000000">용수철</text>
+      </g>
+      <polygon class="movable" points="150,165 170,148 210,150 190,167" fill="#E8E8E8" stroke="#000000" stroke-width="1.5" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+        <rect class="text-bg-rect" x="31.5" y="146.5" width="57.0" height="26.0" fill="#FFFFFF" fill-opacity="0.85"/>
+        <text class="text-el" x="60" y="165" font-size="19" font-weight="normal" font-style="normal" text-anchor="middle" fill="#000000">평면거울</text>
+      </g>
+      <line class="movable" x1="85" y1="165" x2="145" y2="165" stroke="#000000" stroke-width="1.5" marker-end="url(#arrow)" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="100" y1="85" x2="180" y2="158" stroke="#000000" stroke-width="1.8" stroke-dasharray="3,3" marker-end="url(#arrow)" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+        <rect class="text-bg-rect" x="70.0" y="45.0" width="60.0" height="28.0" fill="#FFFFFF" fill-opacity="0.85"/>
+        <text class="text-el" x="100" y="65" font-size="20" font-weight="normal" font-style="normal" text-anchor="middle" fill="#000000">레이저광</text>
+      </g>
+      <line class="movable" x1="180" y1="158" x2="270" y2="80" stroke="#000000" stroke-width="1.8" stroke-dasharray="3,3" marker-end="url(#arrow)" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <ellipse class="movable" cx="270" cy="80" rx="14" ry="7" fill="#FFFFFF" stroke="#000000" stroke-width="1.8" transform="translate(0,0) scale(1,1) rotate(-40 270 80)"/>
+      <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+        <rect class="text-bg-rect" x="201.5" y="21.5" width="57.0" height="26.0" fill="#FFFFFF" fill-opacity="0.85"/>
+        <text class="text-el" x="230" y="40" font-size="19" font-weight="normal" font-style="normal" text-anchor="middle" fill="#000000">광전소자</text>
+      </g>
+      <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+        <rect class="text-bg-rect" x="244.0" y="48.8" width="22.0" height="23.0" fill="#FFFFFF" fill-opacity="0.85"/>
+        <text class="text-el" x="255" y="65" font-size="16" font-weight="normal" font-style="normal" text-anchor="middle" fill="#000000">a</text>
+      </g>
+      <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+        <rect class="text-bg-rect" x="279.0" y="78.8" width="22.0" height="23.0" fill="#FFFFFF" fill-opacity="0.85"/>
+        <text class="text-el" x="290" y="95" font-size="16" font-weight="normal" font-style="normal" text-anchor="middle" fill="#000000">b</text>
+      </g>
+      <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+        <rect class="text-bg-rect" x="255.0" y="27.2" width="160.0" height="25.0" fill="#FFFFFF" fill-opacity="0.85"/>
+        <text class="text-el" x="335" y="45" font-size="18" font-weight="normal" font-style="italic" text-anchor="middle" fill="#000000">I = I_b - I_a</text>
+      </g>
+      <path class="movable" d="M 430 85 L 420 120 L 415 125 L 420 130" fill="none" stroke="#000000" stroke-width="1.8" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="415" y1="125" x2="395" y2="150" stroke="#000000" stroke-width="1.5" stroke-dasharray="2,2" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+        <rect class="text-bg-rect" x="457.5" y="66.5" width="45.0" height="26.0" fill="#FFFFFF" fill-opacity="0.85"/>
+        <text class="text-el" x="480" y="85" font-size="19" font-weight="normal" font-style="normal" text-anchor="middle" fill="#000000">전자총</text>
+      </g>
+      <line class="movable" x1="140" y1="375" x2="380" y2="375" stroke="#000000" stroke-width="3" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+        <rect class="text-bg-rect" x="249.0" y="375.0" width="22.0" height="28.0" fill="#FFFFFF" fill-opacity="0.85"/>
+        <text class="text-el" x="260" y="395" font-size="20" font-weight="normal" font-style="normal" text-anchor="middle" fill="#000000">B</text>
+      </g>
+      <line class="movable" x1="140" y1="350" x2="380" y2="340" stroke="#000000" stroke-width="3" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <circle class="movable" cx="140" cy="350" r="3.5" fill="#FFFFFF" stroke="#000000" stroke-width="1.5" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+        <rect class="text-bg-rect" x="249.0" y="342.0" width="22.0" height="28.0" fill="#FFFFFF" fill-opacity="0.85"/>
+        <text class="text-el" x="260" y="362" font-size="20" font-weight="normal" font-style="normal" text-anchor="middle" fill="#000000">A</text>
+      </g>
+      <path class="movable" d="M 375 340 c -5 8, 5 16, 0 24 c -5 6, 5 10, 0 11" fill="none" stroke="#000000" stroke-width="1.8" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="140" y1="340" x2="450" y2="340" stroke="#000000" stroke-width="1.2" stroke-dasharray="3,3" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="380" y1="340" x2="450" y2="337" stroke="#000000" stroke-width="1.2" stroke-dasharray="3,3" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+        <rect class="text-bg-rect" x="399.0" y="303.5" width="22.0" height="30.0" fill="#FFFFFF" fill-opacity="0.85"/>
+        <text class="text-el" x="410" y="325" font-size="22" font-weight="normal" font-style="italic" text-anchor="middle" fill="#000000">θ</text>
+      </g>
+      <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+        <rect class="text-bg-rect" x="256.5" y="410.0" width="47.0" height="28.0" fill="#FFFFFF" fill-opacity="0.85"/>
+        <text class="text-el" x="280" y="430" font-size="20" font-weight="bold" font-style="normal" text-anchor="middle" fill="#000000">단면도</text>
+      </g>
+      <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+        <rect class="text-bg-rect" x="247.5" y="458.5" width="65.0" height="30.0" fill="#FFFFFF" fill-opacity="0.85"/>
+        <text class="text-el" x="280" y="480" font-size="22" font-weight="normal" font-style="normal" text-anchor="middle" fill="#000000">그림 1</text>
+      </g>
+    </svg>
+  </div>
+</body>
+</html>

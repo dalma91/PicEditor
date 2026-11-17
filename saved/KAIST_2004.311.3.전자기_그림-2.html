@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>2004.311.3.전자기_그림-2</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      background: #f0f2f5;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+    .canvas-container {
+      background: #ffffff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    svg {
+      display: block;
+      user-select: none;
+    }
+    .movable {
+      cursor: move;
+    }
+    .text-el {
+      font-family: "Times New Roman", "Batang", serif;
+      user-select: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="canvas-container">
+    <svg id="canvas" viewBox="0 0 650 530" width="650" height="530" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#000000"/>
+        </marker>
+        <marker id="arrow-open" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 1 2 L 7 5 L 1 8" fill="none" stroke="#000000" stroke-width="1.5" stroke-linecap="round"/>
+        </marker>
+        <pattern id="hatch" width="10" height="10" patternUnits="userSpaceOnUse">
+          <path d="M-1,1 l2,-2 M0,10 l10,-10 M9,11 l2,-2" stroke="#666666" stroke-width="1"/>
+        </pattern>
+        <pattern id="dense-hatch" width="6" height="6" patternUnits="userSpaceOnUse">
+          <path d="M0,6 l6,-6" stroke="#444444" stroke-width="1"/>
+        </pattern>
+      </defs>
+      <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+        <rect class="text-bg-rect" x="25.0" y="43.5" width="50.0" height="30.0" fill="#FFFFFF" fill-opacity="0.85"/>
+        <text class="text-el" x="50" y="65" font-size="22" font-weight="bold" font-style="normal" text-anchor="middle" fill="#000000">(a)</text>
+      </g>
+      <rect class="movable" x="200" y="80" width="75" height="90" fill="#FFFFFF" stroke="#000000" stroke-width="1.2" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+        <rect class="text-bg-rect" x="234.0" y="50.0" width="22.0" height="28.0" fill="#FFFFFF" fill-opacity="0.85"/>
+        <text class="text-el" x="245" y="70" font-size="20" font-weight="normal" font-style="italic" text-anchor="middle" fill="#000000">T</text>
+      </g>
+      <circle class="movable" cx="145" cy="60" r="3" fill="#FFFFFF" stroke="#000000" stroke-width="1.5" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <circle class="movable" cx="175" cy="60" r="3" fill="#FFFFFF" stroke="#000000" stroke-width="1.5" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="145" y1="60" x2="175" y2="60" stroke="#000000" stroke-width="2.5" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <path class="movable" d="M 105 105 L 105 60 L 145 60" fill="none" stroke="#000000" stroke-width="1.8" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <path class="movable" d="M 175 60 L 235 60 L 235 110" fill="none" stroke="#000000" stroke-width="1.8" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <path class="movable" d="M 105 130 L 105 210 L 235 210 L 235 140" fill="none" stroke="#000000" stroke-width="1.8" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="65" y1="105" x2="145" y2="105" stroke="#000000" stroke-width="4.5" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="65" y1="130" x2="145" y2="130" stroke="#000000" stroke-width="4.5" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="210" y1="110" x2="260" y2="110" stroke="#000000" stroke-width="4.5" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="210" y1="140" x2="260" y2="140" stroke="#000000" stroke-width="4.5" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <rect class="movable" x="210" y="110" width="50" height="30" fill="url(#dense-hatch)" stroke="#000000" stroke-width="1.2" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+        <rect class="text-bg-rect" x="79.0" y="74.2" width="22.0" height="25.0" fill="#FFFFFF" fill-opacity="0.85"/>
+        <text class="text-el" x="90" y="92" font-size="18" font-weight="normal" font-style="italic" text-anchor="middle" fill="#000000">Q</text>
+      </g>
+      <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+        <rect class="text-bg-rect" x="74.5" y="127.2" width="31.0" height="25.0" fill="#FFFFFF" fill-opacity="0.85"/>
+        <text class="text-el" x="90" y="145" font-size="18" font-weight="normal" font-style="italic" text-anchor="middle" fill="#000000">-Q</text>
+      </g>
+      <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+        <rect class="text-bg-rect" x="219.0" y="82.2" width="22.0" height="25.0" fill="#FFFFFF" fill-opacity="0.85"/>
+        <text class="text-el" x="230" y="100" font-size="18" font-weight="normal" font-style="italic" text-anchor="middle" fill="#000000">Q</text>
+      </g>
+      <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+        <rect class="text-bg-rect" x="214.5" y="142.2" width="31.0" height="25.0" fill="#FFFFFF" fill-opacity="0.85"/>
+        <text class="text-el" x="230" y="160" font-size="18" font-weight="normal" font-style="italic" text-anchor="middle" fill="#000000">-Q</text>
+      </g>
+      <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+        <rect class="text-bg-rect" x="315.0" y="43.5" width="50.0" height="30.0" fill="#FFFFFF" fill-opacity="0.85"/>
+        <text class="text-el" x="340" y="65" font-size="22" font-weight="bold" font-style="normal" text-anchor="middle" fill="#000000">(b)</text>
+      </g>
+      <rect class="movable" x="490" y="80" width="75" height="90" fill="#FFFFFF" stroke="#000000" stroke-width="1.2" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+        <rect class="text-bg-rect" x="518.0" y="50.0" width="34.0" height="28.0" fill="#FFFFFF" fill-opacity="0.85"/>
+        <text class="text-el" x="535" y="70" font-size="20" font-weight="normal" font-style="italic" text-anchor="middle" fill="#000000">3T</text>
+      </g>
+      <circle class="movable" cx="435" cy="60" r="3" fill="#FFFFFF" stroke="#000000" stroke-width="1.5" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <circle class="movable" cx="465" cy="60" r="3" fill="#FFFFFF" stroke="#000000" stroke-width="1.5" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="435" y1="60" x2="465" y2="60" stroke="#000000" stroke-width="2.5" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <path class="movable" d="M 395 105 L 395 60 L 435 60" fill="none" stroke="#000000" stroke-width="1.8" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <path class="movable" d="M 465 60 L 525 60 L 525 110" fill="none" stroke="#000000" stroke-width="1.8" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <path class="movable" d="M 395 130 L 395 210 L 525 210 L 525 140" fill="none" stroke="#000000" stroke-width="1.8" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="355" y1="105" x2="435" y2="105" stroke="#000000" stroke-width="4.5" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="355" y1="130" x2="435" y2="130" stroke="#000000" stroke-width="4.5" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="500" y1="110" x2="550" y2="110" stroke="#000000" stroke-width="4.5" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="500" y1="140" x2="550" y2="140" stroke="#000000" stroke-width="4.5" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <rect class="movable" x="500" y="110" width="50" height="30" fill="url(#dense-hatch)" stroke="#000000" stroke-width="1.2" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+        <rect class="text-bg-rect" x="25.0" y="273.5" width="50.0" height="30.0" fill="#FFFFFF" fill-opacity="0.85"/>
+        <text class="text-el" x="50" y="295" font-size="22" font-weight="bold" font-style="normal" text-anchor="middle" fill="#000000">(c)</text>
+      </g>
+      <rect class="movable" x="200" y="310" width="75" height="90" fill="#FFFFFF" stroke="#000000" stroke-width="1.2" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+        <rect class="text-bg-rect" x="228.0" y="280.0" width="34.0" height="28.0" fill="#FFFFFF" fill-opacity="0.85"/>
+        <text class="text-el" x="245" y="300" font-size="20" font-weight="normal" font-style="italic" text-anchor="middle" fill="#000000">3T</text>
+      </g>
+      <circle class="movable" cx="145" cy="290" r="3" fill="#FFFFFF" stroke="#000000" stroke-width="1.5" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <circle class="movable" cx="175" cy="290" r="3" fill="#FFFFFF" stroke="#000000" stroke-width="1.5" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="145" y1="290" x2="175" y2="290" stroke="#000000" stroke-width="2.5" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <path class="movable" d="M 105 335 L 105 290 L 145 290" fill="none" stroke="#000000" stroke-width="1.8" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <path class="movable" d="M 175 290 L 235 290 L 235 340" fill="none" stroke="#000000" stroke-width="1.8" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <path class="movable" d="M 105 385 L 105 440 L 235 440 L 235 370" fill="none" stroke="#000000" stroke-width="1.8" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="65" y1="335" x2="145" y2="335" stroke="#000000" stroke-width="4.5" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="65" y1="385" x2="145" y2="385" stroke="#000000" stroke-width="4.5" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="80" y1="335" x2="80" y2="385" stroke="#000000" stroke-width="1.5" marker-start="url(#arrow)" marker-end="url(#arrow)" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="210" y1="340" x2="260" y2="340" stroke="#000000" stroke-width="4.5" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="210" y1="370" x2="260" y2="370" stroke="#000000" stroke-width="4.5" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <rect class="movable" x="210" y="340" width="50" height="30" fill="url(#dense-hatch)" stroke="#000000" stroke-width="1.2" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+        <rect class="text-bg-rect" x="315.0" y="273.5" width="50.0" height="30.0" fill="#FFFFFF" fill-opacity="0.85"/>
+        <text class="text-el" x="340" y="295" font-size="22" font-weight="bold" font-style="normal" text-anchor="middle" fill="#000000">(d)</text>
+      </g>
+      <rect class="movable" x="490" y="310" width="75" height="90" fill="#FFFFFF" stroke="#000000" stroke-width="1.2" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+        <rect class="text-bg-rect" x="524.0" y="280.0" width="22.0" height="28.0" fill="#FFFFFF" fill-opacity="0.85"/>
+        <text class="text-el" x="535" y="300" font-size="20" font-weight="normal" font-style="italic" text-anchor="middle" fill="#000000">T</text>
+      </g>
+      <circle class="movable" cx="435" cy="290" r="3" fill="#FFFFFF" stroke="#000000" stroke-width="1.5" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <circle class="movable" cx="465" cy="290" r="3" fill="#FFFFFF" stroke="#000000" stroke-width="1.5" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="435" y1="290" x2="460" y2="272" stroke="#000000" stroke-width="2.5" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <path class="movable" d="M 395 335 L 395 290 L 435 290" fill="none" stroke="#000000" stroke-width="1.8" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <path class="movable" d="M 465 290 L 525 290 L 525 340" fill="none" stroke="#000000" stroke-width="1.8" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <path class="movable" d="M 395 360 L 395 440 L 525 440 L 525 370" fill="none" stroke="#000000" stroke-width="1.8" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="355" y1="335" x2="435" y2="335" stroke="#000000" stroke-width="4.5" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="355" y1="360" x2="435" y2="360" stroke="#000000" stroke-width="4.5" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="500" y1="340" x2="550" y2="340" stroke="#000000" stroke-width="4.5" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="500" y1="370" x2="550" y2="370" stroke="#000000" stroke-width="4.5" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <rect class="movable" x="500" y="340" width="50" height="30" fill="url(#dense-hatch)" stroke="#000000" stroke-width="1.2" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+        <rect class="text-bg-rect" x="287.5" y="478.5" width="65.0" height="30.0" fill="#FFFFFF" fill-opacity="0.85"/>
+        <text class="text-el" x="320" y="500" font-size="22" font-weight="normal" font-style="normal" text-anchor="middle" fill="#000000">그림 2</text>
+      </g>
+    </svg>
+  </div>
+</body>
+</html>

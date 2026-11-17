@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>2004.143.2.열역학_그림</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      background: #f0f2f5;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+    .canvas-container {
+      background: #ffffff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    svg {
+      display: block;
+      user-select: none;
+    }
+    .movable {
+      cursor: move;
+    }
+    .text-el {
+      font-family: "Times New Roman", "Batang", serif;
+      user-select: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="canvas-container">
+    <svg id="canvas" viewBox="0 0 680 440" width="680" height="440" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#000000"/>
+        </marker>
+        <marker id="arrow-open" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 1 2 L 7 5 L 1 8" fill="none" stroke="#000000" stroke-width="1.5" stroke-linecap="round"/>
+        </marker>
+        <pattern id="hatch" width="10" height="10" patternUnits="userSpaceOnUse">
+          <path d="M-1,1 l2,-2 M0,10 l10,-10 M9,11 l2,-2" stroke="#666666" stroke-width="1"/>
+        </pattern>
+        <pattern id="dense-hatch" width="6" height="6" patternUnits="userSpaceOnUse">
+          <path d="M0,6 l6,-6" stroke="#444444" stroke-width="1"/>
+        </pattern>
+      </defs>
+      <rect class="movable" x="20" y="40" width="205" height="380" fill="#FFFFFF" stroke="#000000" stroke-width="2" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <rect class="movable" x="240" y="40" width="205" height="380" fill="#FFFFFF" stroke="#000000" stroke-width="2" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <rect class="movable" x="460" y="40" width="205" height="380" fill="#FFFFFF" stroke="#000000" stroke-width="2" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <circle class="movable" cx="122" cy="160" r="70" fill="none" stroke="#000000" stroke-width="3" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="110" y1="228" x2="110" y2="245" stroke="#000000" stroke-width="3" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="134" y1="228" x2="134" y2="245" stroke="#000000" stroke-width="3" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <polygon points="62,210 107,310 137,310 182,210" fill="none" stroke="#000000" stroke-width="1.8" class="movable" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <rect class="movable" x="107" y="310" width="30" height="18" fill="#FFFFFF" stroke="#000000" stroke-width="2" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+        <rect class="text-bg-rect" x="21.5" y="110.0" width="47.0" height="28.0" fill="#FFFFFF" fill-opacity="0.85"/>
+        <text class="text-el" x="45" y="130" font-size="20" font-weight="normal" font-style="italic" text-anchor="middle" fill="#000000">T_A</text>
+      </g>
+      <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+        <rect class="text-bg-rect" x="28.0" y="155.0" width="34.0" height="28.0" fill="#FFFFFF" fill-opacity="0.85"/>
+        <text class="text-el" x="45" y="175" font-size="20" font-weight="normal" font-style="italic" text-anchor="middle" fill="#000000">ρ₁</text>
+      </g>
+      <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+        <rect class="text-bg-rect" x="80.0" y="110.0" width="34.0" height="28.0" fill="#FFFFFF" fill-opacity="0.85"/>
+        <text class="text-el" x="97" y="130" font-size="20" font-weight="normal" font-style="italic" text-anchor="middle" fill="#000000">P₁</text>
+      </g>
+      <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+        <rect class="text-bg-rect" x="130.0" y="110.0" width="34.0" height="28.0" fill="#FFFFFF" fill-opacity="0.85"/>
+        <text class="text-el" x="147" y="130" font-size="20" font-weight="normal" font-style="italic" text-anchor="middle" fill="#000000">T₁</text>
+      </g>
+      <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+        <rect class="text-bg-rect" x="80.0" y="155.0" width="34.0" height="28.0" fill="#FFFFFF" fill-opacity="0.85"/>
+        <text class="text-el" x="97" y="175" font-size="20" font-weight="normal" font-style="italic" text-anchor="middle" fill="#000000">V₁</text>
+      </g>
+      <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+        <rect class="text-bg-rect" x="130.0" y="155.0" width="34.0" height="28.0" fill="#FFFFFF" fill-opacity="0.85"/>
+        <text class="text-el" x="147" y="175" font-size="20" font-weight="normal" font-style="italic" text-anchor="middle" fill="#000000">d₁</text>
+      </g>
+      <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+        <rect class="text-bg-rect" x="23.5" y="290.0" width="73.0" height="28.0" fill="#FFFFFF" fill-opacity="0.85"/>
+        <text class="text-el" x="60" y="310" font-size="20" font-weight="normal" font-style="italic" text-anchor="middle" fill="#000000">z = 0</text>
+      </g>
+      <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+        <rect class="text-bg-rect" x="75.5" y="353.5" width="93.0" height="30.0" fill="#FFFFFF" fill-opacity="0.85"/>
+        <text class="text-el" x="122" y="375" font-size="22" font-weight="normal" font-style="normal" text-anchor="middle" fill="#000000">(상태 1)</text>
+      </g>
+      <circle class="movable" cx="342" cy="160" r="70" fill="none" stroke="#000000" stroke-width="3" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <rect class="movable" x="334" y="228" width="16" height="15" fill="#444444" stroke="#000000" stroke-width="1.5" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <polygon points="282,210 327,310 357,310 402,210" fill="none" stroke="#000000" stroke-width="1.8" class="movable" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <rect class="movable" x="327" y="310" width="30" height="18" fill="#FFFFFF" stroke="#000000" stroke-width="2" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+        <rect class="text-bg-rect" x="241.5" y="110.0" width="47.0" height="28.0" fill="#FFFFFF" fill-opacity="0.85"/>
+        <text class="text-el" x="265" y="130" font-size="20" font-weight="normal" font-style="italic" text-anchor="middle" fill="#000000">T_A</text>
+      </g>
+      <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+        <rect class="text-bg-rect" x="300.0" y="110.0" width="34.0" height="28.0" fill="#FFFFFF" fill-opacity="0.85"/>
+        <text class="text-el" x="317" y="130" font-size="20" font-weight="normal" font-style="italic" text-anchor="middle" fill="#000000">P₂</text>
+      </g>
+      <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+        <rect class="text-bg-rect" x="350.0" y="110.0" width="34.0" height="28.0" fill="#FFFFFF" fill-opacity="0.85"/>
+        <text class="text-el" x="367" y="130" font-size="20" font-weight="normal" font-style="italic" text-anchor="middle" fill="#000000">T₂</text>
+      </g>
+      <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+        <rect class="text-bg-rect" x="300.0" y="155.0" width="34.0" height="28.0" fill="#FFFFFF" fill-opacity="0.85"/>
+        <text class="text-el" x="317" y="175" font-size="20" font-weight="normal" font-style="italic" text-anchor="middle" fill="#000000">V₁</text>
+      </g>
+      <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+        <rect class="text-bg-rect" x="350.0" y="155.0" width="34.0" height="28.0" fill="#FFFFFF" fill-opacity="0.85"/>
+        <text class="text-el" x="367" y="175" font-size="20" font-weight="normal" font-style="italic" text-anchor="middle" fill="#000000">d₂</text>
+      </g>
+      <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+        <rect class="text-bg-rect" x="295.5" y="353.5" width="93.0" height="30.0" fill="#FFFFFF" fill-opacity="0.85"/>
+        <text class="text-el" x="342" y="375" font-size="22" font-weight="normal" font-style="normal" text-anchor="middle" fill="#000000">(상태 2)</text>
+      </g>
+      <circle class="movable" cx="562" cy="145" r="82" fill="none" stroke="#000000" stroke-width="3" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <rect class="movable" x="554" y="225" width="16" height="15" fill="#444444" stroke="#000000" stroke-width="1.5" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <polygon points="492,200 547,310 577,310 632,200" fill="none" stroke="#000000" stroke-width="1.8" class="movable" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <rect class="movable" x="547" y="310" width="30" height="18" fill="#FFFFFF" stroke="#000000" stroke-width="2" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+        <rect class="text-bg-rect" x="461.5" y="110.0" width="47.0" height="28.0" fill="#FFFFFF" fill-opacity="0.85"/>
+        <text class="text-el" x="485" y="130" font-size="20" font-weight="normal" font-style="italic" text-anchor="middle" fill="#000000">T_A</text>
+      </g>
+      <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+        <rect class="text-bg-rect" x="468.0" y="155.0" width="34.0" height="28.0" fill="#FFFFFF" fill-opacity="0.85"/>
+        <text class="text-el" x="485" y="175" font-size="20" font-weight="normal" font-style="italic" text-anchor="middle" fill="#000000">ρ₃</text>
+      </g>
+      <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+        <rect class="text-bg-rect" x="520.0" y="110.0" width="34.0" height="28.0" fill="#FFFFFF" fill-opacity="0.85"/>
+        <text class="text-el" x="537" y="130" font-size="20" font-weight="normal" font-style="italic" text-anchor="middle" fill="#000000">P₃</text>
+      </g>
+      <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+        <rect class="text-bg-rect" x="570.0" y="110.0" width="34.0" height="28.0" fill="#FFFFFF" fill-opacity="0.85"/>
+        <text class="text-el" x="587" y="130" font-size="20" font-weight="normal" font-style="italic" text-anchor="middle" fill="#000000">T₃</text>
+      </g>
+      <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+        <rect class="text-bg-rect" x="520.0" y="155.0" width="34.0" height="28.0" fill="#FFFFFF" fill-opacity="0.85"/>
+        <text class="text-el" x="537" y="175" font-size="20" font-weight="normal" font-style="italic" text-anchor="middle" fill="#000000">V₃</text>
+      </g>
+      <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+        <rect class="text-bg-rect" x="570.0" y="155.0" width="34.0" height="28.0" fill="#FFFFFF" fill-opacity="0.85"/>
+        <text class="text-el" x="587" y="175" font-size="20" font-weight="normal" font-style="italic" text-anchor="middle" fill="#000000">d₃</text>
+      </g>
+      <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+        <rect class="text-bg-rect" x="457.0" y="290.0" width="86.0" height="28.0" fill="#FFFFFF" fill-opacity="0.85"/>
+        <text class="text-el" x="500" y="310" font-size="20" font-weight="normal" font-style="italic" text-anchor="middle" fill="#000000">z = z₃</text>
+      </g>
+      <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+        <rect class="text-bg-rect" x="515.5" y="353.5" width="93.0" height="30.0" fill="#FFFFFF" fill-opacity="0.85"/>
+        <text class="text-el" x="562" y="375" font-size="22" font-weight="normal" font-style="normal" text-anchor="middle" fill="#000000">(상태 3)</text>
+      </g>
+    </svg>
+  </div>
+</body>
+</html>

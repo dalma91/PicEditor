@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>2004.084.2.파동_그림-1</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      background: #f0f2f5;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+    .canvas-container {
+      background: #ffffff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    svg {
+      display: block;
+      user-select: none;
+    }
+    .movable {
+      cursor: move;
+    }
+    .text-el {
+      font-family: "Times New Roman", "Batang", serif;
+      user-select: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="canvas-container">
+    <svg id="canvas" viewBox="0 0 500 560" width="500" height="560" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#000000"/>
+        </marker>
+        <marker id="arrow-open" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 1 2 L 7 5 L 1 8" fill="none" stroke="#000000" stroke-width="1.5" stroke-linecap="round"/>
+        </marker>
+        <pattern id="hatch" width="10" height="10" patternUnits="userSpaceOnUse">
+          <path d="M-1,1 l2,-2 M0,10 l10,-10 M9,11 l2,-2" stroke="#666666" stroke-width="1"/>
+        </pattern>
+        <pattern id="dense-hatch" width="6" height="6" patternUnits="userSpaceOnUse">
+          <path d="M0,6 l6,-6" stroke="#444444" stroke-width="1"/>
+        </pattern>
+      </defs>
+      <line class="movable" x1="40" y1="180" x2="162.0" y2="180" stroke="#000000" stroke-width="3" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="178.0" y1="180" x2="322.0" y2="180" stroke="#000000" stroke-width="3" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="338.0" y1="180" x2="460" y2="180" stroke="#000000" stroke-width="3" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+        <rect class="text-bg-rect" x="141.0" y="145.0" width="22.0" height="28.0" fill="#FFFFFF" fill-opacity="0.85"/>
+        <text class="text-el" x="152.0" y="165" font-size="20" font-weight="normal" font-style="normal" text-anchor="middle" fill="#000000">A</text>
+      </g>
+      <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+        <rect class="text-bg-rect" x="69.5" y="188.8" width="101.0" height="23.0" fill="#FFFFFF" fill-opacity="0.85"/>
+        <text class="text-el" x="120.0" y="205" font-size="16" font-weight="normal" font-style="normal" text-anchor="middle" fill="#000000">(-d/2, l)</text>
+      </g>
+      <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+        <rect class="text-bg-rect" x="337.0" y="145.0" width="22.0" height="28.0" fill="#FFFFFF" fill-opacity="0.85"/>
+        <text class="text-el" x="348.0" y="165" font-size="20" font-weight="normal" font-style="normal" text-anchor="middle" fill="#000000">B</text>
+      </g>
+      <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+        <rect class="text-bg-rect" x="334.5" y="148.8" width="91.0" height="23.0" fill="#FFFFFF" fill-opacity="0.85"/>
+        <text class="text-el" x="380.0" y="165" font-size="16" font-weight="normal" font-style="normal" text-anchor="middle" fill="#000000">(d/2, l)</text>
+      </g>
+      <line class="movable" x1="170.0" y1="195" x2="330.0" y2="195" stroke="#000000" stroke-width="1.5" marker-start="url(#arrow)" marker-end="url(#arrow)" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+        <rect class="text-bg-rect" x="239.0" y="195.0" width="22.0" height="28.0" fill="#FFFFFF" fill-opacity="0.85"/>
+        <text class="text-el" x="250" y="215" font-size="20" font-weight="normal" font-style="italic" text-anchor="middle" fill="#000000">d</text>
+      </g>
+      <line class="movable" x1="199.7579186338031" y1="40" x2="170.0" y2="180" stroke="#000000" stroke-width="1.8" marker-end="url(#arrow)" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="279.7579186338031" y1="40" x2="250" y2="180" stroke="#000000" stroke-width="1.8" marker-end="url(#arrow)" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="359.7579186338031" y1="40" x2="330.0" y2="180" stroke="#000000" stroke-width="1.8" marker-end="url(#arrow)" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="250" y1="40" x2="250" y2="180" stroke="#000000" stroke-width="1.5" stroke-dasharray="3,3" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <path class="movable" d="M 250 100 A 80 80 0 0 1 267 100" fill="none" stroke="#000000" stroke-width="1.2" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+        <rect class="text-bg-rect" x="254.0" y="60.0" width="22.0" height="28.0" fill="#FFFFFF" fill-opacity="0.85"/>
+        <text class="text-el" x="265" y="80" font-size="20" font-weight="normal" font-style="italic" text-anchor="middle" fill="#000000">θ</text>
+      </g>
+      <line class="movable" x1="170.0" y1="180" x2="145.0" y2="300" stroke="#000000" stroke-width="1.8" marker-end="url(#arrow)" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="330.0" y1="180" x2="305.0" y2="300" stroke="#000000" stroke-width="1.8" marker-end="url(#arrow)" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <path class="movable" d="M 230 330 l 15 -5 l 10 10 l 15 -5" fill="none" stroke="#000000" stroke-width="1.5" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <path class="movable" d="M 230 338 l 15 -5 l 10 10 l 15 -5" fill="none" stroke="#000000" stroke-width="1.5" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <path class="movable" d="M 430 330 l 15 -5 l 10 10 l 15 -5" fill="none" stroke="#000000" stroke-width="1.5" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <path class="movable" d="M 430 338 l 15 -5 l 10 10 l 15 -5" fill="none" stroke="#000000" stroke-width="1.5" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="200" y1="450" x2="310" y2="450" stroke="#000000" stroke-width="4" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+        <rect class="text-bg-rect" x="179.0" y="418.0" width="22.0" height="28.0" fill="#FFFFFF" fill-opacity="0.85"/>
+        <text class="text-el" x="190" y="438" font-size="20" font-weight="normal" font-style="normal" text-anchor="middle" fill="#000000">S</text>
+      </g>
+      <line class="movable" x1="250" y1="450" x2="400" y2="450" stroke="#000000" stroke-width="2" marker-end="url(#arrow)" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+        <rect class="text-bg-rect" x="404.0" y="443.5" width="22.0" height="30.0" fill="#FFFFFF" fill-opacity="0.85"/>
+        <text class="text-el" x="415" y="465" font-size="22" font-weight="normal" font-style="italic" text-anchor="middle" fill="#000000">x</text>
+      </g>
+      <line class="movable" x1="250" y1="470" x2="250" y2="360" stroke="#000000" stroke-width="2" marker-end="url(#arrow)" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+        <rect class="text-bg-rect" x="219.0" y="353.5" width="22.0" height="30.0" fill="#FFFFFF" fill-opacity="0.85"/>
+        <text class="text-el" x="230" y="375" font-size="22" font-weight="normal" font-style="italic" text-anchor="middle" fill="#000000">y</text>
+      </g>
+      <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+        <rect class="text-bg-rect" x="224.0" y="448.0" width="22.0" height="28.0" fill="#FFFFFF" fill-opacity="0.85"/>
+        <text class="text-el" x="235" y="468" font-size="20" font-weight="normal" font-style="normal" text-anchor="middle" fill="#000000">O</text>
+      </g>
+      <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+        <rect class="text-bg-rect" x="180.0" y="471.8" width="70.0" height="23.0" fill="#FFFFFF" fill-opacity="0.85"/>
+        <text class="text-el" x="215" y="488" font-size="16" font-weight="normal" font-style="normal" text-anchor="middle" fill="#000000">(0, 0)</text>
+      </g>
+      <line class="movable" x1="440" y1="180" x2="440" y2="320" stroke="#000000" stroke-width="1.5" marker-start="url(#arrow)" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="440" y1="350" x2="440" y2="450" stroke="#000000" stroke-width="1.5" marker-end="url(#arrow)" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+        <rect class="text-bg-rect" x="454.0" y="248.5" width="22.0" height="30.0" fill="#FFFFFF" fill-opacity="0.85"/>
+        <text class="text-el" x="465" y="270" font-size="22" font-weight="normal" font-style="italic" text-anchor="middle" fill="#000000">l</text>
+      </g>
+      <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+        <rect class="text-bg-rect" x="47.5" y="498.5" width="65.0" height="30.0" fill="#FFFFFF" fill-opacity="0.85"/>
+        <text class="text-el" x="80" y="520" font-size="22" font-weight="normal" font-style="normal" text-anchor="middle" fill="#000000">그림 1</text>
+      </g>
+    </svg>
+  </div>
+</body>
+</html>

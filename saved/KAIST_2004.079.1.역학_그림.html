@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>2004.079.1.역학_그림</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      background: #f0f2f5;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+    .canvas-container {
+      background: #ffffff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    svg {
+      display: block;
+      user-select: none;
+    }
+    .movable {
+      cursor: move;
+    }
+    .text-el {
+      font-family: "Times New Roman", "Batang", serif;
+      user-select: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="canvas-container">
+    <svg id="canvas" viewBox="0 0 680 400" width="680" height="400" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#000000"/>
+        </marker>
+        <marker id="arrow-open" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 1 2 L 7 5 L 1 8" fill="none" stroke="#000000" stroke-width="1.5" stroke-linecap="round"/>
+        </marker>
+        <pattern id="hatch" width="10" height="10" patternUnits="userSpaceOnUse">
+          <path d="M-1,1 l2,-2 M0,10 l10,-10 M9,11 l2,-2" stroke="#666666" stroke-width="1"/>
+        </pattern>
+        <pattern id="dense-hatch" width="6" height="6" patternUnits="userSpaceOnUse">
+          <path d="M0,6 l6,-6" stroke="#444444" stroke-width="1"/>
+        </pattern>
+      </defs>
+      <line class="movable" x1="40" y1="320" x2="620" y2="320" stroke="#000000" stroke-width="2.5" marker-end="url(#arrow)" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+        <rect class="text-bg-rect" x="623.5" y="312.0" width="23.0" height="32.0" fill="#FFFFFF" fill-opacity="0.85"/>
+        <text class="text-el" x="635" y="335" font-size="24" font-weight="normal" font-style="italic" text-anchor="middle" fill="#000000">x</text>
+      </g>
+      <rect class="movable" x="125" y="298" width="70" height="14" fill="#FFFFFF" stroke="#000000" stroke-width="2" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <circle class="movable" cx="140" cy="316" r="5" fill="#FFFFFF" stroke="#000000" stroke-width="1.8" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <circle class="movable" cx="180" cy="316" r="5" fill="#FFFFFF" stroke="#000000" stroke-width="1.8" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+        <rect class="text-bg-rect" x="55.0" y="265.0" width="60.0" height="28.0" fill="#FFFFFF" fill-opacity="0.85"/>
+        <text class="text-el" x="85" y="285" font-size="20" font-weight="normal" font-style="normal" text-anchor="middle" fill="#000000">수레 1</text>
+      </g>
+      <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+        <rect class="text-bg-rect" x="70.0" y="220.0" width="60.0" height="28.0" fill="#FFFFFF" fill-opacity="0.85"/>
+        <text class="text-el" x="100" y="240" font-size="20" font-weight="normal" font-style="normal" text-anchor="middle" fill="#000000">학생 A</text>
+      </g>
+      <circle class="movable" cx="160" cy="245" r="10" fill="#FFFFFF" stroke="#000000" stroke-width="1.8" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="160" y1="255" x2="160" y2="298" stroke="#000000" stroke-width="2" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="160" y1="270" x2="178" y2="260" stroke="#000000" stroke-width="2" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="178" y1="260" x2="220" y2="235" stroke="#000000" stroke-width="2.5" marker-end="url(#arrow)" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <circle class="movable" cx="228" cy="230" r="6" fill="#FFFFFF" stroke="#000000" stroke-width="2" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+        <rect class="text-bg-rect" x="187.0" y="201.5" width="36.0" height="30.0" fill="#FFFFFF" fill-opacity="0.85"/>
+        <text class="text-el" x="205" y="223" font-size="22" font-weight="normal" font-style="italic" text-anchor="middle" fill="#000000">v₀</text>
+      </g>
+      <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+        <rect class="text-bg-rect" x="249.0" y="205.0" width="22.0" height="28.0" fill="#FFFFFF" fill-opacity="0.85"/>
+        <text class="text-el" x="260" y="225" font-size="20" font-weight="normal" font-style="normal" text-anchor="middle" fill="#000000">공</text>
+      </g>
+      <line class="movable" x1="178" y1="260" x2="210" y2="260" stroke="#000000" stroke-width="1.5" stroke-dasharray="2,2" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <path class="movable" d="M 198 260 A 20 20 0 0 0 194 250" fill="none" stroke="#000000" stroke-width="1.5" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+        <rect class="text-bg-rect" x="191.0" y="234.0" width="34.0" height="28.0" fill="#FFFFFF" fill-opacity="0.85"/>
+        <text class="text-el" x="208" y="254" font-size="20" font-weight="normal" font-style="italic" text-anchor="middle" fill="#000000">θ₀</text>
+      </g>
+      <rect class="movable" x="405" y="298" width="70" height="14" fill="#FFFFFF" stroke="#000000" stroke-width="2" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <circle class="movable" cx="420" cy="316" r="5" fill="#FFFFFF" stroke="#000000" stroke-width="1.8" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <circle class="movable" cx="460" cy="316" r="5" fill="#FFFFFF" stroke="#000000" stroke-width="1.8" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+        <rect class="text-bg-rect" x="485.0" y="265.0" width="60.0" height="28.0" fill="#FFFFFF" fill-opacity="0.85"/>
+        <text class="text-el" x="515" y="285" font-size="20" font-weight="normal" font-style="normal" text-anchor="middle" fill="#000000">수레 2</text>
+      </g>
+      <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+        <rect class="text-bg-rect" x="460.0" y="220.0" width="60.0" height="28.0" fill="#FFFFFF" fill-opacity="0.85"/>
+        <text class="text-el" x="490" y="240" font-size="20" font-weight="normal" font-style="normal" text-anchor="middle" fill="#000000">학생 B</text>
+      </g>
+      <circle class="movable" cx="440" cy="245" r="10" fill="#FFFFFF" stroke="#000000" stroke-width="1.8" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="440" y1="255" x2="440" y2="298" stroke="#000000" stroke-width="2" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="440" y1="270" x2="422" y2="260" stroke="#000000" stroke-width="2" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <path class="movable" d="M 195 305 C 209.0 292, 209.0 318, 212.5 305 C 226.5 292, 226.5 318, 230.0 305 C 244.0 292, 244.0 318, 247.5 305 C 261.5 292, 261.5 318, 265.0 305 C 279.0 292, 279.0 318, 282.5 305 C 296.5 292, 296.5 318, 300.0 305 C 314.0 292, 314.0 318, 317.5 305 C 331.5 292, 331.5 318, 335.0 305 C 349.0 292, 349.0 318, 352.5 305 C 366.5 292, 366.5 318, 370.0 305 C 384.0 292, 384.0 318, 387.5 305 C 401.5 292, 401.5 318, 405.0 305 " fill="none" stroke="#000000" stroke-width="1.8" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <circle class="movable" cx="160" cy="320" r="3.5" fill="#000000" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+        <rect class="text-bg-rect" x="149.0" y="326.5" width="22.0" height="30.0" fill="#FFFFFF" fill-opacity="0.85"/>
+        <text class="text-el" x="160" y="348" font-size="22" font-weight="normal" font-style="normal" text-anchor="middle" fill="#000000">0</text>
+      </g>
+      <circle class="movable" cx="440" cy="320" r="3.5" fill="#000000" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+        <rect class="text-bg-rect" x="429.0" y="326.5" width="22.0" height="30.0" fill="#FFFFFF" fill-opacity="0.85"/>
+        <text class="text-el" x="440" y="348" font-size="22" font-weight="normal" font-style="italic" text-anchor="middle" fill="#000000">d</text>
+      </g>
+    </svg>
+  </div>
+</body>
+</html>
