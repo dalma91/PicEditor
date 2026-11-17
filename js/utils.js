@@ -58,9 +58,16 @@ window.PicEditor.utils = {
   deselectAll() {
     const state = window.PicEditor.state;
     if (state.selectedElement) {
-      const wrap = state.selectedElement.closest('.axes-wrap') || state.selectedElement.closest('.text-wrap') || state.selectedElement;
+      const wrap = state.selectedElement.closest('.axes-wrap') || state.selectedElement.closest('.text-wrap') || state.selectedElement.closest('.group-wrap') || state.selectedElement;
       wrap.classList.remove('selected');
       state.selectedElement = null;
+    }
+    if (state.selectedElements && state.selectedElements.length) {
+      state.selectedElements.forEach(el => {
+        const w = el.closest('.axes-wrap') || el.closest('.text-wrap') || el.closest('.group-wrap') || el;
+        w.classList.remove('selected');
+      });
+      state.selectedElements = [];
     }
     state.isDragging = false;
     state.isDraggingAxesX = false;
@@ -69,10 +76,10 @@ window.PicEditor.utils = {
     state.isDraggingCircleRadius = false;
     state.isDraggingCurveP1 = false;
     state.isDraggingCurveP2 = false;
-    const inspector = document.getElementById('textInspector');
-    if (inspector) {
-      inspector.classList.remove('active');
-    }
+    ['textInspector', 'imageInspector', 'shapeInspector', 'groupInspector'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.classList.remove('active');
+    });
     if (window.PicEditor.tools) {
       if (window.PicEditor.tools.hideAllGizmos) {
         window.PicEditor.tools.hideAllGizmos();
@@ -89,7 +96,7 @@ window.PicEditor.utils = {
   getCleanSvgString(svg) {
     if (!svg) return '';
     const clone = svg.cloneNode(true);
-    clone.querySelectorAll('.editor-gizmo-group, #axes-handle-group, #arc-center-handle-group, #line-handle-group, #circle-handle-group, #triangle-handle-group, #parallelogram-handle-group, #rect-handle-group, #parabola-handle-group, #curve-handle-group, .axis-hit-line, .axis-arrow-hit').forEach(el => el.remove());
+    clone.querySelectorAll('.editor-gizmo-group, #axes-handle-group, #arc-center-handle-group, #line-handle-group, #circle-handle-group, #triangle-handle-group, #parallelogram-handle-group, #rect-handle-group, #parabola-handle-group, #curve-handle-group, .axis-hit-line, .axis-arrow-hit, #marquee-selection-box').forEach(el => el.remove());
     clone.querySelectorAll('.selected').forEach(el => el.classList.remove('selected'));
     return new XMLSerializer().serializeToString(clone);
   }

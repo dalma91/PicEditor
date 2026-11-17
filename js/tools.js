@@ -759,6 +759,14 @@ window.PicEditor.tools = {
   },
 
   /**
+   * 요소가 그룹(group-wrap)인지 여부 판별
+   */
+  isGroupElement(el) {
+    if (!el) return false;
+    return el.classList && el.classList.contains('group-wrap');
+  },
+
+  /**
    * 요소가 직사각형(Rect)인지 여부 판별
    */
   isRectElement(el) {
@@ -1962,6 +1970,11 @@ window.PicEditor.tools = {
     else if (this.isParabolaElement(el)) this.updateParabolaGizmoTransform(el);
     else if (this.isAxesElement(el)) this.updateAxesGizmoTransform(el);
     else if (this.isCurveElement(el)) this.updateCurveGizmoTransform(el);
+    else if (this.isGroupElement(el)) {
+      if (window.PicEditor.inspector && window.PicEditor.inspector.updateGroupBgBox) {
+        window.PicEditor.inspector.updateGroupBgBox(el);
+      }
+    }
   },
 
   /**

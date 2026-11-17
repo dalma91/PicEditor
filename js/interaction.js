@@ -37,6 +37,48 @@ window.PicEditor.interaction = {
   },
 
   /**
+   * 작업 레이어 선택 및 필터링 설정
+   * - 'all': 전체 레이어 (모두 선택 가능)
+   * - 'diagram': 도형 레이어만 (텍스트 방해 차단, pointer-events 제어)
+   * - 'text': 텍스트 레이어만
+   * - 'background': 배경 레이어만
+   */
+  setActiveLayer(layerName) {
+    const state = window.PicEditor.state;
+    state.activeLayer = layerName || 'all';
+    const svg = window.PicEditor.utils.getActiveSvg();
+    if (!svg) return;
+
+    if (window.PicEditor.inspector && window.PicEditor.inspector.ensureLayers) {
+      window.PicEditor.inspector.ensureLayers(svg);
+    }
+
+    const layers = {
+      background: svg.querySelector('.bg-layer'),
+      diagram: svg.querySelector('.main-diagram'),
+      text: svg.querySelector('.text-layer')
+    };
+
+    Object.keys(layers).forEach(k => {
+      const g = layers[k];
+      if (!g) return;
+      if (state.activeLayer === 'all' || state.activeLayer === k) {
+        g.style.pointerEvents = 'auto';
+        g.style.opacity = '1';
+      } else {
+        // 비활성 레이어의 포인터 이벤트를 통과시켜 아래 레이어의 도형이 텍스트 간섭 없이 바로 클릭되도록 조치
+        g.style.pointerEvents = 'none';
+        g.style.opacity = '0.7';
+      }
+    });
+
+    const sel = document.getElementById('activeLayerSelect');
+    if (sel && sel.value !== state.activeLayer) {
+      sel.value = state.activeLayer;
+    }
+  },
+
+  /**
    * 캔버스 내 사용자 객체 존재 여부 확인
    */
   hasAnyObjects() {
@@ -78,7 +120,14 @@ window.PicEditor.interaction = {
    */
   findMovableNearPoint(svg, clientX, clientY, margin = 5) {
     if (!svg || clientX === undefined || clientY === undefined) return null;
-    const movables = Array.from(svg.querySelectorAll('.movable'));
+    const state = window.PicEditor.state;
+    let movables = Array.from(svg.querySelectorAll('.movable'));
+    if (state.activeLayer && state.activeLayer !== 'all') {
+      const targetClass = state.activeLayer === 'diagram' ? 'main-diagram' : (state.activeLayer === 'text' ? 'text-layer' : (state.activeLayer === 'background' ? 'bg-layer' : ''));
+      if (targetClass) {
+        movables = movables.filter(el => !!el.closest('.' + targetClass));
+      }
+    }
     let bestEl = null;
     let minDistance = Infinity;
 
@@ -114,7 +163,7 @@ window.PicEditor.interaction = {
   },
 
   /**
-   * 특정 객체를 선택하고 드래그 상태를 시작하는 공통 함수
+   * 특정 객체를 선택하고 드래그 상태를 시작하는 공통 함수 (다중 선택 및 그룹 지원)
    */
   selectAndStartDragElement(targetEl, e) {
     const state = window.PicEditor.state;
@@ -123,33 +172,59 @@ window.PicEditor.interaction = {
 
     let wrap = targetEl.closest('.axes-wrap') || targetEl.closest('.text-wrap') || targetEl.closest('.mid-arrow') || (targetEl.classList && targetEl.classList.contains('movable') ? targetEl : targetEl.closest('.movable')) || targetEl;
 
+    // 그룹에 속한 요소인 경우 최상위 그룹 컨테이너(.group-wrap)를 선택 대상 처리
+    const groupWrap = wrap.closest ? wrap.closest('.group-wrap') : null;
+    if (groupWrap) {
+      wrap = groupWrap;
+    }
+
     // 타겟이 텍스트 관련일 때만 textTarget을 확인하여 사각형/도형 클릭이 텍스트로 오인되는 문제 원천 차단
     const isTextRelated = (targetEl.tagName && targetEl.tagName.toLowerCase() === 'text') ||
       (targetEl.classList && (targetEl.classList.contains('text-el') || targetEl.classList.contains('text-wrap') || targetEl.classList.contains('text-bg-rect') || targetEl.classList.contains('text-bg-box'))) ||
       (targetEl.closest && targetEl.closest('.text-wrap'));
 
-    if (isTextRelated && window.PicEditor.inspector) {
+    if (isTextRelated && window.PicEditor.inspector && !groupWrap) {
       const textTarget = window.PicEditor.inspector.getTextElement(targetEl);
       if (textTarget) {
         wrap = (window.PicEditor.inspector.getTextWrap ? window.PicEditor.inspector.getTextWrap(textTarget) : null) || wrap;
       }
     }
 
-    if (state.selectedElement && state.selectedElement !== wrap) {
-      window.PicEditor.utils.deselectAll();
+    const isMulti = e && (e.shiftKey || e.ctrlKey || e.metaKey);
+    state.selectedElements = state.selectedElements || [];
+
+    if (isMulti) {
+      const idx = state.selectedElements.indexOf(wrap);
+      if (idx >= 0) {
+        // 이미 선택된 항목이면 선택 토글 해제
+        state.selectedElements.splice(idx, 1);
+        wrap.classList.remove('selected');
+        state.selectedElement = state.selectedElements[0] || null;
+      } else {
+        // 다중 선택에 추가
+        state.selectedElements.push(wrap);
+        wrap.classList.add('selected');
+        state.selectedElement = wrap;
+      }
+    } else {
+      // 일반 단일 클릭
+      if (state.selectedElements.includes(wrap) && state.selectedElements.length > 1) {
+        // 이미 다중 선택된 묶음을 클릭하여 드래그하려는 경우 다중 선택 상태 유지
+        state.selectedElement = wrap;
+      } else {
+        svg.querySelectorAll('.movable').forEach(elem => {
+          const w = elem.closest('.group-wrap') || elem.closest('.axes-wrap') || elem.closest('.text-wrap') || elem.closest('.mid-arrow') || elem;
+          w.classList.remove('selected');
+        });
+        state.selectedElement = wrap;
+        state.selectedElements = [wrap];
+        if (wrap && wrap.classList) wrap.classList.add('selected');
+      }
     }
-
-    state.selectedElement = wrap;
-
-    svg.querySelectorAll('.movable').forEach(elem => {
-      const w = elem.closest('.axes-wrap') || elem.closest('.text-wrap') || elem.closest('.mid-arrow') || elem;
-      w.classList.remove('selected');
-    });
-    if (wrap && wrap.classList) wrap.classList.add('selected');
 
     window.PicEditor.inspector.syncUItoSelected();
 
-    if (window.PicEditor.tools && window.PicEditor.tools.hideAllGizmos) {
+    if (state.selectedElements.length === 1 && window.PicEditor.tools && window.PicEditor.tools.hideAllGizmos) {
       window.PicEditor.tools.hideAllGizmos();
       if (window.PicEditor.tools.isArcElement(wrap)) window.PicEditor.tools.showArcCenterHandle(wrap);
       else if (window.PicEditor.tools.isLineElement(wrap)) window.PicEditor.tools.showLineHandles(wrap);
@@ -160,6 +235,11 @@ window.PicEditor.interaction = {
       else if (window.PicEditor.tools.isParabolaElement(wrap)) window.PicEditor.tools.showParabolaHandles(wrap);
       else if (window.PicEditor.tools.isAxesElement(wrap)) window.PicEditor.tools.showAxesHandles(wrap);
       else if (window.PicEditor.tools.isCurveElement(wrap)) window.PicEditor.tools.showCurveHandles(wrap);
+      else if (window.PicEditor.tools.isGroupElement && window.PicEditor.tools.isGroupElement(wrap)) {
+        window.PicEditor.tools.updateGroupBgBox(wrap);
+      }
+    } else if (state.selectedElements.length > 1 && window.PicEditor.tools && window.PicEditor.tools.hideAllGizmos) {
+      window.PicEditor.tools.hideAllGizmos();
     }
 
     state.isDragging = true;
@@ -185,6 +265,10 @@ window.PicEditor.interaction = {
       const selectAndStartDrag = (e) => {
         if (state.isDrawMode) return;
         if (e.touches && e.touches.length > 1) return;
+        if (state.activeLayer && state.activeLayer !== 'all') {
+          const targetClass = state.activeLayer === 'diagram' ? 'main-diagram' : (state.activeLayer === 'text' ? 'text-layer' : (state.activeLayer === 'background' ? 'bg-layer' : ''));
+          if (targetClass && !el.closest('.' + targetClass)) return;
+        }
         e.stopPropagation();
         window.PicEditor.interaction.selectAndStartDragElement(el, e);
       };
@@ -286,8 +370,28 @@ window.PicEditor.interaction = {
             return;
           }
 
-          // 5px 이내에도 객체가 없을 때만 선택 해제
-          window.PicEditor.utils.deselectAll();
+          // 5px 이내에도 객체가 없을 때: 빈 캔버스 영역 드래그로 범위 선택(Marquee Box Selection) 시작
+          if (!e.shiftKey && !e.ctrlKey) {
+            window.PicEditor.utils.deselectAll();
+          }
+          const pt = window.PicEditor.utils.getSvgPoint(e, svg);
+          state.isMarqueeSelecting = true;
+          state.marqueeStart = { x: pt.x, y: pt.y };
+          let marqueeBox = svg.querySelector('#marquee-selection-box');
+          if (!marqueeBox) {
+            marqueeBox = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+            marqueeBox.setAttribute('id', 'marquee-selection-box');
+            marqueeBox.setAttribute('fill', 'rgba(59, 130, 246, 0.15)');
+            marqueeBox.setAttribute('stroke', '#3b82f6');
+            marqueeBox.setAttribute('stroke-width', '1');
+            marqueeBox.setAttribute('stroke-dasharray', '4,3');
+            svg.appendChild(marqueeBox);
+          }
+          marqueeBox.setAttribute('x', pt.x.toFixed(1));
+          marqueeBox.setAttribute('y', pt.y.toFixed(1));
+          marqueeBox.setAttribute('width', '0');
+          marqueeBox.setAttribute('height', '0');
+          marqueeBox.style.display = 'block';
           return;
         }
         state.isDrawing = true;
@@ -1253,8 +1357,25 @@ window.PicEditor.interaction = {
         return;
       }
 
-      // 3. 선택 모드 요소 드래그 이동
-      if (!state.isDrawMode && state.isDragging && state.selectedElement) {
+      // 빈 영역 드래그로 범위 선택 사각형 갱신
+      if (!state.isDrawMode && state.isMarqueeSelecting && state.marqueeStart) {
+        if (e.cancelable) e.preventDefault();
+        const mx = Math.min(state.marqueeStart.x, pt.x);
+        const my = Math.min(state.marqueeStart.y, pt.y);
+        const mw = Math.abs(pt.x - state.marqueeStart.x);
+        const mh = Math.abs(pt.y - state.marqueeStart.y);
+        const box = svg.querySelector('#marquee-selection-box');
+        if (box) {
+          box.setAttribute('x', mx.toFixed(1));
+          box.setAttribute('y', my.toFixed(1));
+          box.setAttribute('width', mw.toFixed(1));
+          box.setAttribute('height', mh.toFixed(1));
+        }
+        return;
+      }
+
+      // 3. 선택 모드 요소 드래그 이동 (단일 및 다중 선택 요소 일괄 이동)
+      if (!state.isDrawMode && state.isDragging && (state.selectedElement || (state.selectedElements && state.selectedElements.length > 0))) {
         const dx = pt.x - state.startX;
         const dy = pt.y - state.startY;
         if (Math.hypot(dx, dy) > 2) {
@@ -1264,26 +1385,31 @@ window.PicEditor.interaction = {
         state.startX = pt.x;
         state.startY = pt.y;
 
-        const target = state.selectedElement.closest('.axes-wrap') || state.selectedElement.closest('.text-wrap') || state.selectedElement;
-        const t = window.PicEditor.utils.parseTransform(target);
-        t.x += dx;
-        t.y += dy;
-        window.PicEditor.utils.setTransform(target, t);
+        const targets = (state.selectedElements && state.selectedElements.length > 1)
+          ? state.selectedElements
+          : [state.selectedElement ? (state.selectedElement.closest('.group-wrap') || state.selectedElement.closest('.axes-wrap') || state.selectedElement.closest('.text-wrap') || state.selectedElement) : null].filter(Boolean);
 
-        if (window.PicEditor.tools) {
-          if (window.PicEditor.tools.updateGizmosTransform) {
-            window.PicEditor.tools.updateGizmosTransform(target);
-          }
-          if (target.id) {
-            const midG = svg.querySelector(`g.mid-arrow[data-for="${target.id}"]`);
-            if (midG) {
-              const mt = window.PicEditor.utils.parseTransform(midG);
-              mt.x += dx;
-              mt.y += dy;
-              window.PicEditor.utils.setTransform(midG, mt);
+        targets.forEach(target => {
+          const t = window.PicEditor.utils.parseTransform(target);
+          t.x += dx;
+          t.y += dy;
+          window.PicEditor.utils.setTransform(target, t);
+
+          if (window.PicEditor.tools) {
+            if (window.PicEditor.tools.updateGizmosTransform) {
+              window.PicEditor.tools.updateGizmosTransform(target);
+            }
+            if (target.id) {
+              const midG = svg.querySelector(`g.mid-arrow[data-for="${target.id}"]`);
+              if (midG) {
+                const mt = window.PicEditor.utils.parseTransform(midG);
+                mt.x += dx;
+                mt.y += dy;
+                window.PicEditor.utils.setTransform(midG, mt);
+              }
             }
           }
-        }
+        });
       }
 
       // 선택 모드에서 마우스 호버 시 상하좌우 +5px 범위 내 객체가 있으면 포인터/grab 커서 피드백
@@ -1565,6 +1691,60 @@ window.PicEditor.interaction = {
           if (window.PicEditor.sync) window.PicEditor.sync.markModified();
         }
       }
+      if (state.isMarqueeSelecting) {
+        state.isMarqueeSelecting = false;
+        state.marqueeStart = null;
+        if (svg) {
+          const box = svg.querySelector('#marquee-selection-box');
+          if (box) {
+            box.style.display = 'none';
+            const bx = parseFloat(box.getAttribute('x')) || 0;
+            const by = parseFloat(box.getAttribute('y')) || 0;
+            const bw = parseFloat(box.getAttribute('width')) || 0;
+            const bh = parseFloat(box.getAttribute('height')) || 0;
+            if (bw > 4 && bh > 4) {
+              const boxRect = { left: bx, top: by, right: bx + bw, bottom: by + bh };
+              let movables = Array.from(svg.querySelectorAll('.movable'))
+                .filter(el => {
+                  if (el.closest('.editor-gizmo-group')) return false;
+                  if (el.id && el.id.includes('handle')) return false;
+                  if (el.id === 'marquee-selection-box') return false;
+                  return true;
+                });
+              if (state.activeLayer && state.activeLayer !== 'all') {
+                const targetClass = state.activeLayer === 'diagram' ? 'main-diagram' : (state.activeLayer === 'text' ? 'text-layer' : (state.activeLayer === 'background' ? 'bg-layer' : ''));
+                if (targetClass) movables = movables.filter(el => !!el.closest('.' + targetClass));
+              }
+              const selected = [];
+              movables.forEach(el => {
+                const wrap = el.closest('.group-wrap') || el.closest('.axes-wrap') || el.closest('.text-wrap') || el;
+                if (selected.includes(wrap)) return;
+                try {
+                  const bbox = wrap.getBBox ? wrap.getBBox() : null;
+                  const t = window.PicEditor.utils.parseTransform(wrap);
+                  if (bbox) {
+                    const elLeft = bbox.x + t.x;
+                    const elTop = bbox.y + t.y;
+                    const elRight = elLeft + bbox.width;
+                    const elBottom = elTop + bbox.height;
+                    if (elLeft < boxRect.right && elRight > boxRect.left &&
+                        elTop < boxRect.bottom && elBottom > boxRect.top) {
+                      selected.push(wrap);
+                    }
+                  }
+                } catch (err) {}
+              });
+              if (selected.length > 0) {
+                state.selectedElements = selected;
+                state.selectedElement = selected[0];
+                selected.forEach(w => w.classList.add('selected'));
+                window.PicEditor.inspector.syncUItoSelected();
+              }
+            }
+          }
+        }
+      }
+
       if (state.isDragging) {
         state.isDragging = false;
         if (state.hasDragged && window.PicEditor.sync) {
@@ -1576,8 +1756,22 @@ window.PicEditor.interaction = {
     window.addEventListener('mouseup', handlePointerUp);
     window.addEventListener('touchend', handlePointerUp);
 
-    // ESC 키, Enter 키, 삭제 키 및 방향키(Arrow Keys) 이동
+    // ESC 키, Enter 키, 단축키(Ctrl+G 그룹/해제), 삭제 키 및 방향키(Arrow Keys) 이동
     window.addEventListener('keydown', (e) => {
+      // Ctrl + G (그룹화), Ctrl + Shift + G (그룹 해제)
+      if ((e.ctrlKey || e.metaKey) && (e.key === 'g' || e.key === 'G')) {
+        const activeTag = document.activeElement ? document.activeElement.tagName.toLowerCase() : '';
+        if (activeTag !== 'input' && activeTag !== 'textarea') {
+          e.preventDefault();
+          if (e.shiftKey) {
+            if (window.ungroupSelected) window.ungroupSelected();
+          } else {
+            if (window.groupSelected) window.groupSelected();
+          }
+          return;
+        }
+      }
+
       if (e.key === 'Enter') {
         const activeTag = document.activeElement ? document.activeElement.tagName.toLowerCase() : '';
         if (activeTag !== 'input' && activeTag !== 'textarea') {
@@ -1598,7 +1792,7 @@ window.PicEditor.interaction = {
       } else if (e.key === 'Delete' || e.key === 'Backspace') {
         const activeTag = document.activeElement ? document.activeElement.tagName.toLowerCase() : '';
         if (activeTag !== 'input' && activeTag !== 'textarea') {
-          if (state.selectedElement) {
+          if (state.selectedElement || (state.selectedElements && state.selectedElements.length > 0)) {
             window.PicEditor.inspector.deleteSelected();
           }
         }
@@ -1607,8 +1801,8 @@ window.PicEditor.interaction = {
         const activeTag = document.activeElement ? document.activeElement.tagName.toLowerCase() : '';
         if (activeTag === 'input' || activeTag === 'textarea') return;
 
-        // 선택된 객체가 있을 경우 방향키로 미세 이동
-        if (state.selectedElement) {
+        // 선택된 객체가 있을 경우 방향키로 미세 이동 (다중 선택 일괄 이동)
+        if (state.selectedElement || (state.selectedElements && state.selectedElements.length > 0)) {
           e.preventDefault(); // 브라우저 창 스크롤 방지
           const step = e.shiftKey ? 10 : 1; // Shift 키 누르면 10px씩 고속 이동, 기본 1px 정밀 미세 이동
           let dx = 0;
@@ -1619,27 +1813,32 @@ window.PicEditor.interaction = {
           else if (e.key === 'ArrowLeft') dx = -step;
           else if (e.key === 'ArrowRight') dx = step;
 
-          const target = state.selectedElement.closest('.axes-wrap') || state.selectedElement.closest('.text-wrap') || state.selectedElement;
-          const t = window.PicEditor.utils.parseTransform(target);
-          t.x += dx;
-          t.y += dy;
-          window.PicEditor.utils.setTransform(target, t);
+          const targets = (state.selectedElements && state.selectedElements.length > 1)
+            ? state.selectedElements
+            : [state.selectedElement ? (state.selectedElement.closest('.group-wrap') || state.selectedElement.closest('.axes-wrap') || state.selectedElement.closest('.text-wrap') || state.selectedElement) : null].filter(Boolean);
 
-          if (window.PicEditor.tools) {
-            if (window.PicEditor.tools.updateGizmosTransform) {
-              window.PicEditor.tools.updateGizmosTransform(target);
-            }
-            if (target.id) {
-              const svg = window.PicEditor.utils.getActiveSvg();
-              const midG = svg ? svg.querySelector(`g.mid-arrow[data-for="${target.id}"]`) : null;
-              if (midG) {
-                const mt = window.PicEditor.utils.parseTransform(midG);
-                mt.x += dx;
-                mt.y += dy;
-                window.PicEditor.utils.setTransform(midG, mt);
+          targets.forEach(target => {
+            const t = window.PicEditor.utils.parseTransform(target);
+            t.x += dx;
+            t.y += dy;
+            window.PicEditor.utils.setTransform(target, t);
+
+            if (window.PicEditor.tools) {
+              if (window.PicEditor.tools.updateGizmosTransform) {
+                window.PicEditor.tools.updateGizmosTransform(target);
+              }
+              if (target.id) {
+                const svg = window.PicEditor.utils.getActiveSvg();
+                const midG = svg ? svg.querySelector(`g.mid-arrow[data-for="${target.id}"]`) : null;
+                if (midG) {
+                  const mt = window.PicEditor.utils.parseTransform(midG);
+                  mt.x += dx;
+                  mt.y += dy;
+                  window.PicEditor.utils.setTransform(midG, mt);
+                }
               }
             }
-          }
+          });
 
           if (window.PicEditor.sync) {
             window.PicEditor.sync.markModified();
@@ -1653,3 +1852,4 @@ window.PicEditor.interaction = {
 // 전역 단축 참조
 window.toggleMode = () => window.PicEditor.interaction.toggleMode();
 window.initMovableEvents = () => window.PicEditor.interaction.initMovableEvents();
+window.setActiveLayer = (l) => window.PicEditor.interaction.setActiveLayer(l);

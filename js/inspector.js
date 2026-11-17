@@ -60,28 +60,40 @@ window.PicEditor.inspector = {
     const textInspector = document.getElementById('textInspector');
     const imageInspector = document.getElementById('imageInspector');
     const shapeInspector = document.getElementById('shapeInspector');
+    const groupInspector = document.getElementById('groupInspector');
 
+    const isGroup = window.PicEditor.tools && window.PicEditor.tools.isGroupElement(target);
     const isShape = window.PicEditor.tools && window.PicEditor.tools.isShapeElement(target);
 
-    if (tag === 'image') {
+    [textInspector, imageInspector, shapeInspector, groupInspector].forEach(el => {
+      if (el) el.classList.remove('active');
+    });
+
+    if (isGroup) {
+      if (groupInspector) groupInspector.classList.add('active');
+      const bgMode = target.getAttribute('data-bg-mode') || 'transparent';
+      const radT = document.getElementById('groupBgTransparent');
+      const radW = document.getElementById('groupBgWhite');
+      if (radT) radT.checked = (bgMode === 'transparent');
+      if (radW) radW.checked = (bgMode === 'white');
+    } else if (tag === 'image') {
       if (imageInspector) imageInspector.classList.add('active');
-      if (textInspector) textInspector.classList.remove('active');
-      if (shapeInspector) shapeInspector.classList.remove('active');
       this.syncImageInspector(target);
     } else if (textEl || target.classList.contains('text-wrap') || this.getTextElement(target)) {
       if (textInspector) textInspector.classList.add('active');
-      if (imageInspector) imageInspector.classList.remove('active');
-      if (shapeInspector) shapeInspector.classList.remove('active');
       this.syncTextInspector();
     } else if (isShape) {
       if (shapeInspector) shapeInspector.classList.add('active');
-      if (textInspector) textInspector.classList.remove('active');
-      if (imageInspector) imageInspector.classList.remove('active');
       this.syncShapeInspector(target);
-    } else {
-      if (textInspector) textInspector.classList.remove('active');
-      if (imageInspector) imageInspector.classList.remove('active');
-      if (shapeInspector) shapeInspector.classList.remove('active');
+    }
+
+    // 소속 레이어 드롭다운 동기화
+    const layerSelect = document.getElementById('objLayerSelect');
+    if (layerSelect && target) {
+      if (target.closest('.text-layer')) layerSelect.value = 'text-layer';
+      else if (target.closest('.bg-layer')) layerSelect.value = 'bg-layer';
+      else if (target.closest('.front-layer')) layerSelect.value = 'front-layer';
+      else layerSelect.value = 'main-diagram';
     }
 
     // 선/화살표 선택 시 양쪽 머리크기 일치 옵션 표시 연동
@@ -245,12 +257,68 @@ window.PicEditor.inspector = {
   },
 
   /**
-   * 레이어 순서 제어 (맨 앞으로 / 맨 뒤로)
+   * SVG 내 4개 기본 레이어 보장 및 반환 (배경, 도형, 텍스트, 최상위)
+   */
+  ensureLayers(svg) {
+    if (!svg) svg = window.PicEditor.utils.getActiveSvg();
+    if (!svg) return null;
+    let bgLayer = svg.querySelector('.bg-layer');
+    let mainGrp = svg.querySelector('.main-diagram');
+    let textLayer = svg.querySelector('.text-layer');
+    let frontLayer = svg.querySelector('.front-layer');
+
+    if (!bgLayer) {
+      bgLayer = document.createElementNS("http://www.w3.org/2000/svg", "g");
+      bgLayer.setAttribute('class', 'bg-layer');
+      if (mainGrp) svg.insertBefore(bgLayer, mainGrp);
+      else svg.appendChild(bgLayer);
+    }
+    if (!mainGrp) {
+      mainGrp = document.createElementNS("http://www.w3.org/2000/svg", "g");
+      mainGrp.setAttribute('class', 'main-diagram');
+      svg.appendChild(mainGrp);
+    }
+    if (!textLayer) {
+      textLayer = document.createElementNS("http://www.w3.org/2000/svg", "g");
+      textLayer.setAttribute('class', 'text-layer');
+      svg.appendChild(textLayer);
+    }
+    if (!frontLayer) {
+      frontLayer = document.createElementNS("http://www.w3.org/2000/svg", "g");
+      frontLayer.setAttribute('class', 'front-layer');
+      svg.appendChild(frontLayer);
+    }
+    return { bgLayer, mainGrp, textLayer, frontLayer };
+  },
+
+  /**
+   * 선택된 요소의 소속 레이어 변경 ('main-diagram', 'text-layer', 'bg-layer', 'front-layer')
+   */
+  changeSelectedLayer(layerClass) {
+    const state = window.PicEditor.state;
+    if (!state.selectedElement) return;
+    const target = state.selectedElement.closest('.axes-wrap') || state.selectedElement.closest('.text-wrap') || state.selectedElement.closest('.group-wrap') || state.selectedElement;
+    const svg = window.PicEditor.utils.getActiveSvg();
+    if (!svg || !target) return;
+
+    this.ensureLayers(svg);
+    let targetContainer = svg.querySelector(`.${layerClass}`);
+    if (targetContainer && targetContainer !== target.parentNode) {
+      targetContainer.appendChild(target);
+      if (window.PicEditor.tools && window.PicEditor.tools.updateGizmosTransform) {
+        window.PicEditor.tools.updateGizmosTransform(target);
+      }
+      if (window.PicEditor.sync) window.PicEditor.sync.markModified();
+    }
+  },
+
+  /**
+   * 레이어 순서 제어 (맨 앞으로 / 앞으로 1단계 / 뒤로 1단계 / 맨 뒤로)
    */
   bringToFront() {
     const state = window.PicEditor.state;
     if (!state.selectedElement) return;
-    const target = state.selectedElement.closest('.axes-wrap') || state.selectedElement.closest('.text-wrap') || state.selectedElement;
+    const target = state.selectedElement.closest('.axes-wrap') || state.selectedElement.closest('.text-wrap') || state.selectedElement.closest('.group-wrap') || state.selectedElement;
     const parent = target.parentNode;
     if (parent) {
       parent.appendChild(target);
@@ -258,14 +326,210 @@ window.PicEditor.inspector = {
     }
   },
 
+  bringForward() {
+    const state = window.PicEditor.state;
+    if (!state.selectedElement) return;
+    const target = state.selectedElement.closest('.axes-wrap') || state.selectedElement.closest('.text-wrap') || state.selectedElement.closest('.group-wrap') || state.selectedElement;
+    const next = target.nextElementSibling;
+    if (next && target.parentNode) {
+      target.parentNode.insertBefore(next, target);
+      if (window.PicEditor.sync) window.PicEditor.sync.markModified();
+    }
+  },
+
+  sendBackward() {
+    const state = window.PicEditor.state;
+    if (!state.selectedElement) return;
+    const target = state.selectedElement.closest('.axes-wrap') || state.selectedElement.closest('.text-wrap') || state.selectedElement.closest('.group-wrap') || state.selectedElement;
+    const prev = target.previousElementSibling;
+    if (prev && target.parentNode) {
+      target.parentNode.insertBefore(target, prev);
+      if (window.PicEditor.sync) window.PicEditor.sync.markModified();
+    }
+  },
+
   sendToBack() {
     const state = window.PicEditor.state;
     if (!state.selectedElement) return;
-    const target = state.selectedElement.closest('.axes-wrap') || state.selectedElement.closest('.text-wrap') || state.selectedElement;
+    const target = state.selectedElement.closest('.axes-wrap') || state.selectedElement.closest('.text-wrap') || state.selectedElement.closest('.group-wrap') || state.selectedElement;
     const parent = target.parentNode;
     if (parent) {
-      parent.insertBefore(target, parent.firstChild);
+      parent.insertBefore(target, parent.firstElementChild);
       if (window.PicEditor.sync) window.PicEditor.sync.markModified();
+    }
+  },
+
+  /**
+   * 선택된 다중 객체들을 하나의 그룹으로 묶기
+   */
+  createGroup() {
+    const state = window.PicEditor.state;
+    const svg = window.PicEditor.utils.getActiveSvg();
+    if (!svg) return;
+
+    let items = (state.selectedElements && state.selectedElements.length >= 2)
+      ? [...state.selectedElements]
+      : (state.selectedElement ? [state.selectedElement] : []);
+
+    if (items.length < 2) {
+      alert('그룹화할 개체들을 Shift 키를 누른 채 클릭하여 2개 이상 선택해 주세요.');
+      return;
+    }
+
+    const firstCanonical = items[0].closest('.axes-wrap') || items[0].closest('.text-wrap') || items[0].closest('.group-wrap') || items[0];
+    const parent = firstCanonical.parentNode || svg.querySelector('.main-diagram') || svg;
+
+    const groupG = document.createElementNS("http://www.w3.org/2000/svg", "g");
+    groupG.setAttribute('class', 'movable group-wrap');
+    groupG.setAttribute('data-group', 'true');
+    groupG.setAttribute('data-bg-mode', 'transparent');
+    groupG.setAttribute('transform', 'translate(0,0) scale(1,1) rotate(0)');
+
+    // 흰색 배경 선택 시 표시될 배경 rect
+    const bgRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+    bgRect.setAttribute('class', 'group-bg-rect');
+    bgRect.setAttribute('rx', '4');
+    bgRect.setAttribute('fill', '#ffffff');
+    bgRect.setAttribute('stroke', 'none');
+    bgRect.setAttribute('style', 'display:none; pointer-events:all;');
+    groupG.appendChild(bgRect);
+
+    // 선택된 아이템들을 그룹 안으로 이동
+    items.forEach(el => {
+      const canonical = el.closest('.axes-wrap') || el.closest('.text-wrap') || el.closest('.group-wrap') || el;
+      canonical.classList.remove('selected');
+      groupG.appendChild(canonical);
+    });
+
+    parent.appendChild(groupG);
+    this.updateGroupBgBox(groupG);
+
+    window.PicEditor.interaction.initMovableEvents();
+    window.PicEditor.utils.deselectAll();
+
+    state.selectedElement = groupG;
+    state.selectedElements = [groupG];
+    groupG.classList.add('selected');
+
+    this.syncUItoSelected();
+    if (window.PicEditor.sync) window.PicEditor.sync.markModified();
+  },
+
+  /**
+   * 선택된 그룹 해제
+   */
+  ungroup() {
+    const state = window.PicEditor.state;
+    if (!state.selectedElement) return;
+    const groupG = state.selectedElement.closest('.group-wrap');
+    if (!groupG) {
+      alert('해제할 그룹 요소를 먼저 선택해 주세요.');
+      return;
+    }
+
+    const svg = window.PicEditor.utils.getActiveSvg();
+    const parent = groupG.parentNode || svg.querySelector('.main-diagram') || svg;
+    const gt = window.PicEditor.utils.parseTransform(groupG);
+
+    const bgRect = groupG.querySelector('.group-bg-rect');
+    if (bgRect) bgRect.remove();
+
+    const children = Array.from(groupG.children).filter(ch => ch.classList && ch.classList.contains('movable'));
+    const unwrapped = [];
+
+    children.forEach(ch => {
+      const ct = window.PicEditor.utils.parseTransform(ch);
+      ct.x += gt.x;
+      ct.y += gt.y;
+      ct.r = (ct.r || 0) + (gt.r || 0);
+      window.PicEditor.utils.setTransform(ch, ct);
+
+      parent.appendChild(ch);
+      unwrapped.push(ch);
+    });
+
+    groupG.remove();
+    window.PicEditor.interaction.initMovableEvents();
+    window.PicEditor.utils.deselectAll();
+
+    state.selectedElements = unwrapped;
+    if (unwrapped.length > 0) {
+      state.selectedElement = unwrapped[0];
+      unwrapped.forEach(el => el.classList.add('selected'));
+    }
+    this.syncUItoSelected();
+    if (window.PicEditor.sync) window.PicEditor.sync.markModified();
+  },
+
+  /**
+   * 그룹 배경 모드 설정 ('transparent' | 'white')
+   */
+  setGroupBgMode(mode) {
+    const state = window.PicEditor.state;
+    if (!state.selectedElement) return;
+    const groupG = state.selectedElement.closest('.group-wrap');
+    if (!groupG) return;
+
+    groupG.setAttribute('data-bg-mode', mode);
+    let bgRect = groupG.querySelector('.group-bg-rect');
+    if (!bgRect) {
+      bgRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+      bgRect.setAttribute('class', 'group-bg-rect');
+      bgRect.setAttribute('rx', '4');
+      groupG.insertBefore(bgRect, groupG.firstChild);
+    }
+
+    if (mode === 'white') {
+      bgRect.style.display = 'block';
+      bgRect.setAttribute('fill', '#ffffff');
+      this.updateGroupBgBox(groupG);
+    } else {
+      bgRect.style.display = 'none';
+    }
+    if (window.PicEditor.sync) window.PicEditor.sync.markModified();
+  },
+
+  /**
+   * 그룹 배경 흰색 박스 크기 자동 계산/업데이트
+   */
+  updateGroupBgBox(groupG) {
+    if (!groupG) return;
+    const bgRect = groupG.querySelector('.group-bg-rect');
+    if (!bgRect) return;
+
+    const bgMode = groupG.getAttribute('data-bg-mode') || 'transparent';
+    if (bgMode === 'transparent') {
+      bgRect.style.display = 'none';
+      return;
+    }
+
+    const members = Array.from(groupG.children).filter(c => c !== bgRect && c.getBBox);
+    if (!members.length) return;
+
+    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+    members.forEach(m => {
+      try {
+        const b = m.getBBox();
+        const mt = window.PicEditor.utils.parseTransform(m);
+        const bx = b.x + mt.x;
+        const by = b.y + mt.y;
+        const bw = b.width * Math.abs(mt.sx || 1);
+        const bh = b.height * Math.abs(mt.sy || 1);
+        if (bx < minX) minX = bx;
+        if (by < minY) minY = by;
+        if (bx + bw > maxX) maxX = bx + bw;
+        if (by + bh > maxY) maxY = by + bh;
+      } catch (e) {}
+    });
+
+    if (minX !== Infinity && maxX > minX) {
+      const pad = 8;
+      bgRect.setAttribute('x', (minX - pad).toFixed(1));
+      bgRect.setAttribute('y', (minY - pad).toFixed(1));
+      bgRect.setAttribute('width', (maxX - minX + pad * 2).toFixed(1));
+      bgRect.setAttribute('height', (maxY - minY + pad * 2).toFixed(1));
+      bgRect.style.display = 'block';
+      bgRect.setAttribute('fill', '#ffffff');
     }
   },
 
@@ -1146,3 +1410,10 @@ window.deleteSelected = () => window.PicEditor.inspector.deleteSelected();
 window.onShapeFillTransparent = (c) => window.PicEditor.inspector.onShapeFillTransparent(c);
 window.onShapeFillColor = (c) => window.PicEditor.inspector.onShapeFillColor(c);
 window.onShapePattern = (p) => window.PicEditor.inspector.onShapePattern(p);
+window.bringForward = () => window.PicEditor.inspector.bringForward();
+window.sendBackward = () => window.PicEditor.inspector.sendBackward();
+window.changeSelectedLayer = (l) => window.PicEditor.inspector.changeSelectedLayer(l);
+window.groupSelected = () => window.PicEditor.inspector.createGroup();
+window.ungroupSelected = () => window.PicEditor.inspector.ungroup();
+window.onGroupBgModeChange = (m) => window.PicEditor.inspector.setGroupBgMode(m);
+window.setActiveLayer = (l) => window.PicEditor.interaction.setActiveLayer(l);

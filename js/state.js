@@ -6,6 +6,8 @@ window.PicEditor = window.PicEditor || {};
 window.PicEditor.state = {
   activeTab: 1,
   selectedElement: null,
+  selectedElements: [], // 다중 선택 요소 배열
+  activeLayer: 'all',   // 현재 작업 레이어 ('all', 'diagram', 'text', 'background')
   isDragging: false,
   startX: 0,
   startY: 0,
