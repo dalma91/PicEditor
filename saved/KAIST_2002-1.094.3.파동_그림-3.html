@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>2002-1.094.3.파동_그림-3</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: #ffffff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      overflow: auto;
+    }
+    .svg-container {
+      width: 100%;
+      max-width: 1000px;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+    svg {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div class="svg-container">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 460 360" width="100%" height="100%">
+  <defs>
+    <marker id="arrow-114-3" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#000000"/>
+    </marker>
+    <pattern id="grid-pat-114" width="6" height="20" patternUnits="userSpaceOnUse">
+      <line x1="0" y1="0" x2="0" y2="20" stroke="#e2e8f0" stroke-width="1"/>
+    </pattern>
+  </defs>
+
+  <!-- Plot Box -->
+  <rect class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        x="80" y="70" width="340" height="190" fill="url(#grid-pat-114)" stroke="#000000" stroke-width="1.8"/>
+
+  <!-- Vertical Axis Label: 빛의 세기 I -->
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+    <text class="text-el" x="45" y="130" font-family="'Malgun Gothic', sans-serif" font-weight="bold" font-size="18" text-anchor="middle">빛</text>
+    <text class="text-el" x="45" y="152" font-family="'Malgun Gothic', sans-serif" font-weight="bold" font-size="18" text-anchor="middle">의</text>
+    <text class="text-el" x="45" y="174" font-family="'Malgun Gothic', sans-serif" font-weight="bold" font-size="18" text-anchor="middle">세</text>
+    <text class="text-el" x="45" y="196" font-family="'Malgun Gothic', sans-serif" font-weight="bold" font-size="18" text-anchor="middle">기</text>
+    <text class="text-el" x="45" y="222" font-family="'Times New Roman', serif" font-style="italic" font-weight="bold" font-size="22" text-anchor="middle">I</text>
+  </g>
+
+  <!-- Interference Intensity Wave Curve -->
+  <!-- 3.5 cycles of sinusoid between y=100 (peak) and y=230 (trough) -->
+  <path class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        d="M 80 130
+           C 105 180, 115 230, 130 230
+           C 145 230, 160 100, 180 100
+           C 200 100, 215 230, 230 230
+           C 245 230, 260 100, 280 100
+           C 300 100, 315 230, 330 230
+           C 345 230, 360 100, 380 100
+           C 400 100, 410 180, 420 230"
+        fill="none" stroke="#000000" stroke-width="2.5"/>
+
+  <!-- Peaks theta1^2 and theta2^2 markers -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        x1="180" y1="50" x2="180" y2="100" stroke="#000000" stroke-width="1.2" marker-end="url(#arrow-114-3)"/>
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+    <text class="text-el" x="180" y="40" font-family="'Times New Roman', serif" font-style="italic" font-size="18" text-anchor="middle">θ<tspan font-size="12" dy="4">1</tspan><tspan font-size="11" dy="-10">2</tspan></text>
+  </g>
+
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        x1="280" y1="50" x2="280" y2="100" stroke="#000000" stroke-width="1.2" marker-end="url(#arrow-114-3)"/>
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+    <text class="text-el" x="280" y="40" font-family="'Times New Roman', serif" font-style="italic" font-size="18" text-anchor="middle">θ<tspan font-size="12" dy="4">2</tspan><tspan font-size="11" dy="-10">2</tspan></text>
+  </g>
+
+  <!-- Delta dimension between peaks -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        x1="180" y1="50" x2="280" y2="50" stroke="#000000" stroke-width="1.2"/>
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+    <rect class="text-bg-rect" x="222" y="38" width="18" height="22" fill="#FFFFFF"/>
+    <text class="text-el" x="230" y="55" font-family="'Times New Roman', serif" font-style="italic" font-size="20" text-anchor="middle">δ</text>
+  </g>
+
+  <!-- Ticks on Horizontal Axis -->
+  <!-- 0 -->
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+    <text class="text-el" x="80" y="285" font-family="'Times New Roman', serif" font-size="20" text-anchor="middle">0</text>
+  </g>
+
+  <!-- 5.0 * 10^-4 -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x1="250" y1="260" x2="250" y2="265" stroke="#000000" stroke-width="1.5"/>
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+    <text class="text-el" x="250" y="285" font-family="'Times New Roman', serif" font-size="18" text-anchor="middle">5.0 × 10<tspan font-size="12" dy="-8">-4</tspan></text>
+  </g>
+
+  <!-- 1.0 * 10^-3 -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x1="420" y1="260" x2="420" y2="265" stroke="#000000" stroke-width="1.5"/>
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+    <text class="text-el" x="410" y="285" font-family="'Times New Roman', serif" font-size="18" text-anchor="middle">1.0 × 10<tspan font-size="12" dy="-8">-3</tspan></text>
+  </g>
+
+  <!-- Horizontal Axis Label: theta^2 [rad^2] -->
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+    <text class="text-el" x="250" y="315" font-family="'Times New Roman', serif" font-size="18" text-anchor="middle"><tspan font-style="italic">θ</tspan><tspan font-size="12" dy="-8">2</tspan><tspan dy="8"> [rad</tspan><tspan font-size="12" dy="-8">2</tspan><tspan dy="8">]</tspan></text>
+  </g>
+
+  <!-- Caption 그림 3 -->
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+    <text class="text-el" x="250" y="348" font-family="'Malgun Gothic', sans-serif" font-weight="bold" font-size="20" text-anchor="middle">그림 3</text>
+  </g>
+</svg>
+  </div>
+</body>
+</html>

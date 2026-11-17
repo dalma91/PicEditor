@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>2002-1.061.4.전자기_그림-1</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: #ffffff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      overflow: auto;
+    }
+    .svg-container {
+      width: 100%;
+      max-width: 1000px;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+    svg {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div class="svg-container">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 540 260" width="100%" height="100%">
+  <defs>
+    <marker id="arrow-111-1" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#000000"/>
+    </marker>
+  </defs>
+
+  <!-- Capacitors Plates -->
+  <!-- Left Capacitor A -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x1="140" y1="95" x2="250" y2="95" stroke="#000000" stroke-width="2.5"/>
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x1="140" y1="145" x2="250" y2="145" stroke="#000000" stroke-width="2.5"/>
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+    <text class="text-el" x="195" y="205" font-family="'Malgun Gothic', sans-serif" font-weight="bold" font-size="18" text-anchor="middle">축전기 A</text>
+  </g>
+
+  <!-- Right Capacitor B -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x1="280" y1="95" x2="390" y2="95" stroke="#000000" stroke-width="2.5"/>
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x1="280" y1="145" x2="390" y2="145" stroke="#000000" stroke-width="2.5"/>
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+    <text class="text-el" x="380" y="205" font-family="'Malgun Gothic', sans-serif" font-weight="bold" font-size="18" text-anchor="middle">축전기 B</text>
+  </g>
+
+  <!-- Dielectric Slab entering from left -->
+  <rect class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        x="30" y="99" width="110" height="42" fill="#FFFFFF" stroke="#000000" stroke-width="1.8" stroke-dasharray="3,3"/>
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+    <text class="text-el" x="85" y="127" font-family="'Malgun Gothic', sans-serif" font-weight="bold" font-size="18" text-anchor="middle">유전체</text>
+  </g>
+
+  <!-- Plate Spacing d -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        x1="400" y1="95" x2="400" y2="145" stroke="#000000" stroke-width="1.2" marker-start="url(#arrow-111-1)" marker-end="url(#arrow-111-1)"/>
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+    <rect class="text-bg-rect" x="392" y="110" width="16" height="20" fill="#FFFFFF"/>
+    <text class="text-el" x="400" y="126" font-family="'Times New Roman', serif" font-style="italic" font-size="20" text-anchor="middle">d</text>
+  </g>
+
+  <!-- Circuit Connections -->
+  <!-- Upper common wire -->
+  <path class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        d="M 195 95 V 75 H 335 V 95" fill="none" stroke="#000000" stroke-width="1.8"/>
+  <path class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        d="M 265 75 V 45 H 395" fill="none" stroke="#000000" stroke-width="1.8"/>
+  <circle class="movable" transform="translate(0,0) scale(1,1) rotate(0)" cx="265" cy="75" r="2.5" fill="#000000"/>
+
+  <!-- Switch S -->
+  <circle class="movable" transform="translate(0,0) scale(1,1) rotate(0)" cx="395" cy="45" r="4" fill="#FFFFFF" stroke="#000000" stroke-width="1.8"/>
+  <circle class="movable" transform="translate(0,0) scale(1,1) rotate(0)" cx="425" cy="45" r="4" fill="#FFFFFF" stroke="#000000" stroke-width="1.8"/>
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        x1="425" y1="45" x2="405" y2="28" stroke="#000000" stroke-width="2"/>
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+    <text class="text-el" x="425" y="24" font-family="'Times New Roman', serif" font-size="20" text-anchor="middle">S</text>
+  </g>
+
+  <!-- Battery V0 -->
+  <path class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        d="M 425 45 H 460 V 105" fill="none" stroke="#000000" stroke-width="1.8"/>
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x1="440" y1="105" x2="480" y2="105" stroke="#000000" stroke-width="2.5"/>
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x1="450" y1="113" x2="470" y2="113" stroke="#000000" stroke-width="5"/>
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+    <text class="text-el" x="495" y="115" font-family="'Times New Roman', serif" font-style="italic" font-size="22" text-anchor="middle">V<tspan font-size="14" dy="4">0</tspan></text>
+  </g>
+
+  <!-- Lower common wire back to battery -->
+  <path class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        d="M 195 145 V 165 H 335 V 145" fill="none" stroke="#000000" stroke-width="1.8"/>
+  <path class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        d="M 265 165 V 195 H 460 V 113" fill="none" stroke="#000000" stroke-width="1.8"/>
+  <circle class="movable" transform="translate(0,0) scale(1,1) rotate(0)" cx="265" cy="165" r="2.5" fill="#000000"/>
+
+  <!-- Caption 그림 1 -->
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+    <text class="text-el" x="270" y="245" font-family="'Malgun Gothic', sans-serif" font-weight="bold" font-size="20" text-anchor="middle">그림 1</text>
+  </g>
+</svg>
+  </div>
+</body>
+</html>

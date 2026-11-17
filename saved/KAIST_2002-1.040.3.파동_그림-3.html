@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>2002-1.040.3.파동_그림-3</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: #ffffff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      overflow: auto;
+    }
+    .svg-container {
+      width: 100%;
+      max-width: 1000px;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+    svg {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div class="svg-container">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 460 320" width="100%" height="100%">
+  <defs>
+    <marker id="arrow-107-3" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#000000"/>
+    </marker>
+  </defs>
+
+  <!-- Detail of Plate Edge CD -->
+  <path class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        d="M 25 235 L 210 50 L 265 105 L 80 290"
+        fill="#FFFFFF" stroke="#000000" stroke-width="3"/>
+
+  <!-- Corners C and D -->
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+    <text class="text-el" x="200" y="38" font-family="'Times New Roman', serif" font-size="22" text-anchor="middle">C</text>
+  </g>
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+    <text class="text-el" x="280" y="115" font-family="'Times New Roman', serif" font-size="22" text-anchor="middle">D</text>
+  </g>
+
+  <!-- Thickness d dimension -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        x1="50" y1="210" x2="105" y2="265" stroke="#000000" stroke-width="1.2" marker-start="url(#arrow-107-3)" marker-end="url(#arrow-107-3)"/>
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+    <rect class="text-bg-rect" x="70" y="228" width="16" height="20" fill="#FFFFFF"/>
+    <text class="text-el" x="78" y="244" font-family="'Times New Roman', serif" font-style="italic" font-size="20" text-anchor="middle">d</text>
+  </g>
+
+  <!-- Ray E hitting C and exiting towards G -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        x1="90" y1="50" x2="210" y2="50" stroke="#000000" stroke-width="1.8"/>
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+    <text class="text-el" x="75" y="55" font-family="'Times New Roman', serif" font-size="20" text-anchor="middle">E</text>
+  </g>
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        x1="210" y1="50" x2="410" y2="80" stroke="#000000" stroke-width="1.8" marker-end="url(#arrow-107-3)"/>
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+    <text class="text-el" x="425" y="85" font-family="'Times New Roman', serif" font-size="20" text-anchor="middle">G</text>
+  </g>
+
+  <!-- Dashed extension at C and angle theta4 -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        x1="210" y1="50" x2="255" y2="5" stroke="#000000" stroke-width="1.2" stroke-dasharray="3,3"/>
+  <!-- Angle theta4 arc -->
+  <path class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        d="M 235 25 A 35 35 0 0 1 245 55" fill="none" stroke="#000000" stroke-width="1.2"/>
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+    <text class="text-el" x="255" y="40" font-family="'Times New Roman', serif" font-style="italic" font-size="18" text-anchor="middle">θ<tspan font-size="12" dy="4">4</tspan></text>
+  </g>
+
+  <!-- Ray F hitting Point I and exiting towards H -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        x1="50" y1="80" x2="180" y2="80" stroke="#000000" stroke-width="1.8"/>
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+    <text class="text-el" x="35" y="85" font-family="'Times New Roman', serif" font-size="20" text-anchor="middle">F</text>
+  </g>
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+    <text class="text-el" x="180" y="102" font-family="'Times New Roman', serif" font-size="20" text-anchor="middle">I</text>
+  </g>
+  <!-- Angle theta3 arc between Ray F and front face -->
+  <path class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        d="M 140 80 A 40 40 0 0 1 152 108" fill="none" stroke="#000000" stroke-width="1.2"/>
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+    <text class="text-el" x="125" y="100" font-family="'Times New Roman', serif" font-style="italic" font-size="18" text-anchor="middle">θ<tspan font-size="12" dy="4">3</tspan></text>
+  </g>
+
+  <!-- Refracted Ray through D exiting to H -->
+  <path class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        d="M 180 80 C 210 90, 240 100, 265 105" fill="none" stroke="#000000" stroke-width="1.8"/>
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        x1="265" y1="105" x2="375" y2="120" stroke="#000000" stroke-width="1.8" marker-end="url(#arrow-107-3)"/>
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+    <text class="text-el" x="390" y="125" font-family="'Times New Roman', serif" font-size="20" text-anchor="middle">H</text>
+  </g>
+
+  <!-- Caption 그림 3 -->
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+    <text class="text-el" x="200" y="305" font-family="'Malgun Gothic', sans-serif" font-weight="bold" font-size="20" text-anchor="middle">그림 3</text>
+  </g>
+</svg>
+  </div>
+</body>
+</html>

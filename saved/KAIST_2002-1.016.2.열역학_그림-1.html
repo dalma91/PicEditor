@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>2002-1.016.2.열역학_그림-1</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: #ffffff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      overflow: auto;
+    }
+    .svg-container {
+      width: 100%;
+      max-width: 1000px;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+    svg {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div class="svg-container">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 320" width="100%" height="100%">
+  <defs>
+    <marker id="arrow-105-1" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#000000"/>
+    </marker>
+  </defs>
+
+  <!-- Caption 그림 1 -->
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+    <text class="text-el" x="50" y="50" font-family="'Malgun Gothic', sans-serif" font-weight="bold" font-size="22" text-anchor="middle">그림 1</text>
+  </g>
+
+  <!-- Cylinder Outer Frame -->
+  <path class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        d="M 130 50 H 480 V 125 H 530 V 175 H 480 V 240 H 130 Z"
+        fill="none" stroke="#000000" stroke-width="2.5"/>
+
+  <!-- Cylinder Inner Cavity -->
+  <path class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        d="M 142 62 H 468 V 135 H 530 V 165 H 468 V 228 H 142 Z"
+        fill="none" stroke="#000000" stroke-width="1.8"/>
+
+  <!-- Heater Coil on left wall -->
+  <path class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        d="M 110 95 H 152 L 162 105 L 152 115 L 162 125 L 152 135 L 162 145 L 152 155 L 162 165 L 152 175 L 162 185 L 152 195 H 110"
+        fill="none" stroke="#000000" stroke-width="1.8"/>
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+    <rect class="text-bg-rect" x="80" y="105" width="25" height="85" fill="#FFFFFF"/>
+    <text class="text-el" x="92" y="125" font-family="'Malgun Gothic', sans-serif" font-size="18" text-anchor="middle">히</text>
+    <text class="text-el" x="92" y="150" font-family="'Malgun Gothic', sans-serif" font-size="18" text-anchor="middle">터</text>
+  </g>
+
+  <!-- Gas Chamber (length l) -->
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+    <text class="text-el" x="225" y="130" font-family="'Malgun Gothic', sans-serif" font-weight="bold" font-size="24" text-anchor="middle">기체</text>
+  </g>
+
+  <!-- Dimension l for Gas Chamber -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        x1="142" y1="228" x2="142" y2="280" stroke="#000000" stroke-width="1" stroke-dasharray="2,2"/>
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        x1="290" y1="228" x2="290" y2="280" stroke="#000000" stroke-width="1" stroke-dasharray="2,2"/>
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        x1="142" y1="270" x2="290" y2="270" stroke="#000000" stroke-width="1.2" marker-start="url(#arrow-105-1)" marker-end="url(#arrow-105-1)"/>
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+    <rect class="text-bg-rect" x="208" y="258" width="16" height="20" fill="#FFFFFF"/>
+    <text class="text-el" x="216" y="274" font-family="'Times New Roman', serif" font-style="italic" font-size="22" text-anchor="middle">l</text>
+  </g>
+
+  <!-- Piston at x=290 -->
+  <rect class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        x="290" y="62" width="7" height="166" fill="#FFFFFF" stroke="#000000" stroke-width="2"/>
+
+  <!-- Piston pointer & label -->
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+    <text class="text-el" x="400" y="35" font-family="'Malgun Gothic', sans-serif" font-size="18" text-anchor="middle">피스톤 (단면적 <tspan font-family="'Times New Roman', serif" font-style="italic">S</tspan>)</text>
+  </g>
+  <path class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        d="M 296 28 C 265 50, 265 90, 283 115" fill="none" stroke="#000000" stroke-width="1.2" marker-end="url(#arrow-105-1)"/>
+
+  <!-- Vacuum Chamber -->
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+    <text class="text-el" x="380" y="105" font-family="'Malgun Gothic', sans-serif" font-weight="bold" font-size="22" text-anchor="middle">진공</text>
+  </g>
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+    <text class="text-el" x="380" y="205" font-family="'Malgun Gothic', sans-serif" font-weight="bold" font-size="20" text-anchor="middle">용수철</text>
+  </g>
+
+  <!-- Central Piston Rod -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        x1="297" y1="150" x2="630" y2="150" stroke="#000000" stroke-width="3"/>
+
+  <!-- Spring around Rod -->
+  <path class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        d="M 297 150
+           C 305 132, 310 132, 315 150 C 320 168, 325 168, 330 150
+           C 335 132, 340 132, 345 150 C 350 168, 355 168, 360 150
+           C 365 132, 370 132, 375 150 C 380 168, 385 168, 390 150
+           C 395 132, 400 132, 405 150 C 410 168, 415 168, 420 150
+           C 425 132, 430 132, 435 150 C 440 168, 445 168, 450 150
+           C 455 132, 460 132, 465 150
+           H 468"
+        fill="none" stroke="#000000" stroke-width="1.8"/>
+
+  <!-- Screw at Neck -->
+  <rect class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        x="495" y="105" width="20" height="12" fill="#FFFFFF" stroke="#000000" stroke-width="1.8"/>
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        x1="505" y1="117" x2="505" y2="148" stroke="#000000" stroke-width="3"/>
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+    <text class="text-el" x="555" y="95" font-family="'Malgun Gothic', sans-serif" font-weight="bold" font-size="18" text-anchor="middle">나사</text>
+  </g>
+</svg>
+  </div>
+</body>
+</html>

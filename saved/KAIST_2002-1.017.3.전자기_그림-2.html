@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>2002-1.017.3.전자기_그림-2</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: #ffffff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      overflow: auto;
+    }
+    .svg-container {
+      width: 100%;
+      max-width: 1000px;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+    svg {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div class="svg-container">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 460 400" width="100%" height="100%">
+  <!-- Title 회로 2 -->
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+    <text class="text-el" x="70" y="55" font-family="'Malgun Gothic', sans-serif" font-weight="bold" font-size="22" text-anchor="middle">회로 2</text>
+  </g>
+
+  <!-- Plates A, C1, C2, B -->
+  <!-- Plate A at x=145 -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        x1="145" y1="70" x2="145" y2="230" stroke="#000000" stroke-width="2.5"/>
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+    <text class="text-el" x="145" y="58" font-family="'Times New Roman', serif" font-size="22" text-anchor="middle">A</text>
+  </g>
+
+  <!-- Plate C1 at x=190 -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        x1="190" y1="70" x2="190" y2="230" stroke="#000000" stroke-width="2"/>
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+    <text class="text-el" x="190" y="58" font-family="'Times New Roman', serif" font-size="22" text-anchor="middle">C<tspan font-size="14" dy="4">1</tspan></text>
+  </g>
+
+  <!-- Plate C2 at x=250 -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        x1="250" y1="70" x2="250" y2="230" stroke="#000000" stroke-width="2"/>
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+    <text class="text-el" x="250" y="58" font-family="'Times New Roman', serif" font-size="22" text-anchor="middle">C<tspan font-size="14" dy="4">2</tspan></text>
+  </g>
+
+  <!-- Plate B at x=325 -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        x1="325" y1="70" x2="325" y2="230" stroke="#000000" stroke-width="2.5"/>
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+    <text class="text-el" x="325" y="58" font-family="'Times New Roman', serif" font-size="22" text-anchor="middle">B</text>
+  </g>
+
+  <!-- Connection between C1 and C2 -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        x1="190" y1="150" x2="250" y2="150" stroke="#000000" stroke-width="2"/>
+
+  <!-- Dimension Guides d and 2d -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        x1="145" y1="230" x2="190" y2="230" stroke="#000000" stroke-width="1.2"/>
+  <circle class="movable" transform="translate(0,0) scale(1,1) rotate(0)" cx="145" cy="230" r="2.5" fill="#000000"/>
+  <circle class="movable" transform="translate(0,0) scale(1,1) rotate(0)" cx="190" cy="230" r="2.5" fill="#000000"/>
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+    <text class="text-el" x="168" y="255" font-family="'Times New Roman', serif" font-style="italic" font-size="22" text-anchor="middle">d</text>
+  </g>
+
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        x1="250" y1="230" x2="325" y2="230" stroke="#000000" stroke-width="1.2"/>
+  <circle class="movable" transform="translate(0,0) scale(1,1) rotate(0)" cx="250" cy="230" r="2.5" fill="#000000"/>
+  <circle class="movable" transform="translate(0,0) scale(1,1) rotate(0)" cx="325" cy="230" r="2.5" fill="#000000"/>
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+    <text class="text-el" x="288" y="255" font-family="'Times New Roman', serif" font-style="italic" font-size="22" text-anchor="middle">2d</text>
+  </g>
+
+  <!-- Left Circuit with S2 -->
+  <path class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        d="M 145 150 H 65 V 230" fill="none" stroke="#000000" stroke-width="1.8"/>
+  <circle class="movable" transform="translate(0,0) scale(1,1) rotate(0)" cx="65" cy="230" r="3.5" fill="#FFFFFF" stroke="#000000" stroke-width="1.8"/>
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        x1="65" y1="230" x2="55" y2="245" stroke="#000000" stroke-width="2"/>
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+    <text class="text-el" x="40" y="240" font-family="'Times New Roman', serif" font-size="22" text-anchor="middle">S<tspan font-size="14" dy="4">2</tspan></text>
+  </g>
+  <path class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        d="M 65 245 V 315 H 150" fill="none" stroke="#000000" stroke-width="1.8"/>
+
+  <!-- Battery V1 at (155, 315) -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        x1="150" y1="300" x2="150" y2="330" stroke="#000000" stroke-width="3"/>
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        x1="160" y1="306" x2="160" y2="324" stroke="#000000" stroke-width="5"/>
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+    <text class="text-el" x="155" y="355" font-family="'Times New Roman', serif" font-style="italic" font-size="24" text-anchor="middle">V<tspan font-size="14" dy="4">1</tspan></text>
+  </g>
+
+  <!-- Middle Branch with S3 from (220, 150) to (220, 315) -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        x1="160" y1="315" x2="295" y2="315" stroke="#000000" stroke-width="1.8"/>
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        x1="220" y1="150" x2="220" y2="230" stroke="#000000" stroke-width="1.8"/>
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        x1="220" y1="230" x2="235" y2="215" stroke="#000000" stroke-width="2"/>
+  <circle class="movable" transform="translate(0,0) scale(1,1) rotate(0)" cx="220" cy="230" r="3.5" fill="#FFFFFF" stroke="#000000" stroke-width="1.8"/>
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        x1="220" y1="230" x2="220" y2="315" stroke="#000000" stroke-width="1.8"/>
+  <circle class="movable" transform="translate(0,0) scale(1,1) rotate(0)" cx="220" cy="315" r="3" fill="#000000"/>
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+    <text class="text-el" x="245" y="250" font-family="'Times New Roman', serif" font-size="22" text-anchor="middle">S<tspan font-size="14" dy="4">3</tspan></text>
+  </g>
+
+  <!-- Battery V2 at (300, 315) -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        x1="295" y1="306" x2="295" y2="324" stroke="#000000" stroke-width="5"/>
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        x1="305" y1="300" x2="305" y2="330" stroke="#000000" stroke-width="3"/>
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+    <text class="text-el" x="300" y="355" font-family="'Times New Roman', serif" font-style="italic" font-size="24" text-anchor="middle">V<tspan font-size="14" dy="4">2</tspan></text>
+  </g>
+
+  <!-- Right Circuit to B -->
+  <path class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        d="M 305 315 H 385 V 150 H 325" fill="none" stroke="#000000" stroke-width="1.8"/>
+
+  <!-- Ground at (385, 315) -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        x1="385" y1="315" x2="385" y2="340" stroke="#000000" stroke-width="2"/>
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        x1="370" y1="340" x2="400" y2="340" stroke="#000000" stroke-width="2.5"/>
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        x1="376" y1="346" x2="394" y2="346" stroke="#000000" stroke-width="2"/>
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        x1="381" y1="352" x2="389" y2="352" stroke="#000000" stroke-width="1.5"/>
+
+  <!-- Caption 그림 2 -->
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+    <text class="text-el" x="230" y="390" font-family="'Malgun Gothic', sans-serif" font-weight="bold" font-size="22" text-anchor="middle">그림 2</text>
+  </g>
+</svg>
+  </div>
+</body>
+</html>

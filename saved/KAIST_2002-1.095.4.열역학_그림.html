@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>2002-1.095.4.열역학_그림</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: #ffffff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      overflow: auto;
+    }
+    .svg-container {
+      width: 100%;
+      max-width: 1000px;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+    svg {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div class="svg-container">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 260" width="100%" height="100%">
+  <defs>
+    <marker id="arrow-115" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#000000"/>
+    </marker>
+    <pattern id="piston-pat-115" width="6" height="6" patternUnits="userSpaceOnUse">
+      <rect width="6" height="6" fill="#cbd5e1"/>
+      <circle cx="3" cy="3" r="0.75" fill="#475569"/>
+    </pattern>
+  </defs>
+
+  <!-- 3D Rectangular Cylinder Outline:
+       Square cross section L x L, length 3L
+       Front face: (40, 110) to (150, 110) to (150, 205) to (40, 205)
+       Back-Top-Left: (250, 50), Back-Top-Right: (360, 50)
+       Back-Bottom-Right: (360, 145)
+  -->
+
+  <!-- Hidden back edges (Dashed) -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        x1="40" y1="205" x2="250" y2="145" stroke="#000000" stroke-width="2" stroke-dasharray="4,4"/>
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        x1="250" y1="145" x2="360" y2="145" stroke="#000000" stroke-width="2" stroke-dasharray="4,4"/>
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        x1="250" y1="145" x2="250" y2="50" stroke="#000000" stroke-width="2" stroke-dasharray="4,4"/>
+
+  <!-- Piston: Shaded cross section at distance L from front -->
+  <!-- Piston vertices: (115, 90) to (225, 90) to (225, 185) to (115, 185) -->
+  <polygon class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+           points="115,90 225,90 225,185 115,185"
+           fill="url(#piston-pat-115)" stroke="#000000" stroke-width="2"/>
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+    <rect class="text-bg-rect" x="65" y="125" width="60" height="25" fill="#FFFFFF"/>
+    <text class="text-el" x="95" y="145" font-family="'Malgun Gothic', sans-serif" font-weight="bold" font-size="18" text-anchor="middle">피스톤</text>
+  </g>
+
+  <!-- Central Piston Rod extending along x axis -->
+  <!-- From center of piston (170, 137) through right face to (480, 50) -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        x1="170" y1="137" x2="475" y2="50" stroke="#000000" stroke-width="3"/>
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        x1="170" y1="141" x2="475" y2="54" stroke="#000000" stroke-width="3"/>
+  <ellipse class="movable" transform="translate(0,0) scale(1,1) rotate(0)" cx="475" cy="52" rx="2" ry="4" fill="#FFFFFF" stroke="#000000" stroke-width="1.5"/>
+
+  <!-- x-axis Arrow along Rod -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        x1="410" y1="52" x2="465" y2="35" stroke="#000000" stroke-width="2" marker-end="url(#arrow-115)"/>
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+    <text class="text-el" x="420" y="28" font-family="'Times New Roman', serif" font-style="italic" font-size="22" text-anchor="middle">x<tspan font-family="'Malgun Gothic', sans-serif" font-style="normal">축</tspan></text>
+  </g>
+
+  <!-- Visible Cylinder Edges -->
+  <!-- Top surface -->
+  <polygon class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+           points="40,110 250,50 360,50 150,110"
+           fill="none" stroke="#000000" stroke-width="2.5"/>
+  <!-- Front face outline -->
+  <polygon class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+           points="40,110 150,110 150,205 40,205"
+           fill="none" stroke="#000000" stroke-width="2.5"/>
+  <!-- Right face outline -->
+  <polygon class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+           points="150,110 360,50 360,145 150,205"
+           fill="none" stroke="#000000" stroke-width="2.5"/>
+
+  <!-- Cylinder Label -->
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+    <text class="text-el" x="330" y="195" font-family="'Malgun Gothic', sans-serif" font-weight="bold" font-size="20" text-anchor="middle">실린더</text>
+  </g>
+
+  <!-- Dimensions: Height L on front face -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        x1="18" y1="110" x2="18" y2="205" stroke="#000000" stroke-width="1.2" marker-start="url(#arrow-115)" marker-end="url(#arrow-115)"/>
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x1="18" y1="110" x2="40" y2="110" stroke="#000000" stroke-width="1"/>
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x1="18" y1="205" x2="40" y2="205" stroke="#000000" stroke-width="1"/>
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+    <rect class="text-bg-rect" x="8" y="145" width="20" height="22" fill="#FFFFFF"/>
+    <text class="text-el" x="18" y="165" font-family="'Times New Roman', serif" font-style="italic" font-size="22" text-anchor="middle">L</text>
+  </g>
+
+  <!-- Dimension: Width L on front face -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        x1="40" y1="225" x2="150" y2="225" stroke="#000000" stroke-width="1.2" marker-start="url(#arrow-115)" marker-end="url(#arrow-115)"/>
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+    <rect class="text-bg-rect" x="85" y="215" width="20" height="22" fill="#FFFFFF"/>
+    <text class="text-el" x="95" y="235" font-family="'Times New Roman', serif" font-style="italic" font-size="22" text-anchor="middle">L</text>
+  </g>
+
+  <!-- Dimension: Initial Piston Distance L -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        x1="150" y1="225" x2="225" y2="205" stroke="#000000" stroke-width="1.2" marker-start="url(#arrow-115)" marker-end="url(#arrow-115)"/>
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+    <rect class="text-bg-rect" x="180" y="205" width="20" height="22" fill="#FFFFFF"/>
+    <text class="text-el" x="190" y="222" font-family="'Times New Roman', serif" font-style="italic" font-size="22" text-anchor="middle">L</text>
+  </g>
+</svg>
+  </div>
+</body>
+</html>

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>2002-1.070.2.전자기_그림-1</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: #ffffff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      overflow: auto;
+    }
+    .svg-container {
+      width: 100%;
+      max-width: 1000px;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+    svg {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div class="svg-container">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 320" width="100%" height="100%">
+  <!-- Capacitor C1 on left -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x1="60" y1="160" x2="115" y2="160" stroke="#000000" stroke-width="3"/>
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x1="60" y1="180" x2="115" y2="180" stroke="#000000" stroke-width="3"/>
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+    <text class="text-el" x="40" y="176" font-family="'Times New Roman', serif" font-style="italic" font-size="22" text-anchor="middle">C<tspan font-size="14" dy="4">1</tspan></text>
+  </g>
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+    <text class="text-el" x="65" y="145" font-family="'Times New Roman', serif" font-style="italic" font-size="22" text-anchor="middle">V<tspan font-size="14" dy="4">1</tspan></text>
+  </g>
+
+  <!-- Circuit Loop -->
+  <path class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        d="M 87 160 V 85 H 155" fill="none" stroke="#000000" stroke-width="1.8"/>
+
+  <!-- Switch S1 at top -->
+  <circle class="movable" transform="translate(0,0) scale(1,1) rotate(0)" cx="155" cy="85" r="4" fill="#FFFFFF" stroke="#000000" stroke-width="1.8"/>
+  <circle class="movable" transform="translate(0,0) scale(1,1) rotate(0)" cx="205" cy="85" r="4" fill="#FFFFFF" stroke="#000000" stroke-width="1.8"/>
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        x1="155" y1="85" x2="195" y2="60" stroke="#000000" stroke-width="2.5"/>
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+    <text class="text-el" x="160" y="55" font-family="'Times New Roman', serif" font-size="22" text-anchor="middle">S<tspan font-size="14" dy="4">1</tspan></text>
+  </g>
+
+  <!-- Right branch to Inductor L -->
+  <path class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        d="M 205 85 H 270 V 135" fill="none" stroke="#000000" stroke-width="1.8"/>
+
+  <!-- Inductor L (helical coil) -->
+  <path class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        d="M 270 135
+           C 295 135, 295 155, 270 155
+           C 295 155, 295 175, 270 175
+           C 295 175, 295 195, 270 195
+           C 295 195, 295 215, 270 215
+           V 255 H 87 V 180"
+        fill="none" stroke="#000000" stroke-width="2"/>
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+    <text class="text-el" x="240" y="180" font-family="'Times New Roman', serif" font-style="italic" font-size="24" text-anchor="middle">L</text>
+  </g>
+
+  <!-- Caption 그림 3 -->
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+    <text class="text-el" x="160" y="305" font-family="'Malgun Gothic', sans-serif" font-weight="bold" font-size="20" text-anchor="middle">그림 3</text>
+  </g>
+</svg>
+  </div>
+</body>
+</html>

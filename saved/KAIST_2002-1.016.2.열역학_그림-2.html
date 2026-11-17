@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>2002-1.016.2.열역학_그림-2</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: #ffffff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      overflow: auto;
+    }
+    .svg-container {
+      width: 100%;
+      max-width: 1000px;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+    svg {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div class="svg-container">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 540 320" width="100%" height="100%">
+  <defs>
+    <marker id="arrow-105-2" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#000000"/>
+    </marker>
+  </defs>
+
+  <!-- Caption 그림 2 -->
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+    <text class="text-el" x="55" y="55" font-family="'Malgun Gothic', sans-serif" font-weight="bold" font-size="22" text-anchor="middle">그림 2</text>
+  </g>
+
+  <!-- Axes: origin at (130, 240) -->
+  <!-- Vertical Axis (Pressure) -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        x1="130" y1="240" x2="130" y2="25" stroke="#000000" stroke-width="2" marker-end="url(#arrow-105-2)"/>
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+    <text class="text-el" x="110" y="50" font-family="'Malgun Gothic', sans-serif" font-weight="bold" font-size="20" text-anchor="middle">압</text>
+    <text class="text-el" x="110" y="75" font-family="'Malgun Gothic', sans-serif" font-weight="bold" font-size="20" text-anchor="middle">력</text>
+  </g>
+
+  <!-- Horizontal Axis (Volume) -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        x1="130" y1="240" x2="510" y2="240" stroke="#000000" stroke-width="2" marker-end="url(#arrow-105-2)"/>
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+    <text class="text-el" x="495" y="270" font-family="'Malgun Gothic', sans-serif" font-weight="bold" font-size="20" text-anchor="middle">부피</text>
+  </g>
+
+  <!-- Origin label 0 -->
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+    <text class="text-el" x="115" y="255" font-family="'Times New Roman', serif" font-size="22" text-anchor="middle">0</text>
+  </g>
+
+  <!-- Isothermal Dashed Curves -->
+  <!-- Curve T1: C 160 170, 260 215, 470 225 -->
+  <path class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        d="M 170 60 C 180 140, 230 200, 470 225"
+        fill="none" stroke="#000000" stroke-width="1.8" stroke-dasharray="4,4"/>
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+    <rect class="text-bg-rect" x="390" y="195" width="85" height="25" fill="#FFFFFF"/>
+    <text class="text-el" x="430" y="215" font-family="'Times New Roman', serif" font-style="italic" font-size="22" text-anchor="middle">T = T<tspan font-size="14" dy="4">1</tspan></text>
+  </g>
+
+  <!-- Curve T2: C 220 80, 300 130, 480 165 -->
+  <path class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        d="M 235 40 C 255 100, 320 150, 480 170"
+        fill="none" stroke="#000000" stroke-width="1.8" stroke-dasharray="4,4"/>
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+    <rect class="text-bg-rect" x="390" y="135" width="85" height="25" fill="#FFFFFF"/>
+    <text class="text-el" x="430" y="155" font-family="'Times New Roman', serif" font-style="italic" font-size="22" text-anchor="middle">T = T<tspan font-size="14" dy="4">2</tspan></text>
+  </g>
+
+  <!-- State Points: A=(240, 180), B=(240, 65), C=(325, 138) -->
+  <!-- Vertical dashed line at Sl1 -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        x1="240" y1="180" x2="240" y2="240" stroke="#000000" stroke-width="1.2" stroke-dasharray="2,2"/>
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+    <text class="text-el" x="240" y="265" font-family="'Times New Roman', serif" font-style="italic" font-size="22" text-anchor="middle">Sl<tspan font-size="14" dy="4">1</tspan></text>
+  </g>
+
+  <!-- Vertical dashed line at Sl2 -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        x1="325" y1="138" x2="325" y2="240" stroke="#000000" stroke-width="1.2" stroke-dasharray="2,2"/>
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+    <text class="text-el" x="325" y="265" font-family="'Times New Roman', serif" font-style="italic" font-size="22" text-anchor="middle">Sl<tspan font-size="14" dy="4">2</tspan></text>
+  </g>
+
+  <!-- Path I: A to B (Isochoric) -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        x1="240" y1="180" x2="240" y2="65" stroke="#000000" stroke-width="2.5"/>
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        x1="240" y1="145" x2="240" y2="120" stroke="#000000" stroke-width="2.5" marker-end="url(#arrow-105-2)"/>
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+    <text class="text-el" x="228" y="132" font-family="'Times New Roman', serif" font-size="20" text-anchor="middle">I</text>
+  </g>
+
+  <!-- Path II: A to C (Linear expansion) -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        x1="240" y1="180" x2="325" y2="138" stroke="#000000" stroke-width="2.5"/>
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        x1="270" y1="165" x2="295" y2="152" stroke="#000000" stroke-width="2.5" marker-end="url(#arrow-105-2)"/>
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+    <text class="text-el" x="278" y="145" font-family="'Times New Roman', serif" font-size="20" text-anchor="middle">II</text>
+  </g>
+
+  <!-- State labels A, B, C -->
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+    <text class="text-el" x="225" y="195" font-family="'Times New Roman', serif" font-size="22" text-anchor="middle">A</text>
+  </g>
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+    <text class="text-el" x="255" y="55" font-family="'Times New Roman', serif" font-size="22" text-anchor="middle">B</text>
+  </g>
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+    <text class="text-el" x="335" y="125" font-family="'Times New Roman', serif" font-size="22" text-anchor="middle">C</text>
+  </g>
+</svg>
+  </div>
+</body>
+</html>

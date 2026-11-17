@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>2002-1.016.1.역학_그림</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: #ffffff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      overflow: auto;
+    }
+    .svg-container {
+      width: 100%;
+      max-width: 1000px;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+    svg {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div class="svg-container">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 650 400" width="100%" height="100%">
+  <defs>
+    <marker id="arrow-104" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#000000"/>
+    </marker>
+  </defs>
+
+  <!-- Track AB: Starts at Q=(65, 45), curves to B=(260, 130) -->
+  <path class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        d="M 50 30 Q 80 130 220 130 H 260"
+        fill="none" stroke="#000000" stroke-width="2.8"/>
+
+  <!-- Ball Q at A=(65, 45) -->
+  <circle class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+          cx="68" cy="45" r="4.5" fill="#000000"/>
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+    <text class="text-el" x="88" y="42" font-family="'Times New Roman', serif" font-size="20" text-anchor="middle">Q</text>
+  </g>
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+    <text class="text-el" x="55" y="65" font-family="'Times New Roman', serif" font-size="20" text-anchor="middle">A</text>
+  </g>
+
+  <!-- Ball P at B=(260, 130) -->
+  <circle class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+          cx="260" cy="125" r="4.5" fill="#000000"/>
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+    <text class="text-el" x="260" y="105" font-family="'Times New Roman', serif" font-size="20" text-anchor="middle">P</text>
+  </g>
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+    <text class="text-el" x="245" y="152" font-family="'Times New Roman', serif" font-size="20" text-anchor="middle">B</text>
+  </g>
+
+  <!-- Vertical Wall BCE: B=(260, 130) -> C=(260, 275) -> E=(260, 325) -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        x1="260" y1="130" x2="260" y2="335" stroke="#000000" stroke-width="3"/>
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+    <text class="text-el" x="275" y="270" font-family="'Times New Roman', serif" font-size="20" text-anchor="middle">C</text>
+  </g>
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+    <text class="text-el" x="245" y="335" font-family="'Times New Roman', serif" font-size="20" text-anchor="middle">E</text>
+  </g>
+
+  <!-- Incline EFG: Starts at E=(260, 325), passes F=(420, 275), extends to G=(620, 210) -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        x1="260" y1="325" x2="620" y2="210" stroke="#000000" stroke-width="2.8"/>
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+    <text class="text-el" x="435" y="295" font-family="'Times New Roman', serif" font-size="20" text-anchor="middle">F</text>
+  </g>
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+    <text class="text-el" x="590" y="200" font-family="'Times New Roman', serif" font-size="20" text-anchor="middle">G</text>
+  </g>
+
+  <!-- Parabolic flight trajectory from B=(260, 130) to F=(420, 275) -->
+  <path class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        d="M 260 130 Q 350 130 420 275"
+        fill="none" stroke="#000000" stroke-width="1.8" stroke-dasharray="3,3"/>
+
+  <!-- Tangent line at F -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        x1="420" y1="275" x2="375" y2="185" stroke="#000000" stroke-width="1.2"/>
+
+  <!-- Horizontal dashed line CF -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        x1="165" y1="275" x2="430" y2="275" stroke="#000000" stroke-width="1.2" stroke-dasharray="3,3"/>
+
+  <!-- Angle alpha arc at F -->
+  <path class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        d="M 420 275 M 390 275 A 30 30 0 0 1 405 245" fill="none" stroke="#000000" stroke-width="1.2"/>
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+    <text class="text-el" x="375" y="260" font-family="'Times New Roman', serif" font-style="italic" font-size="18" text-anchor="middle">α</text>
+  </g>
+
+  <!-- Horizontal dashed line from E -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        x1="260" y1="325" x2="500" y2="325" stroke="#000000" stroke-width="1.2" stroke-dasharray="3,3"/>
+
+  <!-- Incline angle beta arc at E -->
+  <path class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        d="M 315 325 A 55 55 0 0 0 312 308" fill="none" stroke="#000000" stroke-width="1.2"/>
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+    <text class="text-el" x="335" y="320" font-family="'Times New Roman', serif" font-style="italic" font-size="18" text-anchor="middle">β</text>
+  </g>
+
+  <!-- Vertical dashed line at F -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        x1="420" y1="200" x2="420" y2="375" stroke="#000000" stroke-width="1.2" stroke-dasharray="3,3" marker-start="url(#arrow-104)"/>
+
+  <!-- Height h dimension at left -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        x1="18" y1="45" x2="65" y2="45" stroke="#000000" stroke-width="1" stroke-dasharray="2,2"/>
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        x1="18" y1="130" x2="220" y2="130" stroke="#000000" stroke-width="1" stroke-dasharray="2,2"/>
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        x1="40" y1="45" x2="40" y2="130" stroke="#000000" stroke-width="1.2" marker-start="url(#arrow-104)" marker-end="url(#arrow-104)"/>
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+    <rect class="text-bg-rect" x="32" y="78" width="16" height="20" fill="#FFFFFF"/>
+    <text class="text-el" x="40" y="94" font-family="'Times New Roman', serif" font-style="italic" font-size="20" text-anchor="middle">h</text>
+  </g>
+
+  <!-- Height H dimension on wall -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        x1="220" y1="130" x2="220" y2="275" stroke="#000000" stroke-width="1.2" marker-start="url(#arrow-104)" marker-end="url(#arrow-104)"/>
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+    <rect class="text-bg-rect" x="208" y="190" width="22" height="22" fill="#FFFFFF"/>
+    <text class="text-el" x="219" y="208" font-family="'Times New Roman', serif" font-style="italic" font-size="22" text-anchor="middle">H</text>
+  </g>
+
+  <!-- Horizontal distance L dimension at bottom -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        x1="260" y1="365" x2="420" y2="365" stroke="#000000" stroke-width="1.2" marker-start="url(#arrow-104)" marker-end="url(#arrow-104)"/>
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        x1="260" y1="335" x2="260" y2="375" stroke="#000000" stroke-width="1" stroke-dasharray="2,2"/>
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+    <rect class="text-bg-rect" x="330" y="352" width="20" height="22" fill="#FFFFFF"/>
+    <text class="text-el" x="340" y="370" font-family="'Times New Roman', serif" font-style="italic" font-size="22" text-anchor="middle">L</text>
+  </g>
+</svg>
+  </div>
+</body>
+</html>

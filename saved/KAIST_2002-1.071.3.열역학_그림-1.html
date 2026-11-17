@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>2002-1.071.3.열역학_그림-1</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: #ffffff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      overflow: auto;
+    }
+    .svg-container {
+      width: 100%;
+      max-width: 1000px;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+    svg {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div class="svg-container">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 540 320" width="100%" height="100%">
+  <defs>
+    <marker id="arrow-113-1" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#000000"/>
+    </marker>
+  </defs>
+
+  <!-- Collision Cylinder Dashed Outline -->
+  <rect class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        x="65" y="105" width="375" height="100" fill="none" stroke="#000000" stroke-width="1.8" stroke-dasharray="4,4"/>
+
+  <!-- Initial Sphere at (65, 155) -->
+  <circle class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+          cx="65" cy="155" r="25" fill="#cbd5e1" stroke="#000000" stroke-width="2"/>
+  <circle class="movable" transform="translate(0,0) scale(1,1) rotate(0)" cx="65" cy="155" r="3" fill="#000000"/>
+  <!-- Diameter d dimension -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        x1="65" y1="130" x2="65" y2="180" stroke="#000000" stroke-width="1.2" marker-start="url(#arrow-113-1)" marker-end="url(#arrow-113-1)"/>
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+    <text class="text-el" x="85" y="165" font-family="'Times New Roman', serif" font-style="italic" font-size="20" text-anchor="middle">d</text>
+  </g>
+
+  <!-- Displacement Vector to Final Sphere at (440, 155) -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        x1="65" y1="155" x2="435" y2="155" stroke="#000000" stroke-width="2.5" marker-end="url(#arrow-113-1)"/>
+
+  <!-- Final Shaded Sphere at (440, 155) -->
+  <circle class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+          cx="440" cy="155" r="25" fill="#cbd5e1" stroke="#000000" stroke-width="2"/>
+  <circle class="movable" transform="translate(0,0) scale(1,1) rotate(0)" cx="440" cy="155" r="3" fill="#000000"/>
+
+  <!-- Target Sphere touching at top edge at (440, 105) -->
+  <circle class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+          cx="440" cy="105" r="25" fill="#FFFFFF" stroke="#000000" stroke-width="2"/>
+  <circle class="movable" transform="translate(0,0) scale(1,1) rotate(0)" cx="440" cy="105" r="3" fill="#000000"/>
+  <!-- Diameter d of target sphere -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        x1="440" y1="80" x2="440" y2="130" stroke="#000000" stroke-width="1.2" marker-start="url(#arrow-113-1)" marker-end="url(#arrow-113-1)"/>
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+    <text class="text-el" x="460" y="112" font-family="'Times New Roman', serif" font-style="italic" font-size="20" text-anchor="middle">d</text>
+  </g>
+
+  <!-- Target Sphere Pointer & Label -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        x1="390" y1="65" x2="415" y2="85" stroke="#000000" stroke-width="1.2"/>
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+    <text class="text-el" x="325" y="45" font-family="'Malgun Gothic', sans-serif" font-weight="bold" font-size="18" text-anchor="middle">간신히</text>
+    <text class="text-el" x="325" y="70" font-family="'Malgun Gothic', sans-serif" font-weight="bold" font-size="18" text-anchor="middle">충돌하는 분자</text>
+  </g>
+
+  <!-- Cylinder Radius d dimension -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        x1="350" y1="105" x2="350" y2="155" stroke="#000000" stroke-width="1.2" marker-start="url(#arrow-113-1)" marker-end="url(#arrow-113-1)"/>
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+    <rect class="text-bg-rect" x="362" y="120" width="16" height="20" fill="#FFFFFF"/>
+    <text class="text-el" x="370" y="136" font-family="'Times New Roman', serif" font-style="italic" font-size="20" text-anchor="middle">d</text>
+  </g>
+
+  <!-- Mean Free Path lambda dimension at bottom -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)"
+        x1="65" y1="250" x2="440" y2="250" stroke="#000000" stroke-width="1.2" marker-start="url(#arrow-113-1)" marker-end="url(#arrow-113-1)"/>
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+    <rect class="text-bg-rect" x="242" y="260" width="20" height="25" fill="#FFFFFF"/>
+    <text class="text-el" x="252" y="280" font-family="'Times New Roman', serif" font-style="italic" font-size="24" text-anchor="middle">λ</text>
+  </g>
+
+  <!-- Caption 그림 5 -->
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+    <text class="text-el" x="252" y="315" font-family="'Malgun Gothic', sans-serif" font-weight="bold" font-size="20" text-anchor="middle">그림 5</text>
+  </g>
+</svg>
+  </div>
+</body>
+</html>
