@@ -11,9 +11,12 @@ window.PicEditor.inspector = {
     const state = window.PicEditor.state;
     if (!state.selectedElement) return;
 
+    // 만약 선택된 대상이 그룹에 속해 있다면 그룹 요소를 최상위 대상으로 지정
+    const groupWrap = state.selectedElement.closest ? state.selectedElement.closest('.group-wrap') : null;
+
     // 만약 선택된 대상이 텍스트 관련이면 textEl와 wrap을 정확히 결정
-    const textEl = this.getTextElement(state.selectedElement);
-    const wrap = textEl ? this.getTextWrap(textEl) : (state.selectedElement.closest('.axes-wrap') || state.selectedElement.closest('.text-wrap') || state.selectedElement);
+    const textEl = !groupWrap ? this.getTextElement(state.selectedElement) : null;
+    const wrap = groupWrap || (textEl ? this.getTextWrap(textEl) : (state.selectedElement.closest('.axes-wrap') || state.selectedElement.closest('.text-wrap') || state.selectedElement));
     const target = wrap;
     const tag = target.tagName ? target.tagName.toLowerCase() : '';
 
@@ -72,10 +75,17 @@ window.PicEditor.inspector = {
     if (isGroup) {
       if (groupInspector) groupInspector.classList.add('active');
       const bgMode = target.getAttribute('data-bg-mode') || 'transparent';
-      const radT = document.getElementById('groupBgTransparent');
+      const radT = document.getElementById('groupBgTransparent') || document.getElementById('groupBgTrans');
       const radW = document.getElementById('groupBgWhite');
       if (radT) radT.checked = (bgMode === 'transparent');
       if (radW) radW.checked = (bgMode === 'white');
+
+      const btnTrans = document.getElementById('btnGroupBgTrans');
+      const btnWhite = document.getElementById('btnGroupBgWhite');
+      if (btnTrans) btnTrans.classList.toggle('active', bgMode === 'transparent');
+      if (btnWhite) btnWhite.classList.toggle('active', bgMode === 'white');
+
+      this.updateGroupBgBox(target);
     } else if (tag === 'image') {
       if (imageInspector) imageInspector.classList.add('active');
       this.syncImageInspector(target);
@@ -420,8 +430,18 @@ window.PicEditor.inspector = {
    */
   ungroup() {
     const state = window.PicEditor.state;
-    if (!state.selectedElement) return;
-    const groupG = state.selectedElement.closest('.group-wrap');
+    let groupG = null;
+    if (state.selectedElement && state.selectedElement.closest) {
+      groupG = state.selectedElement.closest('.group-wrap');
+    }
+    if (!groupG && state.selectedElements && state.selectedElements.length > 0) {
+      for (let el of state.selectedElements) {
+        if (el && el.closest) {
+          const g = el.closest('.group-wrap');
+          if (g) { groupG = g; break; }
+        }
+      }
+    }
     if (!groupG) {
       alert('해제할 그룹 요소를 먼저 선택해 주세요.');
       return;
@@ -434,7 +454,7 @@ window.PicEditor.inspector = {
     const bgRect = groupG.querySelector('.group-bg-rect');
     if (bgRect) bgRect.remove();
 
-    const children = Array.from(groupG.children).filter(ch => ch.classList && ch.classList.contains('movable'));
+    const children = Array.from(groupG.children).filter(ch => ch !== bgRect && !ch.classList.contains('group-bg-rect'));
     const unwrapped = [];
 
     children.forEach(ch => {
@@ -443,6 +463,7 @@ window.PicEditor.inspector = {
       ct.y += gt.y;
       ct.r = (ct.r || 0) + (gt.r || 0);
       window.PicEditor.utils.setTransform(ch, ct);
+      ch.classList.add('movable');
 
       parent.appendChild(ch);
       unwrapped.push(ch);
@@ -466,8 +487,18 @@ window.PicEditor.inspector = {
    */
   setGroupBgMode(mode) {
     const state = window.PicEditor.state;
-    if (!state.selectedElement) return;
-    const groupG = state.selectedElement.closest('.group-wrap');
+    let groupG = null;
+    if (state.selectedElement && state.selectedElement.closest) {
+      groupG = state.selectedElement.closest('.group-wrap');
+    }
+    if (!groupG && state.selectedElements && state.selectedElements.length > 0) {
+      for (let el of state.selectedElements) {
+        if (el && el.closest) {
+          const g = el.closest('.group-wrap');
+          if (g) { groupG = g; break; }
+        }
+      }
+    }
     if (!groupG) return;
 
     groupG.setAttribute('data-bg-mode', mode);
@@ -477,15 +508,38 @@ window.PicEditor.inspector = {
       bgRect.setAttribute('class', 'group-bg-rect');
       bgRect.setAttribute('rx', '4');
       groupG.insertBefore(bgRect, groupG.firstChild);
+    } else {
+      if (groupG.firstChild !== bgRect) {
+        groupG.insertBefore(bgRect, groupG.firstChild);
+      }
     }
 
     if (mode === 'white') {
+      bgRect.removeAttribute('display');
       bgRect.style.display = 'block';
       bgRect.setAttribute('fill', '#ffffff');
+      bgRect.setAttribute('fill-opacity', '1');
+      bgRect.setAttribute('stroke', '#cbd5e1');
+      bgRect.setAttribute('stroke-width', '1');
       this.updateGroupBgBox(groupG);
     } else {
       bgRect.style.display = 'none';
+      bgRect.setAttribute('display', 'none');
+      bgRect.setAttribute('fill', 'none');
+      bgRect.setAttribute('stroke', 'none');
     }
+
+    // UI 토글 버튼 및 라디오 동기화
+    const btnTrans = document.getElementById('btnGroupBgTrans');
+    const btnWhite = document.getElementById('btnGroupBgWhite');
+    if (btnTrans) btnTrans.classList.toggle('active', mode === 'transparent');
+    if (btnWhite) btnWhite.classList.toggle('active', mode === 'white');
+
+    const radT = document.getElementById('groupBgTransparent') || document.getElementById('groupBgTrans');
+    const radW = document.getElementById('groupBgWhite');
+    if (radT) radT.checked = (mode === 'transparent');
+    if (radW) radW.checked = (mode === 'white');
+
     if (window.PicEditor.sync) window.PicEditor.sync.markModified();
   },
 
@@ -494,42 +548,91 @@ window.PicEditor.inspector = {
    */
   updateGroupBgBox(groupG) {
     if (!groupG) return;
-    const bgRect = groupG.querySelector('.group-bg-rect');
-    if (!bgRect) return;
-
+    let bgRect = groupG.querySelector('.group-bg-rect');
     const bgMode = groupG.getAttribute('data-bg-mode') || 'transparent';
+
     if (bgMode === 'transparent') {
-      bgRect.style.display = 'none';
+      if (bgRect) {
+        bgRect.style.display = 'none';
+        bgRect.setAttribute('display', 'none');
+      }
       return;
     }
 
-    const members = Array.from(groupG.children).filter(c => c !== bgRect && c.getBBox);
-    if (!members.length) return;
+    if (!bgRect) {
+      bgRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+      bgRect.setAttribute('class', 'group-bg-rect');
+      bgRect.setAttribute('rx', '4');
+      groupG.insertBefore(bgRect, groupG.firstChild);
+    } else {
+      if (groupG.firstChild !== bgRect) {
+        groupG.insertBefore(bgRect, groupG.firstChild);
+      }
+    }
 
     let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
-    members.forEach(m => {
-      try {
-        const b = m.getBBox();
-        const mt = window.PicEditor.utils.parseTransform(m);
-        const bx = b.x + mt.x;
-        const by = b.y + mt.y;
-        const bw = b.width * Math.abs(mt.sx || 1);
-        const bh = b.height * Math.abs(mt.sy || 1);
-        if (bx < minX) minX = bx;
-        if (by < minY) minY = by;
-        if (bx + bw > maxX) maxX = bx + bw;
-        if (by + bh > maxY) maxY = by + bh;
-      } catch (e) {}
-    });
+    let hasValid = false;
 
-    if (minX !== Infinity && maxX > minX) {
-      const pad = 8;
-      bgRect.setAttribute('x', (minX - pad).toFixed(1));
-      bgRect.setAttribute('y', (minY - pad).toFixed(1));
-      bgRect.setAttribute('width', (maxX - minX + pad * 2).toFixed(1));
-      bgRect.setAttribute('height', (maxY - minY + pad * 2).toFixed(1));
-      bgRect.style.display = 'block';
+    // 1) bgRect를 잠시 숨긴 후 groupG.getBBox()로 전체 영역 직접 산출 시도
+    const prevDisplay = bgRect.style.display;
+    bgRect.style.display = 'none';
+    bgRect.setAttribute('display', 'none');
+
+    try {
+      const gBox = groupG.getBBox();
+      if (gBox && (gBox.width > 0 || gBox.height > 0)) {
+        minX = gBox.x;
+        minY = gBox.y;
+        maxX = gBox.x + gBox.width;
+        maxY = gBox.y + gBox.height;
+        hasValid = true;
+      }
+    } catch (e) {}
+
+    // 2) fallback: 자식 개별 순회하여 BBox 합산
+    if (!hasValid) {
+      const members = Array.from(groupG.children).filter(c => c !== bgRect && !c.classList.contains('group-bg-rect'));
+      members.forEach(m => {
+        try {
+          if (m.getBBox) {
+            const b = m.getBBox();
+            const mt = window.PicEditor.utils.parseTransform(m);
+            const bx = b.x + mt.x;
+            const by = b.y + mt.y;
+            const bw = b.width * Math.abs(mt.sx || 1);
+            const bh = b.height * Math.abs(mt.sy || 1);
+            if (bw > 0 || bh > 0) {
+              minX = Math.min(minX, bx);
+              minY = Math.min(minY, by);
+              maxX = Math.max(maxX, bx + bw);
+              maxY = Math.max(maxY, by + bh);
+              hasValid = true;
+            }
+          }
+        } catch (err) {}
+      });
+    }
+
+    if (hasValid && minX !== Infinity && maxX >= minX && maxY >= minY) {
+      const pad = 10;
+      const x = minX - pad;
+      const y = minY - pad;
+      const w = Math.max(16, maxX - minX + pad * 2);
+      const h = Math.max(16, maxY - minY + pad * 2);
+
+      bgRect.setAttribute('x', x.toFixed(1));
+      bgRect.setAttribute('y', y.toFixed(1));
+      bgRect.setAttribute('width', w.toFixed(1));
+      bgRect.setAttribute('height', h.toFixed(1));
       bgRect.setAttribute('fill', '#ffffff');
+      bgRect.setAttribute('fill-opacity', '1');
+      bgRect.setAttribute('stroke', '#cbd5e1');
+      bgRect.setAttribute('stroke-width', '1');
+      bgRect.removeAttribute('display');
+      bgRect.style.display = 'block';
+      bgRect.style.pointerEvents = 'all';
+    } else {
+      bgRect.style.display = prevDisplay;
     }
   },
 

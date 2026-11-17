@@ -1100,16 +1100,18 @@ button.github-accent-btn:hover {
 
 .group-inspector {
   display: none;
-  background: #ffffff;
-  border: 1px solid #c4b5fd;
+  background: #faf5ff;
+  border: 1.5px solid #8b5cf6;
   border-left: 4px solid #8b5cf6;
-  border-radius: 6px;
+  border-radius: 8px;
   padding: 10px;
   margin-top: 10px;
   box-shadow: 0 1px 3px rgba(139, 92, 246, 0.1);
+  flex-direction: column;
+  gap: 8px;
 }
 .group-inspector.active {
-  display: block;
+  display: flex !important;
 }
 .group-inspector-title {
   display: block;
