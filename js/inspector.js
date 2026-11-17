@@ -398,9 +398,9 @@ window.PicEditor.inspector = {
     // 흰색 배경 선택 시 표시될 배경 rect
     const bgRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
     bgRect.setAttribute('class', 'group-bg-rect');
-    bgRect.setAttribute('rx', '4');
     bgRect.setAttribute('fill', '#ffffff');
     bgRect.setAttribute('stroke', 'none');
+    bgRect.setAttribute('stroke-width', '0');
     bgRect.setAttribute('style', 'display:none; pointer-events:all;');
     groupG.appendChild(bgRect);
 
@@ -519,8 +519,8 @@ window.PicEditor.inspector = {
       bgRect.style.display = 'block';
       bgRect.setAttribute('fill', '#ffffff');
       bgRect.setAttribute('fill-opacity', '1');
-      bgRect.setAttribute('stroke', '#cbd5e1');
-      bgRect.setAttribute('stroke-width', '1');
+      bgRect.setAttribute('stroke', 'none');
+      bgRect.setAttribute('stroke-width', '0');
       this.updateGroupBgBox(groupG);
     } else {
       bgRect.style.display = 'none';
@@ -614,20 +614,22 @@ window.PicEditor.inspector = {
     }
 
     if (hasValid && minX !== Infinity && maxX >= minX && maxY >= minY) {
-      const pad = 10;
-      const x = minX - pad;
-      const y = minY - pad;
-      const w = Math.max(16, maxX - minX + pad * 2);
-      const h = Math.max(16, maxY - minY + pad * 2);
+      // 폭이나 여백(padding)을 전혀 주지 않고, 그룹화된 객체들의 영역 크기 그대로 적용
+      const x = minX;
+      const y = minY;
+      const w = maxX - minX;
+      const h = maxY - minY;
 
       bgRect.setAttribute('x', x.toFixed(1));
       bgRect.setAttribute('y', y.toFixed(1));
-      bgRect.setAttribute('width', w.toFixed(1));
-      bgRect.setAttribute('height', h.toFixed(1));
+      bgRect.setAttribute('width', Math.max(1, w).toFixed(1));
+      bgRect.setAttribute('height', Math.max(1, h).toFixed(1));
       bgRect.setAttribute('fill', '#ffffff');
       bgRect.setAttribute('fill-opacity', '1');
-      bgRect.setAttribute('stroke', '#cbd5e1');
-      bgRect.setAttribute('stroke-width', '1');
+      bgRect.setAttribute('stroke', 'none');
+      bgRect.setAttribute('stroke-width', '0');
+      bgRect.removeAttribute('rx');
+      bgRect.removeAttribute('ry');
       bgRect.removeAttribute('display');
       bgRect.style.display = 'block';
       bgRect.style.pointerEvents = 'all';
