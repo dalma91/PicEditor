@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>2005.085.1.역학_그림</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      background: #f0f2f5;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+    .canvas-container {
+      background: #ffffff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    svg {
+      display: block;
+      user-select: none;
+    }
+    .movable {
+      cursor: move;
+    }
+    .text-el {
+      font-family: "Times New Roman", "Batang", serif;
+      user-select: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="canvas-container">
+    <svg id="canvas" viewBox="0 0 640 520" width="640" height="520" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#000000"/>
+        </marker>
+        <marker id="arrow-blue" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#2563eb"/>
+        </marker>
+        <marker id="arrow-red" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#dc2626"/>
+        </marker>
+        <pattern id="pattern-hatch-right" width="10" height="10" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
+          <line x1="0" y1="0" x2="0" y2="10" stroke="#000000" stroke-width="1.2" />
+        </pattern>
+        <pattern id="pattern-hatch-left" width="10" height="10" patternTransform="rotate(-45 0 0)" patternUnits="userSpaceOnUse">
+          <line x1="0" y1="0" x2="0" y2="10" stroke="#000000" stroke-width="1.2" />
+        </pattern>
+      </defs>
+      
+  <!-- 중심 O 및 질량중심 G -->
+  <circle class="movable" transform="translate(0,0) scale(1,1) rotate(0)" cx="320" cy="280" r="4" fill="#dc2626" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="326" y="271.5" width="77.6" height="18.0" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="330" y="285" font-size="15" fill="#dc2626" style="font-weight:bold;">G (질량중심)</text>
+    </g>
+
+  <!-- 동심원 회전 궤도 (점선) -->
+  <circle class="movable" transform="translate(0,0) scale(1,1) rotate(0)" cx="320" cy="280" r="180" fill="none" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="6,4" />
+  <circle class="movable" transform="translate(0,0) scale(1,1) rotate(0)" cx="320" cy="280" r="120" fill="none" stroke="#94a3b8" stroke-width="1.2" stroke-dasharray="4,4" />
+
+  <!-- 정삼각형 (점선) -->
+  <polygon class="movable" transform="translate(0,0) scale(1,1) rotate(0)" points="320,100 164,370 476,370" fill="none" stroke="#000000" stroke-width="1.8" stroke-dasharray="5,4" />
+
+  <!-- 천체 1 (M) - 상단 -->
+  <circle class="movable" transform="translate(0,0) scale(1,1) rotate(0)" cx="320" cy="100" r="22" fill="#000000" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="266" y="55.6" width="110.08" height="19.2" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="270" y="70" font-size="16" fill="#000000" style="font-weight:bold;">천체 1 (질량 M)</text>
+    </g>
+
+  <!-- 천체 2 (m) - 좌하단 -->
+  <circle class="movable" transform="translate(0,0) scale(1,1) rotate(0)" cx="164" cy="370" r="16" fill="#475569" stroke="#000000" stroke-width="1.5" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="81" y="371.5" width="77.6" height="18.0" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="85" y="385" font-size="15" fill="#000000" style="font-weight:bold;">천체 2 (m)</text>
+    </g>
+
+  <!-- 천체 3 (m) - 우하단 -->
+  <circle class="movable" transform="translate(0,0) scale(1,1) rotate(0)" cx="476" cy="370" r="16" fill="#475569" stroke="#000000" stroke-width="1.5" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="491" y="371.5" width="77.6" height="18.0" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="495" y="385" font-size="15" fill="#000000" style="font-weight:bold;">천체 3 (m)</text>
+    </g>
+
+  <!-- 회전 각속도 ω 화살표 -->
+  <path class="movable" transform="translate(0,0) scale(1,1) rotate(0)" d="M 320 60 A 220 220 0 0 1 450 110" fill="none" stroke="#2563eb" stroke-width="2.5" marker-end="url(#arrow-blue)" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="436" y="70.6" width="54.4" height="19.2" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="440" y="85" font-size="16" fill="#2563eb" style="font-weight:bold;">각속도 ω</text>
+    </g>
+
+  <!-- 변의 길이 L -->
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="316" y="380.6" width="17.28" height="19.2" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="320" y="395" font-size="16" fill="#000000" style="font-style:italic;">L</text>
+    </g>
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="211" y="205.6" width="17.28" height="19.2" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="215" y="220" font-size="16" fill="#000000" style="font-style:italic;">L</text>
+    </g>
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="411" y="205.6" width="17.28" height="19.2" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="415" y="220" font-size="16" fill="#000000" style="font-style:italic;">L</text>
+    </g>
+
+    </svg>
+  </div>
+</body>
+</html>

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>2005.246.3.전자기_그림</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      background: #f0f2f5;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+    .canvas-container {
+      background: #ffffff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    svg {
+      display: block;
+      user-select: none;
+    }
+    .movable {
+      cursor: move;
+    }
+    .text-el {
+      font-family: "Times New Roman", "Batang", serif;
+      user-select: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="canvas-container">
+    <svg id="canvas" viewBox="0 0 600 460" width="600" height="460" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#000000"/>
+        </marker>
+        <marker id="arrow-blue" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#2563eb"/>
+        </marker>
+        <marker id="arrow-red" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#dc2626"/>
+        </marker>
+        <pattern id="pattern-hatch-right" width="10" height="10" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
+          <line x1="0" y1="0" x2="0" y2="10" stroke="#000000" stroke-width="1.2" />
+        </pattern>
+        <pattern id="pattern-hatch-left" width="10" height="10" patternTransform="rotate(-45 0 0)" patternUnits="userSpaceOnUse">
+          <line x1="0" y1="0" x2="0" y2="10" stroke="#000000" stroke-width="1.2" />
+        </pattern>
+      </defs>
+      
+  <!-- 천장 고정대 -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x1="180" y1="40" x2="420" y2="40" stroke="#000000" stroke-width="3" />
+  <rect class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x="180" y="25" width="240" height="15" fill="url(#pattern-hatch-right)" stroke="none" />
+
+  <!-- 긴 실 (진자 서스펜션) -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x1="300" y1="40" x2="300" y2="180" stroke="#000000" stroke-width="1.8" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="306" y="97.4" width="113.55999999999999" height="16.8" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="310" y="110" font-size="14" fill="#000000" style="">긴 실 (복원력 -kx)</text>
+    </g>
+
+  <!-- 고정 극판 A' (면적 S, 전하 Q) -->
+  <rect class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x="160" y="160" width="10" height="120" fill="#000000" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="131" y="132.4" width="89.19999999999999" height="16.8" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="135" y="145" font-size="14" fill="#000000" style="font-weight:bold;">A' (고정, Q)</text>
+    </g>
+
+  <!-- 가동체 H (A와 B를 도체 막대로 연결, 질량 m) -->
+  <!-- 극판 A (면적 S) -->
+  <rect class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x="240" y="160" width="10" height="120" fill="#2563eb" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="236" y="132.4" width="16.119999999999997" height="16.8" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="240" y="145" font-size="14" fill="#2563eb" style="font-weight:bold;">A</text>
+    </g>
+  <!-- 연결 도체 막대 H -->
+  <rect class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x="250" y="215" width="100" height="10" fill="#64748b" stroke="#000000" stroke-width="1.5" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="256" y="232.4" width="105.44" height="16.8" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="260" y="245" font-size="14" fill="#000000" style="font-weight:bold;">가동체 H (질량 m)</text>
+    </g>
+  <!-- 극판 B (면적 2S) -->
+  <rect class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x="350" y="130" width="10" height="180" fill="#2563eb" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="346" y="102.4" width="16.119999999999997" height="16.8" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="350" y="115" font-size="14" fill="#2563eb" style="font-weight:bold;">B</text>
+    </g>
+
+  <!-- 고정 극판 B' (면적 2S, 전하 -Q) -->
+  <rect class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x="460" y="130" width="10" height="180" fill="#000000" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="446" y="102.4" width="97.32" height="16.8" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="450" y="115" font-size="14" fill="#000000" style="font-weight:bold;">B' (고정, -Q)</text>
+    </g>
+
+  <!-- 간격 표시 d - x 및 2d + x -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x1="170" y1="310" x2="240" y2="310" stroke="#000000" stroke-width="1.2" marker-start="url(#arrow)" marker-end="url(#arrow)" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="181" y="317.4" width="48.599999999999994" height="16.8" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="185" y="330" font-size="14" fill="#000000" style="font-style:italic;">d - x</text>
+    </g>
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x1="360" y1="330" x2="460" y2="330" stroke="#000000" stroke-width="1.2" marker-start="url(#arrow)" marker-end="url(#arrow)" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="386" y="337.4" width="56.72" height="16.8" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="390" y="350" font-size="14" fill="#000000" style="font-style:italic;">2d + x</text>
+    </g>
+
+  <!-- 수평 x축 -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x1="120" y1="390" x2="520" y2="390" stroke="#000000" stroke-width="1.5" marker-end="url(#arrow)" />
+  <circle class="movable" transform="translate(0,0) scale(1,1) rotate(0)" cx="280" cy="390" r="3.5" fill="#000000" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="261" y="402.4" width="48.599999999999994" height="16.8" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="265" y="415" font-size="14" fill="#000000" style="">x = 0</text>
+    </g>
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="496" y="402.4" width="48.599999999999994" height="16.8" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="500" y="415" font-size="14" fill="#000000" style="font-style:italic;">+x 방향</text>
+    </g>
+
+    </svg>
+  </div>
+</body>
+</html>

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>2005.182.2.전자기_그림</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      background: #f0f2f5;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+    .canvas-container {
+      background: #ffffff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    svg {
+      display: block;
+      user-select: none;
+    }
+    .movable {
+      cursor: move;
+    }
+    .text-el {
+      font-family: "Times New Roman", "Batang", serif;
+      user-select: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="canvas-container">
+    <svg id="canvas" viewBox="0 0 620 550" width="620" height="550" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#000000"/>
+        </marker>
+        <marker id="arrow-blue" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#2563eb"/>
+        </marker>
+        <marker id="arrow-red" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#dc2626"/>
+        </marker>
+        <pattern id="pattern-hatch-right" width="10" height="10" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
+          <line x1="0" y1="0" x2="0" y2="10" stroke="#000000" stroke-width="1.2" />
+        </pattern>
+        <pattern id="pattern-hatch-left" width="10" height="10" patternTransform="rotate(-45 0 0)" patternUnits="userSpaceOnUse">
+          <line x1="0" y1="0" x2="0" y2="10" stroke="#000000" stroke-width="1.2" />
+        </pattern>
+      </defs>
+      
+  <!-- 상단 회로: 스위치 S, 축전기 C, 저항 R -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x1="200" y1="80" x2="200" y2="50" stroke="#000000" stroke-width="2" />
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x1="380" y1="80" x2="380" y2="50" stroke="#000000" stroke-width="2" />
+  <!-- 상단 수평 연결선 및 스위치 S -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x1="200" y1="50" x2="260" y2="50" stroke="#000000" stroke-width="2" />
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x1="320" y1="50" x2="380" y2="50" stroke="#000000" stroke-width="2" />
+  <!-- 스위치 S -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x1="260" y1="50" x2="305" y2="35" stroke="#dc2626" stroke-width="2.5" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="266" y="17.4" width="48.599999999999994" height="16.8" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="270" y="30" font-size="14" fill="#dc2626" style="font-weight:bold;">스위치 S</text>
+    </g>
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="236" y="58.3" width="98.47999999999999" height="15.6" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="240" y="70" font-size="13" fill="#000000" style="">축전기 C / 저항 R</text>
+    </g>
+
+  <!-- 두 연직 도체 레일 (간격 d, 길이 2h) -->
+  <!-- 좌측 레일 -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x1="200" y1="80" x2="200" y2="520" stroke="#000000" stroke-width="3" />
+  <!-- 우측 레일 -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x1="380" y1="80" x2="380" y2="520" stroke="#000000" stroke-width="3" />
+
+  <!-- 레일 간격 d -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x1="200" y1="100" x2="380" y2="100" stroke="#000000" stroke-width="1.2" marker-start="url(#arrow)" marker-end="url(#arrow)" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="271" y="82.4" width="40.48" height="16.8" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="275" y="95" font-size="14" fill="#000000" style="font-style:italic;">간격 d</text>
+    </g>
+
+  <!-- 상단 절반 (매끄러움, x=0 ~ h) -->
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="66" y="78.3" width="121.1" height="15.6" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="70" y="90" font-size="13" fill="#000000" style="">x = 0 (매끄러운 구간)</text>
+    </g>
+  <!-- 경계선 x = h -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x1="170" y1="300" x2="410" y2="300" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="4,4" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="101" y="293.3" width="83.39999999999999" height="15.6" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="105" y="305" font-size="13" fill="#000000" style="font-weight:bold;">x = h (경계)</text>
+    </g>
+
+  <!-- 하단 절반 (거친 구간, 마찰계수 μ') -->
+  <rect class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x="190" y="300" width="10" height="220" fill="url(#pattern-hatch-right)" stroke="none" />
+  <rect class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x="380" y="300" width="10" height="220" fill="url(#pattern-hatch-right)" stroke="none" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="401" y="398.3" width="121.1" height="15.6" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="405" y="410" font-size="13" fill="#000000" style="">거친 구간 (마찰계수 μ')</text>
+    </g>
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="106" y="508.3" width="83.39999999999999" height="15.6" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="110" y="520" font-size="13" fill="#000000" style="">x = 2h (끝)</text>
+    </g>
+
+  <!-- 도체 막대 (질량 m) -->
+  <rect class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x="180" y="200" width="220" height="14" fill="#64748b" stroke="#000000" stroke-width="2" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="241" y="221.5" width="86.3" height="18.0" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="245" y="235" font-size="15" fill="#000000" style="font-weight:bold;">도체 막대 (m)</text>
+    </g>
+
+  <!-- 기울어진 자기장 B 화살표 (각도 θ 위로 기울어짐) -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x1="450" y1="200" x2="550" y2="140" stroke="#2563eb" stroke-width="2.5" marker-end="url(#arrow-blue)" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="526" y="115.6" width="54.4" height="19.2" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="530" y="130" font-size="16" fill="#2563eb" style="font-weight:bold;">자기장 B</text>
+    </g>
+  <!-- 수평선 대비 각도 θ -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x1="450" y1="200" x2="540" y2="200" stroke="#94a3b8" stroke-width="1.2" stroke-dasharray="3,3" />
+  <path class="movable" transform="translate(0,0) scale(1,1) rotate(0)" d="M 490 200 A 40 40 0 0 0 500 170" fill="none" stroke="#2563eb" stroke-width="1.5" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="501" y="176.5" width="16.7" height="18.0" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="505" y="190" font-size="15" fill="#2563eb" style="font-style:italic;">θ</text>
+    </g>
+
+    </svg>
+  </div>
+</body>
+</html>

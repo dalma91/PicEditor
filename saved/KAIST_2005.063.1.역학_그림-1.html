@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>2005.063.1.역학_그림-1</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      background: #f0f2f5;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+    .canvas-container {
+      background: #ffffff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    svg {
+      display: block;
+      user-select: none;
+    }
+    .movable {
+      cursor: move;
+    }
+    .text-el {
+      font-family: "Times New Roman", "Batang", serif;
+      user-select: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="canvas-container">
+    <svg id="canvas" viewBox="0 0 580 520" width="580" height="520" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#000000"/>
+        </marker>
+        <marker id="arrow-blue" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#2563eb"/>
+        </marker>
+        <marker id="arrow-red" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#dc2626"/>
+        </marker>
+        <pattern id="pattern-hatch-right" width="10" height="10" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
+          <line x1="0" y1="0" x2="0" y2="10" stroke="#000000" stroke-width="1.2" />
+        </pattern>
+        <pattern id="pattern-hatch-left" width="10" height="10" patternTransform="rotate(-45 0 0)" patternUnits="userSpaceOnUse">
+          <line x1="0" y1="0" x2="0" y2="10" stroke="#000000" stroke-width="1.2" />
+        </pattern>
+      </defs>
+      
+  <!-- 45도 빗면 -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x1="60" y1="460" x2="520" y2="0" stroke="#000000" stroke-width="2.5" />
+  <polygon class="movable" transform="translate(0,0) scale(1,1) rotate(0)" points="60,460 520,0 520,460" fill="url(#pattern-hatch-right)" stroke="none" opacity="0.3" />
+
+  <!-- 쐐기 A (직각이등변삼각형, 윗면 수평 y=180, 오른쪽 수직면 x=400) -->
+  <polygon class="movable" transform="translate(0,0) scale(1,1) rotate(0)" points="120,400 400,120 400,400" fill="#f8fafc" stroke="#000000" stroke-width="2" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="296" y="303.8" width="91.52" height="21.599999999999998" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="300" y="320" font-size="18" fill="#000000" style="font-weight:bold;">A (질량 M)</text>
+    </g>
+
+  <!-- 블록 B (A 윗면 오른쪽 끝) -->
+  <rect class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x="350" y="80" width="40" height="40" fill="#000000" stroke="#000000" stroke-width="1.5" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="336" y="56.5" width="77.6" height="18.0" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="340" y="70" font-size="15" fill="#000000" style="font-weight:bold;">B (질량 m)</text>
+    </g>
+
+  <!-- 수평 외력 F -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x1="470" y1="260" x2="405" y2="260" stroke="#dc2626" stroke-width="2.5" marker-end="url(#arrow-red)" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="471" y="248.8" width="18.439999999999998" height="21.599999999999998" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="475" y="265" font-size="18" fill="#dc2626" style="font-weight:bold;">F</text>
+    </g>
+
+  <!-- 좌표축 O, x, y -->
+  <circle class="movable" transform="translate(0,0) scale(1,1) rotate(0)" cx="120" cy="400" r="3.5" fill="#000000" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="76" y="406.5" width="60.199999999999996" height="18.0" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="80" y="420" font-size="15" fill="#000000" style="font-weight:bold;">O (원점)</text>
+    </g>
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x1="120" y1="400" x2="230" y2="400" stroke="#000000" stroke-width="1.5" marker-end="url(#arrow)" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="231" y="390.6" width="17.28" height="19.2" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="235" y="405" font-size="16" fill="#000000" style="font-style:italic;">x</text>
+    </g>
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x1="120" y1="400" x2="120" y2="490" stroke="#000000" stroke-width="1.5" marker-end="url(#arrow)" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="121" y="485.6" width="17.28" height="19.2" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="125" y="500" font-size="16" fill="#000000" style="font-style:italic;">y</text>
+    </g>
+
+  <!-- 각도 45도 -->
+  <path class="movable" transform="translate(0,0) scale(1,1) rotate(0)" d="M 160 460 A 60 60 0 0 1 125 418" fill="none" stroke="#000000" stroke-width="1.5" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="161" y="426.5" width="34.099999999999994" height="18.0" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="165" y="440" font-size="15" fill="#000000" style="">45°</text>
+    </g>
+
+  <!-- 치수 d -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x1="120" y1="105" x2="395" y2="105" stroke="#000000" stroke-width="1.2" marker-start="url(#arrow)" marker-end="url(#arrow)" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="251" y="85.6" width="17.28" height="19.2" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="255" y="100" font-size="16" fill="#000000" style="font-style:italic;">d</text>
+    </g>
+
+    </svg>
+  </div>
+</body>
+</html>

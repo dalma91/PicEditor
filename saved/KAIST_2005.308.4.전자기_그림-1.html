@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>2005.308.4.전자기_그림-1</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      background: #f0f2f5;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+    .canvas-container {
+      background: #ffffff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    svg {
+      display: block;
+      user-select: none;
+    }
+    .movable {
+      cursor: move;
+    }
+    .text-el {
+      font-family: "Times New Roman", "Batang", serif;
+      user-select: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="canvas-container">
+    <svg id="canvas" viewBox="0 0 640 360" width="640" height="360" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#000000"/>
+        </marker>
+        <marker id="arrow-blue" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#2563eb"/>
+        </marker>
+        <marker id="arrow-red" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#dc2626"/>
+        </marker>
+        <pattern id="pattern-hatch-right" width="10" height="10" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
+          <line x1="0" y1="0" x2="0" y2="10" stroke="#000000" stroke-width="1.2" />
+        </pattern>
+        <pattern id="pattern-hatch-left" width="10" height="10" patternTransform="rotate(-45 0 0)" patternUnits="userSpaceOnUse">
+          <line x1="0" y1="0" x2="0" y2="10" stroke="#000000" stroke-width="1.2" />
+        </pattern>
+      </defs>
+      
+  <!-- 수평 평행 금속선 레일 (간격 a) -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x1="120" y1="120" x2="560" y2="120" stroke="#000000" stroke-width="2.5" />
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x1="120" y1="260" x2="560" y2="260" stroke="#000000" stroke-width="2.5" />
+
+  <!-- 레일 간격 a 치수 -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x1="150" y1="120" x2="150" y2="260" stroke="#000000" stroke-width="1.2" marker-start="url(#arrow)" marker-end="url(#arrow)" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="131" y="180.6" width="17.28" height="19.2" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="135" y="195" font-size="16" fill="#000000" style="font-style:italic;">a</text>
+    </g>
+
+  <!-- 좌측 연결 회로: 스위치, 저항 R, 축전기 C0 -->
+  <path class="movable" transform="translate(0,0) scale(1,1) rotate(0)" d="M 120 120 L 80 120 L 80 160" fill="none" stroke="#000000" stroke-width="2" />
+  <!-- 저항 R 기호 -->
+  <rect class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x="70" y="160" width="20" height="40" fill="#f8fafc" stroke="#000000" stroke-width="2" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="41" y="170.6" width="17.28" height="19.2" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="45" y="185" font-size="16" fill="#000000" style="font-weight:bold;">R</text>
+    </g>
+  <path class="movable" transform="translate(0,0) scale(1,1) rotate(0)" d="M 80 200 L 80 220" fill="none" stroke="#000000" stroke-width="2" />
+  <!-- 축전기 C0 기호 -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x1="65" y1="220" x2="95" y2="220" stroke="#000000" stroke-width="2.5" />
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x1="65" y1="228" x2="95" y2="228" stroke="#000000" stroke-width="2.5" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="36" y="216.5" width="25.4" height="18.0" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="40" y="230" font-size="15" fill="#000000" style="font-weight:bold;">C₀</text>
+    </g>
+  <path class="movable" transform="translate(0,0) scale(1,1) rotate(0)" d="M 80 228 L 80 260 L 120 260" fill="none" stroke="#000000" stroke-width="2" />
+
+  <!-- 금속 막대 A (속도 v로 우측 이동) -->
+  <rect class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x="320" y="100" width="16" height="180" fill="#64748b" stroke="#000000" stroke-width="2" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="276" y="71.5" width="68.89999999999999" height="18.0" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="280" y="85" font-size="15" fill="#000000" style="font-weight:bold;">금속 막대 A</text>
+    </g>
+  <!-- 속도 v 화살표 -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x1="336" y1="190" x2="410" y2="190" stroke="#2563eb" stroke-width="2.5" marker-end="url(#arrow-blue)" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="411" y="180.6" width="17.28" height="19.2" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="415" y="195" font-size="16" fill="#2563eb" style="font-style:italic;">v</text>
+    </g>
+
+  <!-- 균일 자기장 B (연직 상향 나오미 기호 ⊙) -->
+  <g class="movable" transform="translate(0,0) scale(1,1) rotate(0)">
+    <circle cx="230" cy="160" r="10" fill="none" stroke="#000000" stroke-width="1.2" />
+    <circle cx="230" cy="160" r="2.5" fill="#000000" />
+    <circle cx="230" cy="220" r="10" fill="none" stroke="#000000" stroke-width="1.2" />
+    <circle cx="230" cy="220" r="2.5" fill="#000000" />
+    <circle cx="470" cy="160" r="10" fill="none" stroke="#000000" stroke-width="1.2" />
+    <circle cx="470" cy="160" r="2.5" fill="#000000" />
+    <circle cx="470" cy="220" r="10" fill="none" stroke="#000000" stroke-width="1.2" />
+    <circle cx="470" cy="220" r="2.5" fill="#000000" />
+  </g>
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="376" y="276.5" width="138.5" height="18.0" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="380" y="290" font-size="15" fill="#000000" style="font-weight:bold;">자기장 B (연직 상향 ⊙)</text>
+    </g>
+
+    </svg>
+  </div>
+</body>
+</html>

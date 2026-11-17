@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>2005.250.2.역학_그림-2</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      background: #f0f2f5;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+    .canvas-container {
+      background: #ffffff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    svg {
+      display: block;
+      user-select: none;
+    }
+    .movable {
+      cursor: move;
+    }
+    .text-el {
+      font-family: "Times New Roman", "Batang", serif;
+      user-select: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="canvas-container">
+    <svg id="canvas" viewBox="0 0 660 440" width="660" height="440" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#000000"/>
+        </marker>
+        <marker id="arrow-blue" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#2563eb"/>
+        </marker>
+        <marker id="arrow-red" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#dc2626"/>
+        </marker>
+        <pattern id="pattern-hatch-right" width="10" height="10" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
+          <line x1="0" y1="0" x2="0" y2="10" stroke="#000000" stroke-width="1.2" />
+        </pattern>
+        <pattern id="pattern-hatch-left" width="10" height="10" patternTransform="rotate(-45 0 0)" patternUnits="userSpaceOnUse">
+          <line x1="0" y1="0" x2="0" y2="10" stroke="#000000" stroke-width="1.2" />
+        </pattern>
+      </defs>
+      
+  <!-- 연직 회전축 -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x1="120" y1="40" x2="120" y2="400" stroke="#2563eb" stroke-width="2" stroke-dasharray="6,4" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="96" y="16.5" width="34.099999999999994" height="18.0" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="100" y="30" font-size="15" fill="#2563eb" style="font-weight:bold;">회전축</text>
+    </g>
+  <!-- 회전 각속도 ω 화살표 -->
+  <path class="movable" transform="translate(0,0) scale(1,1) rotate(0)" d="M 120 70 A 30 15 0 1 1 115 84" fill="none" stroke="#2563eb" stroke-width="2" marker-end="url(#arrow-blue)" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="136" y="60.6" width="17.28" height="19.2" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="140" y="75" font-size="16" fill="#2563eb" style="font-style:italic;">ω</text>
+    </g>
+
+  <!-- L자 금구 (높이 L, 밑변 4L) -->
+  <path class="movable" transform="translate(0,0) scale(1,1) rotate(0)" d="M 120 120 L 120 320 L 560 320" fill="none" stroke="#000000" stroke-width="4" stroke-linejoin="round" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="466" y="333.3" width="68.32" height="15.6" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="470" y="345" font-size="13" fill="#000000" style="">L자 금구 밑변</text>
+    </g>
+  <!-- 높이 L 치수 -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x1="90" y1="120" x2="90" y2="320" stroke="#000000" stroke-width="1.2" marker-start="url(#arrow)" marker-end="url(#arrow)" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="66" y="210.6" width="17.28" height="19.2" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="70" y="225" font-size="16" fill="#000000" style="font-style:italic;">L</text>
+    </g>
+
+  <!-- 상단 경첩 및 팔(막대, 길이 √2 L) -->
+  <circle class="movable" transform="translate(0,0) scale(1,1) rotate(0)" cx="120" cy="120" r="5" fill="#dc2626" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="126" y="103.3" width="23.08" height="15.6" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="130" y="115" font-size="13" fill="#dc2626" style="">경첩</text>
+    </g>
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x1="120" y1="120" x2="320" y2="320" stroke="#000000" stroke-width="5" stroke-linecap="round" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="221" y="192.4" width="97.32" height="16.8" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="225" y="205" font-size="14" fill="#000000" style="font-weight:bold;">팔 (길이 √2 L)</text>
+    </g>
+
+  <!-- 팔 중간과 밑변을 잇는 연직 용수철 S2 -->
+  <path class="movable" transform="translate(0,0) scale(1,1) rotate(0)" d="M 220 220 L 220 235 L 210 248 L 230 260 L 210 272 L 230 284 L 220 295 L 220 320" fill="none" stroke="#000000" stroke-width="2.5" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="231" y="263.3" width="53.239999999999995" height="15.6" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="235" y="275" font-size="13" fill="#000000" style="font-weight:bold;">용수철 S₂</text>
+    </g>
+
+  <!-- 팔 끝과 밑변 사이에 끼인 막대 R 및 물체들 -->
+  <rect class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x="300" y="312" width="230" height="8" fill="#64748b" stroke="#000000" stroke-width="1" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="301" y="292.4" width="16.119999999999997" height="16.8" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="305" y="305" font-size="14" fill="#000000" style="font-weight:bold;">R</text>
+    </g>
+  <!-- 실 장력 T0 -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x1="330" y1="316" x2="380" y2="316" stroke="#dc2626" stroke-width="2" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="331" y="283.3" width="75.85999999999999" height="15.6" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="335" y="295" font-size="13" fill="#dc2626" style="">실 (장력 T₀)</text>
+    </g>
+  <!-- 물체 1 -->
+  <circle class="movable" transform="translate(0,0) scale(1,1) rotate(0)" cx="390" cy="316" r="14" fill="#000000" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="381" y="310.2" width="14.959999999999999" height="14.399999999999999" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="385" y="321" font-size="12" fill="#FFFFFF" style="font-weight:bold;">1</text>
+    </g>
+  <!-- 물체 2 -->
+  <circle class="movable" transform="translate(0,0) scale(1,1) rotate(0)" cx="490" cy="316" r="14" fill="#000000" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="481" y="310.2" width="14.959999999999999" height="14.399999999999999" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="485" y="321" font-size="12" fill="#FFFFFF" style="font-weight:bold;">2</text>
+    </g>
+
+  <!-- 회전축에서의 거리 L, 2L, 3L -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x1="120" y1="370" x2="320" y2="370" stroke="#000000" stroke-width="1" marker-start="url(#arrow)" marker-end="url(#arrow)" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="211" y="377.4" width="16.119999999999997" height="16.8" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="215" y="390" font-size="14" fill="#000000" style="font-style:italic;">L</text>
+    </g>
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x1="120" y1="370" x2="390" y2="370" stroke="#000000" stroke-width="1" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="346" y="377.4" width="24.24" height="16.8" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="350" y="390" font-size="14" fill="#000000" style="font-style:italic;">2L</text>
+    </g>
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x1="120" y1="370" x2="490" y2="370" stroke="#000000" stroke-width="1" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="436" y="377.4" width="24.24" height="16.8" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="440" y="390" font-size="14" fill="#000000" style="font-style:italic;">3L</text>
+    </g>
+
+    </svg>
+  </div>
+</body>
+</html>

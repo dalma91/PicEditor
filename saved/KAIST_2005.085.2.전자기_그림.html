@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>2005.085.2.전자기_그림</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      background: #f0f2f5;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+    .canvas-container {
+      background: #ffffff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    svg {
+      display: block;
+      user-select: none;
+    }
+    .movable {
+      cursor: move;
+    }
+    .text-el {
+      font-family: "Times New Roman", "Batang", serif;
+      user-select: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="canvas-container">
+    <svg id="canvas" viewBox="0 0 650 500" width="650" height="500" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#000000"/>
+        </marker>
+        <marker id="arrow-blue" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#2563eb"/>
+        </marker>
+        <marker id="arrow-red" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#dc2626"/>
+        </marker>
+        <pattern id="pattern-hatch-right" width="10" height="10" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
+          <line x1="0" y1="0" x2="0" y2="10" stroke="#000000" stroke-width="1.2" />
+        </pattern>
+        <pattern id="pattern-hatch-left" width="10" height="10" patternTransform="rotate(-45 0 0)" patternUnits="userSpaceOnUse">
+          <line x1="0" y1="0" x2="0" y2="10" stroke="#000000" stroke-width="1.2" />
+        </pattern>
+      </defs>
+      
+  <!-- 세 극판 P1, P2, P3 (연직 평행판) -->
+  <!-- 극판 P1 (왼쪽, 고정) -->
+  <rect class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x="140" y="80" width="12" height="240" fill="#000000" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="131" y="50.6" width="26.56" height="19.2" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="135" y="65" font-size="16" fill="#000000" style="font-weight:bold;">P₁</text>
+    </g>
+
+  <!-- 극판 P2 (중간, 가동판) -->
+  <rect class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x="280" y="90" width="12" height="220" fill="#2563eb" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="261" y="61.5" width="77.6" height="18.0" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="265" y="75" font-size="15" fill="#2563eb" style="font-weight:bold;">P₂ (가동판)</text>
+    </g>
+  <!-- P2 이동 양방향 화살표 -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x1="250" y1="200" x2="320" y2="200" stroke="#dc2626" stroke-width="2" marker-start="url(#arrow-red)" marker-end="url(#arrow-red)" />
+
+  <!-- 극판 P3 (오른쪽, 고정) -->
+  <rect class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x="420" y="80" width="12" height="240" fill="#000000" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="411" y="50.6" width="26.56" height="19.2" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="415" y="65" font-size="16" fill="#000000" style="font-weight:bold;">P₃</text>
+    </g>
+
+  <!-- 간격 표시 d1, d2 -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x1="152" y1="340" x2="280" y2="340" stroke="#000000" stroke-width="1.2" marker-start="url(#arrow)" marker-end="url(#arrow)" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="201" y="347.4" width="24.24" height="16.8" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="205" y="360" font-size="14" fill="#000000" style="font-style:italic;">d₁</text>
+    </g>
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x1="292" y1="340" x2="420" y2="340" stroke="#000000" stroke-width="1.2" marker-start="url(#arrow)" marker-end="url(#arrow)" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="341" y="347.4" width="24.24" height="16.8" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="345" y="360" font-size="14" fill="#000000" style="font-style:italic;">d₂</text>
+    </g>
+
+  <!-- 회로 연결선: 전원 V, 스위치 S, 접지 -->
+  <path class="movable" transform="translate(0,0) scale(1,1) rotate(0)" d="M 146 320 L 146 420 L 250 420" fill="none" stroke="#000000" stroke-width="2" />
+  <!-- 직류 전원 기호 V -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x1="250" y1="400" x2="250" y2="440" stroke="#000000" stroke-width="3" />
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x1="262" y1="410" x2="262" y2="430" stroke="#000000" stroke-width="2" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="236" y="451.5" width="51.5" height="18.0" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="240" y="465" font-size="15" fill="#000000" style="font-weight:bold;">+ V -</text>
+    </g>
+  <path class="movable" transform="translate(0,0) scale(1,1) rotate(0)" d="M 262 420 L 426 420 L 426 320" fill="none" stroke="#000000" stroke-width="2" />
+
+  <!-- P3 접지 기호 -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x1="426" y1="420" x2="426" y2="460" stroke="#000000" stroke-width="2" />
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x1="410" y1="460" x2="442" y2="460" stroke="#000000" stroke-width="2" />
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x1="416" y1="466" x2="436" y2="466" stroke="#000000" stroke-width="1.8" />
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x1="422" y1="472" x2="430" y2="472" stroke="#000000" stroke-width="1.5" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="441" y="458.3" width="60.779999999999994" height="15.6" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="445" y="470" font-size="13" fill="#000000" style="">접지 (0V)</text>
+    </g>
+
+    </svg>
+  </div>
+</body>
+</html>

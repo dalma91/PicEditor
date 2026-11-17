@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>2005.066.1.역학_그림</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      background: #f0f2f5;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+    .canvas-container {
+      background: #ffffff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    svg {
+      display: block;
+      user-select: none;
+    }
+    .movable {
+      cursor: move;
+    }
+    .text-el {
+      font-family: "Times New Roman", "Batang", serif;
+      user-select: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="canvas-container">
+    <svg id="canvas" viewBox="0 0 700 450" width="700" height="450" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#000000"/>
+        </marker>
+        <marker id="arrow-blue" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#2563eb"/>
+        </marker>
+        <marker id="arrow-red" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#dc2626"/>
+        </marker>
+        <pattern id="pattern-hatch-right" width="10" height="10" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
+          <line x1="0" y1="0" x2="0" y2="10" stroke="#000000" stroke-width="1.2" />
+        </pattern>
+        <pattern id="pattern-hatch-left" width="10" height="10" patternTransform="rotate(-45 0 0)" patternUnits="userSpaceOnUse">
+          <line x1="0" y1="0" x2="0" y2="10" stroke="#000000" stroke-width="1.2" />
+        </pattern>
+      </defs>
+      
+  <!-- 계단 바닥 (좌측 높이 320, 우측 계단 높이 380) -->
+  <path class="movable" transform="translate(0,0) scale(1,1) rotate(0)" d="M 40 320 L 300 320 L 300 400 L 660 400" fill="none" stroke="#000000" stroke-width="2.5" />
+  <rect class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x="40" y="320" width="260" height="20" fill="url(#pattern-hatch-right)" stroke="none" />
+  <rect class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x="300" y="400" width="360" height="20" fill="url(#pattern-hatch-right)" stroke="none" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="246" y="346.5" width="25.4" height="18.0" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="250" y="360" font-size="15" fill="#000000" style="">계단</text>
+    </g>
+
+  <!-- 좌측: 과정 1 (낙하) -->
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="126" y="35.6" width="72.96" height="19.2" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="130" y="50" font-size="16" fill="#000000" style="font-weight:bold;">[하강 과정]</text>
+    </g>
+  <!-- 낙하 공 (질량 m) -->
+  <circle class="movable" transform="translate(0,0) scale(1,1) rotate(0)" cx="170" cy="110" r="16" fill="#000000" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="191" y="102.4" width="48.599999999999994" height="16.8" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="195" y="115" font-size="14" fill="#000000" style="font-weight:bold;">공 (m)</text>
+    </g>
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x1="170" y1="130" x2="170" y2="175" stroke="#2563eb" stroke-width="2" marker-end="url(#arrow-blue)" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="176" y="146.5" width="16.7" height="18.0" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="180" y="160" font-size="15" fill="#2563eb" style="font-style:italic;">v</text>
+    </g>
+  <!-- 높이 h 치수 -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x1="120" y1="110" x2="120" y2="240" stroke="#000000" stroke-width="1.2" marker-start="url(#arrow)" marker-end="url(#arrow)" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="96" y="165.6" width="17.28" height="19.2" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="100" y="180" font-size="16" fill="#000000" style="font-style:italic;">h</text>
+    </g>
+
+  <!-- 우측: 용수철과 판 (질량 M, 상수 k) -->
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="456" y="35.6" width="100.8" height="19.2" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="460" y="50" font-size="16" fill="#000000" style="font-weight:bold;">[용수철 판 충돌]</text>
+    </g>
+  <!-- 용수철 판 M -->
+  <rect class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x="440" y="240" width="100" height="18" fill="#64748b" stroke="#000000" stroke-width="2" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="546" y="242.4" width="72.96" height="16.8" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="550" y="255" font-size="14" fill="#000000" style="font-weight:bold;">판 (질량 M)</text>
+    </g>
+  <!-- 연직 용수철 k -->
+  <path class="movable" transform="translate(0,0) scale(1,1) rotate(0)" d="M 490 258 L 475 272 L 505 288 L 475 304 L 505 320 L 475 336 L 505 352 L 475 368 L 505 384 L 490 400" fill="none" stroke="#000000" stroke-width="2.5" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="516" y="322.4" width="89.19999999999999" height="16.8" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="520" y="335" font-size="14" fill="#000000" style="">용수철 (상수 k)</text>
+    </g>
+
+  <!-- 충돌하는 공 (점선) -->
+  <circle class="movable" transform="translate(0,0) scale(1,1) rotate(0)" cx="490" cy="224" r="16" fill="none" stroke="#dc2626" stroke-width="2" stroke-dasharray="4,3" />
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x1="490" y1="200" x2="490" y2="150" stroke="#dc2626" stroke-width="2" marker-end="url(#arrow-red)" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="506" y="162.4" width="48.599999999999994" height="16.8" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="510" y="175" font-size="14" fill="#dc2626" style="font-weight:bold;">반발 상승</text>
+    </g>
+
+    </svg>
+  </div>
+</body>
+</html>

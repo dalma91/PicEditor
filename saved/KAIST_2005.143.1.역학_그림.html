@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>2005.143.1.역학_그림</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      background: #f0f2f5;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+    .canvas-container {
+      background: #ffffff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    svg {
+      display: block;
+      user-select: none;
+    }
+    .movable {
+      cursor: move;
+    }
+    .text-el {
+      font-family: "Times New Roman", "Batang", serif;
+      user-select: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="canvas-container">
+    <svg id="canvas" viewBox="0 0 660 400" width="660" height="400" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#000000"/>
+        </marker>
+        <marker id="arrow-blue" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#2563eb"/>
+        </marker>
+        <marker id="arrow-red" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#dc2626"/>
+        </marker>
+        <pattern id="pattern-hatch-right" width="10" height="10" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
+          <line x1="0" y1="0" x2="0" y2="10" stroke="#000000" stroke-width="1.2" />
+        </pattern>
+        <pattern id="pattern-hatch-left" width="10" height="10" patternTransform="rotate(-45 0 0)" patternUnits="userSpaceOnUse">
+          <line x1="0" y1="0" x2="0" y2="10" stroke="#000000" stroke-width="1.2" />
+        </pattern>
+      </defs>
+      
+  <!-- 지면 바닥 -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x1="50" y1="360" x2="620" y2="360" stroke="#000000" stroke-width="2" />
+  
+  <!-- 트럭 차체 외곽선 (적재함) -->
+  <path class="movable" transform="translate(0,0) scale(1,1) rotate(0)" d="M 120 140 L 120 310 L 480 310 L 480 200 L 550 200 L 570 260 L 570 310" fill="none" stroke="#000000" stroke-width="2.5" />
+  <!-- 트럭 바퀴 -->
+  <circle class="movable" transform="translate(0,0) scale(1,1) rotate(0)" cx="200" cy="335" r="24" fill="#f8fafc" stroke="#000000" stroke-width="2.5" />
+  <circle class="movable" transform="translate(0,0) scale(1,1) rotate(0)" cx="420" cy="335" r="24" fill="#f8fafc" stroke="#000000" stroke-width="2.5" />
+  <circle class="movable" transform="translate(0,0) scale(1,1) rotate(0)" cx="520" cy="335" r="24" fill="#f8fafc" stroke="#000000" stroke-width="2.5" />
+  
+  <!-- 트럭 주행 가속도 α 화살표 -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x1="480" y1="120" x2="570" y2="120" stroke="#2563eb" stroke-width="3" marker-end="url(#arrow-blue)" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="496" y="90.6" width="54.4" height="19.2" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="500" y="105" font-size="16" fill="#2563eb" style="font-weight:bold;">가속도 α</text>
+    </g>
+
+  <!-- 적재함 내부 기댄 강체 막대 AB (A: 벽 접점, B: 바닥 접점) -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x1="120" y1="180" x2="260" y2="310" stroke="#000000" stroke-width="6" stroke-linecap="round" />
+  <!-- 끝점 A, B -->
+  <circle class="movable" transform="translate(0,0) scale(1,1) rotate(0)" cx="120" cy="180" r="4" fill="#dc2626" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="91" y="170.6" width="17.28" height="19.2" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="95" y="185" font-size="16" fill="#dc2626" style="font-weight:bold;">A</text>
+    </g>
+  <circle class="movable" transform="translate(0,0) scale(1,1) rotate(0)" cx="260" cy="310" r="4" fill="#dc2626" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="266" y="300.6" width="17.28" height="19.2" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="270" y="315" font-size="16" fill="#dc2626" style="font-weight:bold;">B</text>
+    </g>
+
+  <!-- 막대 질량중심 G -->
+  <circle class="movable" transform="translate(0,0) scale(1,1) rotate(0)" cx="190" cy="245" r="3.5" fill="#000000" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="196" y="227.4" width="72.96" height="16.8" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="200" y="240" font-size="14" fill="#000000" style="">G (질량 m)</text>
+    </g>
+
+  <!-- 각도 θ (바닥과 이루는 각) -->
+  <path class="movable" transform="translate(0,0) scale(1,1) rotate(0)" d="M 230 310 A 30 30 0 0 1 242 293" fill="none" stroke="#000000" stroke-width="1.5" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="211" y="291.5" width="16.7" height="18.0" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="215" y="305" font-size="15" fill="#000000" style="font-style:italic;">θ</text>
+    </g>
+
+  <!-- 막대 길이 L 라벨 -->
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="136" y="262.4" width="40.48" height="16.8" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="140" y="275" font-size="14" fill="#000000" style="font-style:italic;">길이 L</text>
+    </g>
+
+    </svg>
+  </div>
+</body>
+</html>
