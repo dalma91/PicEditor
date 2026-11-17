@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>2006.142.3.원자_그림</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      background: #f0f2f5;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+    .canvas-container {
+      background: #ffffff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    svg {
+      display: block;
+      user-select: none;
+    }
+    .movable {
+      cursor: move;
+    }
+    .text-el {
+      font-family: "Times New Roman", "Batang", serif;
+      user-select: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="canvas-container">
+    <svg id="canvas" viewBox="0 0 550 440" width="550" height="440" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#000000"/>
+        </marker>
+        <marker id="arrow-blue" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#2563eb"/>
+        </marker>
+        <marker id="arrow-red" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#dc2626"/>
+        </marker>
+        <pattern id="pattern-hatch-right" width="10" height="10" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
+          <line x1="0" y1="0" x2="0" y2="10" stroke="#000000" stroke-width="1.2" />
+        </pattern>
+        <pattern id="pattern-hatch-left" width="10" height="10" patternTransform="rotate(-45 0 0)" patternUnits="userSpaceOnUse">
+          <line x1="0" y1="0" x2="0" y2="10" stroke="#000000" stroke-width="1.2" />
+        </pattern>
+      </defs>
+      
+  <!-- (a) 광자 흡수 전 -->
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="76" y="36.5" width="77.6" height="18.0" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="80" y="50" font-size="15" fill="#000000" style="font-weight:bold;">(a) 흡수 전</text>
+    </g>
+  <circle class="movable" transform="translate(0,0) scale(1,1) rotate(0)" cx="140" cy="110" r="20" fill="#f8fafc" stroke="#000000" stroke-width="2" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="121" y="103.3" width="53.239999999999995" height="15.6" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="125" y="115" font-size="13" fill="#000000" style="font-weight:bold;">M (E₁)</text>
+    </g>
+  <!-- 원자 속도 v1 -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x1="140" y1="70" x2="190" y2="70" stroke="#2563eb" stroke-width="2" marker-end="url(#arrow-blue)" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="191" y="62.4" width="24.24" height="16.8" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="195" y="75" font-size="14" fill="#2563eb" style="font-style:italic;">v₁</text>
+    </g>
+  <!-- 마주 오는 광자 f1 -->
+  <path class="movable" transform="translate(0,0) scale(1,1) rotate(0)" d="M 280 110 Q 265 95 250 110 T 220 110" fill="none" stroke="#dc2626" stroke-width="2" marker-end="url(#arrow-red)" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="231" y="123.3" width="60.779999999999994" height="15.6" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="235" y="135" font-size="13" fill="#dc2626" style="font-weight:bold;">광자 (f₁)</text>
+    </g>
+
+  <!-- (b) 들뜬 상태 -->
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="76" y="166.5" width="155.89999999999998" height="18.0" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="80" y="180" font-size="15" fill="#000000" style="font-weight:bold;">(b) 흡수 직후 (들뜬 상태)</text>
+    </g>
+  <circle class="movable" transform="translate(0,0) scale(1,1) rotate(0)" cx="140" cy="240" r="20" fill="#fef08a" stroke="#000000" stroke-width="2" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="121" y="233.3" width="53.239999999999995" height="15.6" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="125" y="245" font-size="13" fill="#000000" style="font-weight:bold;">M (E₂)</text>
+    </g>
+  <!-- 감소한 속도 v2 -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x1="140" y1="205" x2="175" y2="205" stroke="#2563eb" stroke-width="2" marker-end="url(#arrow-blue)" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="176" y="197.4" width="64.84" height="16.8" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="180" y="210" font-size="14" fill="#2563eb" style="font-style:italic;">v₂ (감속)</text>
+    </g>
+
+  <!-- (c) 광자 방출 후 -->
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="76" y="296.5" width="103.69999999999999" height="18.0" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="80" y="310" font-size="15" fill="#000000" style="font-weight:bold;">(c) 광자 방출 후</text>
+    </g>
+  <circle class="movable" transform="translate(0,0) scale(1,1) rotate(0)" cx="140" cy="370" r="20" fill="#f8fafc" stroke="#000000" stroke-width="2" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="121" y="363.3" width="53.239999999999995" height="15.6" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="125" y="375" font-size="13" fill="#000000" style="font-weight:bold;">M (E₁)</text>
+    </g>
+  <!-- 최종 속도 v3 -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x1="140" y1="335" x2="165" y2="335" stroke="#2563eb" stroke-width="2" marker-end="url(#arrow-blue)" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="166" y="327.4" width="24.24" height="16.8" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="170" y="340" font-size="14" fill="#2563eb" style="font-style:italic;">v₃</text>
+    </g>
+  <!-- 자발 방출 광자 f3 -->
+  <path class="movable" transform="translate(0,0) scale(1,1) rotate(0)" d="M 165 370 Q 185 355 205 370 T 245 370" fill="none" stroke="#16a34a" stroke-width="2" marker-end="url(#arrow)" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="206" y="383.3" width="83.39999999999999" height="15.6" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="210" y="395" font-size="13" fill="#16a34a" style="font-weight:bold;">방출 광자 (f₃)</text>
+    </g>
+
+    </svg>
+  </div>
+</body>
+</html>

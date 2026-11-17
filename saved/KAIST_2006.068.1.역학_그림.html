@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>2006.068.1.역학_그림</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      background: #f0f2f5;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+    .canvas-container {
+      background: #ffffff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    svg {
+      display: block;
+      user-select: none;
+    }
+    .movable {
+      cursor: move;
+    }
+    .text-el {
+      font-family: "Times New Roman", "Batang", serif;
+      user-select: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="canvas-container">
+    <svg id="canvas" viewBox="0 0 650 470" width="650" height="470" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#000000"/>
+        </marker>
+        <marker id="arrow-blue" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#2563eb"/>
+        </marker>
+        <marker id="arrow-red" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#dc2626"/>
+        </marker>
+        <pattern id="pattern-hatch-right" width="10" height="10" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
+          <line x1="0" y1="0" x2="0" y2="10" stroke="#000000" stroke-width="1.2" />
+        </pattern>
+        <pattern id="pattern-hatch-left" width="10" height="10" patternTransform="rotate(-45 0 0)" patternUnits="userSpaceOnUse">
+          <line x1="0" y1="0" x2="0" y2="10" stroke="#000000" stroke-width="1.2" />
+        </pattern>
+      </defs>
+      
+  <!-- 수평 바닥 -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x1="50" y1="380" x2="620" y2="380" stroke="#000000" stroke-width="2.5" />
+  <rect class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x="50" y="380" width="570" height="15" fill="url(#pattern-hatch-right)" stroke="none" />
+
+  <!-- 큰 대(대차, 질량 M) -->
+  <path class="movable" transform="translate(0,0) scale(1,1) rotate(0)" d="M 100 380 L 520 380 L 520 120 L 500 120 L 500 360 L 100 360 Z" fill="#f1f5f9" stroke="#000000" stroke-width="2.5" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="276" y="381.5" width="77.6" height="18.0" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="280" y="395" font-size="15" fill="#000000" style="font-weight:bold;">대 (질량 M)</text>
+    </g>
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="476" y="87.4" width="113.55999999999999" height="16.8" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="480" y="100" font-size="14" fill="#000000" style="font-weight:bold;">연직 벽 (반발계수 e)</text>
+    </g>
+
+  <!-- 사람이 공을 던지는 점 (바닥에서 높이 h, 벽까지 거리 L) -->
+  <circle class="movable" transform="translate(0,0) scale(1,1) rotate(0)" cx="180" cy="280" r="5" fill="#dc2626" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="136" y="257.4" width="48.599999999999994" height="16.8" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="140" y="270" font-size="14" fill="#dc2626" style="font-weight:bold;">던지는 점</text>
+    </g>
+
+  <!-- 높이 h 치수 -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x1="150" y1="280" x2="150" y2="360" stroke="#000000" stroke-width="1.2" marker-start="url(#arrow)" marker-end="url(#arrow)" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="131" y="311.5" width="16.7" height="18.0" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="135" y="325" font-size="15" fill="#000000" style="font-style:italic;">h</text>
+    </g>
+
+  <!-- 거리 L 치수 -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x1="180" y1="420" x2="500" y2="420" stroke="#000000" stroke-width="1.2" marker-start="url(#arrow)" marker-end="url(#arrow)" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="331" y="425.6" width="17.28" height="19.2" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="335" y="440" font-size="16" fill="#000000" style="font-style:italic;">L</text>
+    </g>
+
+  <!-- 초속력 v, 각도 θ 화살표 -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x1="180" y1="280" x2="250" y2="210" stroke="#2563eb" stroke-width="2.5" marker-end="url(#arrow-blue)" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="216" y="187.4" width="97.32" height="16.8" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="220" y="200" font-size="14" fill="#2563eb" style="font-weight:bold;">초속력 v, 각도 θ</text>
+    </g>
+
+  <!-- 공의 포물선 궤적 (던짐 -> 벽 충돌 -> 반발 귀환) -->
+  <path class="movable" transform="translate(0,0) scale(1,1) rotate(0)" d="M 180 280 Q 340 160 500 200" fill="none" stroke="#2563eb" stroke-width="1.8" stroke-dasharray="5,4" />
+  <path class="movable" transform="translate(0,0) scale(1,1) rotate(0)" d="M 500 200 Q 340 230 180 280" fill="none" stroke="#dc2626" stroke-width="1.8" stroke-dasharray="4,3" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="326" y="248.3" width="45.699999999999996" height="15.6" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="330" y="260" font-size="13" fill="#dc2626" style="">귀환 궤적</text>
+    </g>
+
+    </svg>
+  </div>
+</body>
+</html>

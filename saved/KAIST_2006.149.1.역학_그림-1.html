@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>2006.149.1.역학_그림-1</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      background: #f0f2f5;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+    .canvas-container {
+      background: #ffffff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    svg {
+      display: block;
+      user-select: none;
+    }
+    .movable {
+      cursor: move;
+    }
+    .text-el {
+      font-family: "Times New Roman", "Batang", serif;
+      user-select: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="canvas-container">
+    <svg id="canvas" viewBox="0 0 640 420" width="640" height="420" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#000000"/>
+        </marker>
+        <marker id="arrow-blue" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#2563eb"/>
+        </marker>
+        <marker id="arrow-red" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#dc2626"/>
+        </marker>
+        <pattern id="pattern-hatch-right" width="10" height="10" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
+          <line x1="0" y1="0" x2="0" y2="10" stroke="#000000" stroke-width="1.2" />
+        </pattern>
+        <pattern id="pattern-hatch-left" width="10" height="10" patternTransform="rotate(-45 0 0)" patternUnits="userSpaceOnUse">
+          <line x1="0" y1="0" x2="0" y2="10" stroke="#000000" stroke-width="1.2" />
+        </pattern>
+      </defs>
+      
+  <!-- 수평 회전대 (타원 투영, 반지름 R, 각속도 ω) -->
+  <ellipse class="movable" transform="translate(0,0) scale(1,1) rotate(0)" cx="320" cy="250" rx="240" ry="120" fill="#f8fafc" stroke="#000000" stroke-width="2.5" />
+  <!-- 중심 O 및 회전축 -->
+  <circle class="movable" transform="translate(0,0) scale(1,1) rotate(0)" cx="320" cy="250" r="5" fill="#000000" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="321" y="262.4" width="64.84" height="16.8" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="325" y="275" font-size="14" fill="#000000" style="font-weight:bold;">O (회전축)</text>
+    </g>
+  <!-- 각속도 ω 회전 화살표 -->
+  <path class="movable" transform="translate(0,0) scale(1,1) rotate(0)" d="M 320 200 A 70 35 0 1 1 310 200" fill="none" stroke="#2563eb" stroke-width="2.5" marker-end="url(#arrow-blue)" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="331" y="176.5" width="51.5" height="18.0" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="335" y="190" font-size="15" fill="#2563eb" style="font-weight:bold;">각속도 ω</text>
+    </g>
+
+  <!-- 회전대 원주 위 반지름 a인 원통 -->
+  <ellipse class="movable" transform="translate(0,0) scale(1,1) rotate(0)" cx="480" cy="210" rx="36" ry="18" fill="#e2e8f0" stroke="#000000" stroke-width="2" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="436" y="162.4" width="89.19999999999999" height="16.8" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="440" y="175" font-size="14" fill="#000000" style="font-weight:bold;">원통 (반지름 a)</text>
+    </g>
+
+  <!-- 반지름 R 치수선 -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x1="320" y1="250" x2="480" y2="210" stroke="#000000" stroke-width="1.5" stroke-dasharray="4,4" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="356" y="232.4" width="121.67999999999999" height="16.8" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="360" y="245" font-size="14" fill="#000000" style="font-style:italic;">반지름 R (R >> a)</text>
+    </g>
+
+    </svg>
+  </div>
+</body>
+</html>

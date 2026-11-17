@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>2006.066.3.원자_그림-2</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      background: #f0f2f5;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+    .canvas-container {
+      background: #ffffff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    svg {
+      display: block;
+      user-select: none;
+    }
+    .movable {
+      cursor: move;
+    }
+    .text-el {
+      font-family: "Times New Roman", "Batang", serif;
+      user-select: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="canvas-container">
+    <svg id="canvas" viewBox="0 0 620 400" width="620" height="400" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#000000"/>
+        </marker>
+        <marker id="arrow-blue" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#2563eb"/>
+        </marker>
+        <marker id="arrow-red" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#dc2626"/>
+        </marker>
+        <pattern id="pattern-hatch-right" width="10" height="10" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
+          <line x1="0" y1="0" x2="0" y2="10" stroke="#000000" stroke-width="1.2" />
+        </pattern>
+        <pattern id="pattern-hatch-left" width="10" height="10" patternTransform="rotate(-45 0 0)" patternUnits="userSpaceOnUse">
+          <line x1="0" y1="0" x2="0" y2="10" stroke="#000000" stroke-width="1.2" />
+        </pattern>
+      </defs>
+      
+  <!-- 이중 슬릿 상세 (상단) -->
+  <rect class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x="120" y="80" width="160" height="12" fill="#000000" />
+  <rect class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x="290" y="80" width="12" height="12" fill="#000000" />
+  <rect class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x="312" y="80" width="160" height="12" fill="#000000" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="256" y="47.4" width="64.84" height="16.8" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="260" y="60" font-size="14" fill="#000000" style="font-weight:bold;">슬릿 간격 d</text>
+    </g>
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x1="285" y1="70" x2="307" y2="70" stroke="#000000" stroke-width="1" marker-start="url(#arrow)" marker-end="url(#arrow)" />
+
+  <!-- 물질파 전파선 (점선) -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x1="285" y1="92" x2="300" y2="300" stroke="#2563eb" stroke-width="1.2" stroke-dasharray="4,4" />
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x1="307" y1="92" x2="300" y2="300" stroke="#2563eb" stroke-width="1.2" stroke-dasharray="4,4" />
+
+  <!-- 스크린까지 거리 l -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x1="80" y1="92" x2="80" y2="300" stroke="#000000" stroke-width="1.2" marker-start="url(#arrow)" marker-end="url(#arrow)" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="61" y="185.6" width="17.28" height="19.2" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="65" y="200" font-size="16" fill="#000000" style="font-style:italic;">l</text>
+    </g>
+
+  <!-- 하단 스크린 및 간섭 줄무늬 -->
+  <rect class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x="100" y="300" width="400" height="24" fill="#f1f5f9" stroke="#000000" stroke-width="1.5" />
+  <!-- 간섭 줄무늬 (명암 패턴) -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x1="220" y1="300" x2="220" y2="324" stroke="#000000" stroke-width="3" />
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x1="260" y1="300" x2="260" y2="324" stroke="#000000" stroke-width="3" />
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x1="300" y1="300" x2="300" y2="324" stroke="#000000" stroke-width="4" />
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x1="340" y1="300" x2="340" y2="324" stroke="#000000" stroke-width="3" />
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x1="380" y1="300" x2="380" y2="324" stroke="#000000" stroke-width="3" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="386" y="332.4" width="105.44" height="16.8" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="390" y="345" font-size="14" fill="#000000" style="font-weight:bold;">간섭무늬 (시각 t₀)</text>
+    </g>
+
+  <!-- 무늬 간격 Δx0 치수 -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x1="300" y1="335" x2="340" y2="335" stroke="#dc2626" stroke-width="1.5" marker-start="url(#arrow-red)" marker-end="url(#arrow-red)" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="301" y="347.4" width="32.36" height="16.8" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="305" y="360" font-size="14" fill="#dc2626" style="font-weight:bold;">Δx₀</text>
+    </g>
+
+    </svg>
+  </div>
+</body>
+</html>

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>2006.066.3.원자_그림-3</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      background: #f0f2f5;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+    .canvas-container {
+      background: #ffffff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    svg {
+      display: block;
+      user-select: none;
+    }
+    .movable {
+      cursor: move;
+    }
+    .text-el {
+      font-family: "Times New Roman", "Batang", serif;
+      user-select: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="canvas-container">
+    <svg id="canvas" viewBox="0 0 620 320" width="620" height="320" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#000000"/>
+        </marker>
+        <marker id="arrow-blue" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#2563eb"/>
+        </marker>
+        <marker id="arrow-red" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#dc2626"/>
+        </marker>
+        <pattern id="pattern-hatch-right" width="10" height="10" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
+          <line x1="0" y1="0" x2="0" y2="10" stroke="#000000" stroke-width="1.2" />
+        </pattern>
+        <pattern id="pattern-hatch-left" width="10" height="10" patternTransform="rotate(-45 0 0)" patternUnits="userSpaceOnUse">
+          <line x1="0" y1="0" x2="0" y2="10" stroke="#000000" stroke-width="1.2" />
+        </pattern>
+      </defs>
+      
+  <!-- 좌표축 x, I(x) -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x1="80" y1="260" x2="560" y2="260" stroke="#000000" stroke-width="2" marker-end="url(#arrow)" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="561" y="251.5" width="42.8" height="18.0" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="565" y="265" font-size="15" fill="#000000" style="font-style:italic;">위치 x</text>
+    </g>
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x1="320" y1="280" x2="320" y2="60" stroke="#000000" stroke-width="2" marker-end="url(#arrow)" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="296" y="36.5" width="68.89999999999999" height="18.0" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="300" y="50" font-size="15" fill="#000000" style="font-weight:bold;">강도 I(x)</text>
+    </g>
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="306" y="268.3" width="45.699999999999996" height="15.6" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="310" y="280" font-size="13" fill="#000000" style="">x = 0</text>
+    </g>
+
+  <!-- 간섭 강도 분포 곡선 (코사인 제곱 포락선) -->
+  <path class="movable" transform="translate(0,0) scale(1,1) rotate(0)" d="M 120 260 Q 160 250 200 240 Q 220 260 240 210 Q 260 260 280 150 Q 300 260 320 80 Q 340 260 360 150 Q 380 260 400 210 Q 420 260 440 240 Q 480 250 520 260" fill="none" stroke="#2563eb" stroke-width="2.5" />
+
+  <!-- 피크 간격 Δx 표시 -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x1="320" y1="120" x2="360" y2="120" stroke="#dc2626" stroke-width="1.5" marker-start="url(#arrow-red)" marker-end="url(#arrow-red)" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="321" y="98.3" width="68.32" height="15.6" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="325" y="110" font-size="13" fill="#dc2626" style="font-weight:bold;">무늬 간격 Δx</text>
+    </g>
+
+    </svg>
+  </div>
+</body>
+</html>

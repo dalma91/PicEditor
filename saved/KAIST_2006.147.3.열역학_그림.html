@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>2006.147.3.열역학_그림</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      background: #f0f2f5;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+    .canvas-container {
+      background: #ffffff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    svg {
+      display: block;
+      user-select: none;
+    }
+    .movable {
+      cursor: move;
+    }
+    .text-el {
+      font-family: "Times New Roman", "Batang", serif;
+      user-select: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="canvas-container">
+    <svg id="canvas" viewBox="0 0 660 440" width="660" height="440" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#000000"/>
+        </marker>
+        <marker id="arrow-blue" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#2563eb"/>
+        </marker>
+        <marker id="arrow-red" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#dc2626"/>
+        </marker>
+        <pattern id="pattern-hatch-right" width="10" height="10" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
+          <line x1="0" y1="0" x2="0" y2="10" stroke="#000000" stroke-width="1.2" />
+        </pattern>
+        <pattern id="pattern-hatch-left" width="10" height="10" patternTransform="rotate(-45 0 0)" patternUnits="userSpaceOnUse">
+          <line x1="0" y1="0" x2="0" y2="10" stroke="#000000" stroke-width="1.2" />
+        </pattern>
+      </defs>
+      
+  <!-- 연직 실린더 (단면적 S) -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x1="160" y1="60" x2="160" y2="380" stroke="#000000" stroke-width="3" />
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x1="400" y1="60" x2="400" y2="380" stroke="#000000" stroke-width="3" />
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x1="160" y1="380" x2="400" y2="380" stroke="#000000" stroke-width="3" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="251" y="397.4" width="48.599999999999994" height="16.8" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="255" y="410" font-size="14" fill="#000000" style="">단면적 S</text>
+    </g>
+
+  <!-- 바닥에서 높이 d인 선택 투과 필터 (A만 통과, B 차단) -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x1="160" y1="260" x2="400" y2="260" stroke="#2563eb" stroke-width="3" stroke-dasharray="6,4" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="411" y="252.4" width="162.27999999999997" height="16.8" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="415" y="265" font-size="14" fill="#2563eb" style="font-weight:bold;">선택 필터 (A 통과 / B 차단)</text>
+    </g>
+  <!-- 높이 d 치수 -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x1="130" y1="260" x2="130" y2="380" stroke="#000000" stroke-width="1.2" marker-start="url(#arrow)" marker-end="url(#arrow)" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="106" y="310.6" width="17.28" height="19.2" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="110" y="325" font-size="16" fill="#000000" style="font-style:italic;">d</text>
+    </g>
+
+  <!-- 가동 피스톤 (질량 M) -->
+  <rect class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x="162" y="160" width="236" height="20" fill="#64748b" stroke="#000000" stroke-width="2" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="226" y="136.5" width="95.0" height="18.0" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="230" y="150" font-size="15" fill="#000000" style="font-weight:bold;">피스톤 (질량 M)</text>
+    </g>
+
+  <!-- 기체 A 분자 (열린 원) 및 기체 B 분자 (채운 원) -->
+  <circle class="movable" transform="translate(0,0) scale(1,1) rotate(0)" cx="220" cy="320" r="5" fill="#FFFFFF" stroke="#000000" stroke-width="1.5" />
+  <circle class="movable" transform="translate(0,0) scale(1,1) rotate(0)" cx="280" cy="340" r="5" fill="#FFFFFF" stroke="#000000" stroke-width="1.5" />
+  <circle class="movable" transform="translate(0,0) scale(1,1) rotate(0)" cx="340" cy="310" r="5" fill="#FFFFFF" stroke="#000000" stroke-width="1.5" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="411" y="298.3" width="166.33999999999997" height="15.6" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="415" y="310" font-size="13" fill="#000000" style="">○ 기체 A (질량 m_A, N_A개)</text>
+    </g>
+
+  <circle class="movable" transform="translate(0,0) scale(1,1) rotate(0)" cx="250" cy="300" r="5" fill="#000000" />
+  <circle class="movable" transform="translate(0,0) scale(1,1) rotate(0)" cx="310" cy="330" r="5" fill="#000000" />
+  <circle class="movable" transform="translate(0,0) scale(1,1) rotate(0)" cx="360" cy="350" r="5" fill="#000000" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="411" y="328.3" width="166.33999999999997" height="15.6" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="415" y="340" font-size="13" fill="#000000" style="">● 기체 B (질량 m_B, N_B개)</text>
+    </g>
+
+  <!-- 필터 위로 투과해 올라간 A 분자 -->
+  <circle class="movable" transform="translate(0,0) scale(1,1) rotate(0)" cx="260" cy="220" r="5" fill="#FFFFFF" stroke="#000000" stroke-width="1.5" />
+  <circle class="movable" transform="translate(0,0) scale(1,1) rotate(0)" cx="320" cy="200" r="5" fill="#FFFFFF" stroke="#000000" stroke-width="1.5" />
+
+    </svg>
+  </div>
+</body>
+</html>

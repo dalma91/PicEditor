@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>2006.137.1.역학_그림-2</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      background: #f0f2f5;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+    .canvas-container {
+      background: #ffffff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    svg {
+      display: block;
+      user-select: none;
+    }
+    .movable {
+      cursor: move;
+    }
+    .text-el {
+      font-family: "Times New Roman", "Batang", serif;
+      user-select: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="canvas-container">
+    <svg id="canvas" viewBox="0 0 520 510" width="520" height="510" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#000000"/>
+        </marker>
+        <marker id="arrow-blue" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#2563eb"/>
+        </marker>
+        <marker id="arrow-red" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#dc2626"/>
+        </marker>
+        <pattern id="pattern-hatch-right" width="10" height="10" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
+          <line x1="0" y1="0" x2="0" y2="10" stroke="#000000" stroke-width="1.2" />
+        </pattern>
+        <pattern id="pattern-hatch-left" width="10" height="10" patternTransform="rotate(-45 0 0)" patternUnits="userSpaceOnUse">
+          <line x1="0" y1="0" x2="0" y2="10" stroke="#000000" stroke-width="1.2" />
+        </pattern>
+      </defs>
+      
+  <!-- 전차 천장 및 점 S -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x1="120" y1="80" x2="440" y2="80" stroke="#000000" stroke-width="3" />
+  <circle class="movable" transform="translate(0,0) scale(1,1) rotate(0)" cx="280" cy="80" r="4" fill="#000000" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="286" y="61.5" width="60.199999999999996" height="18.0" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="290" y="75" font-size="15" fill="#000000" style="font-weight:bold;">천장 점 S</text>
+    </g>
+
+  <!-- 연직 기준선 SA (정지 위치 A) -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x1="280" y1="80" x2="280" y2="380" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="5,4" />
+  <circle class="movable" transform="translate(0,0) scale(1,1) rotate(0)" cx="280" cy="360" r="3.5" fill="#94a3b8" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="281" y="373.3" width="45.699999999999996" height="15.6" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="285" y="385" font-size="13" fill="#000000" style="">정지점 A</text>
+    </g>
+
+  <!-- 기울어진 실 (길이 d, 각도 θ) -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x1="280" y1="80" x2="160" y2="340" stroke="#000000" stroke-width="2" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="186" y="176.5" width="77.6" height="18.0" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="190" y="190" font-size="15" fill="#000000" style="font-style:italic;">실 (길이 d)</text>
+    </g>
+
+  <!-- 각도 θ 호 -->
+  <path class="movable" transform="translate(0,0) scale(1,1) rotate(0)" d="M 280 150 A 70 70 0 0 1 250 145" fill="none" stroke="#000000" stroke-width="1.5" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="251" y="151.5" width="16.7" height="18.0" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="255" y="165" font-size="15" fill="#000000" style="font-style:italic;">θ</text>
+    </g>
+
+  <!-- 물체 (질량 m) -->
+  <circle class="movable" transform="translate(0,0) scale(1,1) rotate(0)" cx="160" cy="340" r="16" fill="#000000" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="101" y="331.5" width="60.199999999999996" height="18.0" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="105" y="345" font-size="15" fill="#000000" style="font-weight:bold;">물체 (m)</text>
+    </g>
+
+  <!-- 원심력 및 중력 합력 (겉보기 중력 g') 화살표 -->
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x1="160" y1="340" x2="160" y2="420" stroke="#000000" stroke-width="1.8" marker-end="url(#arrow)" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="166" y="403.3" width="45.699999999999996" height="15.6" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="170" y="415" font-size="13" fill="#000000" style="">중력 mg</text>
+    </g>
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x1="160" y1="340" x2="80" y2="340" stroke="#2563eb" stroke-width="2" marker-end="url(#arrow-blue)" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="71" y="318.3" width="30.619999999999997" height="15.6" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="75" y="330" font-size="13" fill="#2563eb" style="font-weight:bold;">원심력</text>
+    </g>
+  <line class="movable" transform="translate(0,0) scale(1,1) rotate(0)" x1="160" y1="340" x2="100" y2="470" stroke="#dc2626" stroke-width="2.5" marker-end="url(#arrow-red)" />
+  <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+      <rect class="text-bg-rect" x="106" y="472.4" width="89.19999999999999" height="16.8" fill="#FFFFFF" fill-opacity="0.9" rx="2" />
+      <text class="text-el" x="110" y="485" font-size="14" fill="#dc2626" style="font-weight:bold;">겉보기 중력 mg'</text>
+    </g>
+
+    </svg>
+  </div>
+</body>
+</html>
