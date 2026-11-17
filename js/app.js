@@ -33,5 +33,5 @@ window.addEventListener('DOMContentLoaded', () => {
     window.PicEditor.sync.checkAutoSaveOnLoad();
   }
 
-  console.log('물리 그래픽 편집 스튜디오 V1.1이 성공적으로 초기화되었습니다.');
+  console.log('물리 그래픽 편집 스튜디오 V1.2이 성공적으로 초기화되었습니다.');
 });

@@ -827,8 +827,11 @@ window.PicEditor.interaction = {
         return;
       }
 
-      // 1-PL. 평행사변형(Parallelogram) 꼭짓점(보라색 점) 드래그 이동 (평행사변형 성질 엄격 유지)
-      if ((state.isDraggingParallelogramP1 || state.isDraggingParallelogramP2 || state.isDraggingParallelogramP3 || state.isDraggingParallelogramP4) && state.selectedElement) {
+      // 1-PL. 평행사변형(Parallelogram) 꼭짓점(P1~P4) 및 모서리(E1~E4) 드래그 이동 (평행사변형 정의 엄격 유지)
+      if ((state.isDraggingParallelogramP1 || state.isDraggingParallelogramP2 || 
+           state.isDraggingParallelogramP3 || state.isDraggingParallelogramP4 ||
+           state.isDraggingParallelogramE1 || state.isDraggingParallelogramE2 ||
+           state.isDraggingParallelogramE3 || state.isDraggingParallelogramE4) && state.selectedElement) {
         state.hasDragged = true;
         if (e.cancelable) e.preventDefault();
         const paraEl = state.selectedElement;
@@ -843,19 +846,49 @@ window.PicEditor.interaction = {
           const localX = lx * cos - ly * sin;
           const localY = lx * sin + ly * cos;
 
-          // P1 + P3 = P2 + P4 성질 유지 (대각선 중점 불변 원리)
+          // 1) 꼭짓점(Vertices P1~P4) 이동: 두 쌍의 대변이 각각 평행하고 길이가 같은 성질 엄격 유지
           if (state.isDraggingParallelogramP1) {
+            // P1(좌상단) 이동: 밑변(P4-P3) 고정, 윗변 P1-P2가 밑변과 항상 평행 및 동일 길이 유지
             pts[0] = { x: localX, y: localY };
-            pts[3] = { x: pts[0].x + pts[2].x - pts[1].x, y: pts[0].y + pts[2].y - pts[1].y };
+            pts[1] = { x: pts[0].x + (pts[2].x - pts[3].x), y: pts[0].y + (pts[2].y - pts[3].y) };
           } else if (state.isDraggingParallelogramP2) {
+            // P2(우상단) 이동: 좌측변(P4-P1) 고정, 밑변 P4-P3이 윗변 P1-P2와 항상 평행 및 동일 길이 유지
             pts[1] = { x: localX, y: localY };
-            pts[2] = { x: pts[1].x + pts[3].x - pts[0].x, y: pts[1].y + pts[3].y - pts[0].y };
+            pts[2] = { x: pts[3].x + (pts[1].x - pts[0].x), y: pts[3].y + (pts[1].y - pts[0].y) };
           } else if (state.isDraggingParallelogramP3) {
+            // P3(우하단) 이동: 좌측변(P4-P1) 고정, 윗변 P1-P2가 밑변 P4-P3과 항상 평행 및 동일 길이 유지
             pts[2] = { x: localX, y: localY };
-            pts[1] = { x: pts[0].x + pts[2].x - pts[3].x, y: pts[0].y + pts[2].y - pts[3].y };
+            pts[1] = { x: pts[0].x + (pts[2].x - pts[3].x), y: pts[0].y + (pts[2].y - pts[3].y) };
           } else if (state.isDraggingParallelogramP4) {
+            // P4(좌하단) 이동: 윗변(P1-P2) 고정, 밑변 P4-P3이 윗변과 항상 평행 및 동일 길이 유지
             pts[3] = { x: localX, y: localY };
-            pts[0] = { x: pts[1].x + pts[3].x - pts[2].x, y: pts[1].y + pts[3].y - pts[2].y };
+            pts[2] = { x: pts[3].x + (pts[1].x - pts[0].x), y: pts[3].y + (pts[1].y - pts[0].y) };
+          }
+          // 2) 모서리(변 E1~E4) 이동: 해당 변 전체가 대변과 평행을 유지하며 평행 이동
+          else if (state.isDraggingParallelogramE1 && state.paraDragStart) {
+            // E1(윗변 P1-P2) 전체 이동: 밑변(P4-P3) 고정
+            const dx = localX - state.paraDragStart.localX;
+            const dy = localY - state.paraDragStart.localY;
+            pts[0] = { x: state.paraDragStart.pts[0].x + dx, y: state.paraDragStart.pts[0].y + dy };
+            pts[1] = { x: state.paraDragStart.pts[1].x + dx, y: state.paraDragStart.pts[1].y + dy };
+          } else if (state.isDraggingParallelogramE2 && state.paraDragStart) {
+            // E2(우변 P2-P3) 전체 이동: 좌변(P4-P1) 고정
+            const dx = localX - state.paraDragStart.localX;
+            const dy = localY - state.paraDragStart.localY;
+            pts[1] = { x: state.paraDragStart.pts[1].x + dx, y: state.paraDragStart.pts[1].y + dy };
+            pts[2] = { x: state.paraDragStart.pts[2].x + dx, y: state.paraDragStart.pts[2].y + dy };
+          } else if (state.isDraggingParallelogramE3 && state.paraDragStart) {
+            // E3(아랫변 P3-P4) 전체 이동: 윗변(P1-P2) 고정
+            const dx = localX - state.paraDragStart.localX;
+            const dy = localY - state.paraDragStart.localY;
+            pts[2] = { x: state.paraDragStart.pts[2].x + dx, y: state.paraDragStart.pts[2].y + dy };
+            pts[3] = { x: state.paraDragStart.pts[3].x + dx, y: state.paraDragStart.pts[3].y + dy };
+          } else if (state.isDraggingParallelogramE4 && state.paraDragStart) {
+            // E4(좌변 P4-P1) 전체 이동: 우변(P2-P3) 고정
+            const dx = localX - state.paraDragStart.localX;
+            const dy = localY - state.paraDragStart.localY;
+            pts[0] = { x: state.paraDragStart.pts[0].x + dx, y: state.paraDragStart.pts[0].y + dy };
+            pts[3] = { x: state.paraDragStart.pts[3].x + dx, y: state.paraDragStart.pts[3].y + dy };
           }
 
           paraEl.setAttribute('points', `${pts[0].x.toFixed(1)},${pts[0].y.toFixed(1)} ${pts[1].x.toFixed(1)},${pts[1].y.toFixed(1)} ${pts[2].x.toFixed(1)},${pts[2].y.toFixed(1)} ${pts[3].x.toFixed(1)},${pts[3].y.toFixed(1)}`);
@@ -1357,16 +1390,28 @@ window.PicEditor.interaction = {
         return;
       }
 
-      // 평행사변형 꼭짓점 드래그 종료
-      if (state.isDraggingParallelogramP1 || state.isDraggingParallelogramP2 || state.isDraggingParallelogramP3 || state.isDraggingParallelogramP4) {
+      // 평행사변형 꼭짓점 및 모서리 드래그 종료
+      if (state.isDraggingParallelogramP1 || state.isDraggingParallelogramP2 || 
+          state.isDraggingParallelogramP3 || state.isDraggingParallelogramP4 ||
+          state.isDraggingParallelogramE1 || state.isDraggingParallelogramE2 ||
+          state.isDraggingParallelogramE3 || state.isDraggingParallelogramE4) {
         state.isDraggingParallelogramP1 = false;
         state.isDraggingParallelogramP2 = false;
         state.isDraggingParallelogramP3 = false;
         state.isDraggingParallelogramP4 = false;
+        state.isDraggingParallelogramE1 = false;
+        state.isDraggingParallelogramE2 = false;
+        state.isDraggingParallelogramE3 = false;
+        state.isDraggingParallelogramE4 = false;
+        state.paraDragStart = null;
         if (svg) {
           [1, 2, 3, 4].forEach(idx => {
-            const h = svg.querySelector(`#parallelogram-p${idx}-handle-wrap`);
-            if (h) h.style.cursor = 'grab';
+            const hp = svg.querySelector(`#parallelogram-p${idx}-handle-wrap`);
+            if (hp) hp.style.cursor = 'grab';
+            const he = svg.querySelector(`#parallelogram-e${idx}-handle-wrap`);
+            if (he) {
+              he.style.cursor = (idx === 1 || idx === 3) ? 'ns-resize' : 'ew-resize';
+            }
           });
         }
         if (state.hasDragged && window.PicEditor.sync) window.PicEditor.sync.markModified();

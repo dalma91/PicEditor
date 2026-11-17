@@ -1007,7 +1007,7 @@ window.PicEditor.tools = {
   },
 
   /**
-   * 평행사변형(Parallelogram) 4개 꼭짓점 조작 핸들 보장 및 이벤트 바인딩
+   * 평행사변형(Parallelogram) 4개 꼭짓점(P1~P4) 및 4개 모서리(E1~E4) 조작 핸들 보장 및 이벤트 바인딩
    */
   ensureParallelogramGizmo(svg) {
     let gizmo = svg.querySelector('#parallelogram-handle-group');
@@ -1017,6 +1017,25 @@ window.PicEditor.tools = {
       gizmo.setAttribute('class', 'editor-gizmo-group');
       gizmo.setAttribute('style', 'display:none; pointer-events:none;');
       gizmo.innerHTML = `
+        <!-- 4개 모서리(변) 중앙 조작 핸들 (E1:윗변, E2:우변, E3:아랫변, E4:좌변) -->
+        <g id="parallelogram-e1-handle-wrap" style="cursor:ns-resize; pointer-events:all;" title="윗변 모서리 이동">
+          <circle r="20" fill="#000000" opacity="0.001" style="cursor:ns-resize; pointer-events:all;" />
+          <rect x="-8" y="-5" width="16" height="10" rx="3" fill="#8b5cf6" stroke="#ffffff" stroke-width="2" style="filter:drop-shadow(0 2px 4px rgba(0,0,0,0.35)); pointer-events:none;" />
+        </g>
+        <g id="parallelogram-e2-handle-wrap" style="cursor:ew-resize; pointer-events:all;" title="우변 모서리 이동">
+          <circle r="20" fill="#000000" opacity="0.001" style="cursor:ew-resize; pointer-events:all;" />
+          <rect x="-5" y="-8" width="10" height="16" rx="3" fill="#8b5cf6" stroke="#ffffff" stroke-width="2" style="filter:drop-shadow(0 2px 4px rgba(0,0,0,0.35)); pointer-events:none;" />
+        </g>
+        <g id="parallelogram-e3-handle-wrap" style="cursor:ns-resize; pointer-events:all;" title="아랫변 모서리 이동">
+          <circle r="20" fill="#000000" opacity="0.001" style="cursor:ns-resize; pointer-events:all;" />
+          <rect x="-8" y="-5" width="16" height="10" rx="3" fill="#8b5cf6" stroke="#ffffff" stroke-width="2" style="filter:drop-shadow(0 2px 4px rgba(0,0,0,0.35)); pointer-events:none;" />
+        </g>
+        <g id="parallelogram-e4-handle-wrap" style="cursor:ew-resize; pointer-events:all;" title="좌변 모서리 이동">
+          <circle r="20" fill="#000000" opacity="0.001" style="cursor:ew-resize; pointer-events:all;" />
+          <rect x="-5" y="-8" width="10" height="16" rx="3" fill="#8b5cf6" stroke="#ffffff" stroke-width="2" style="filter:drop-shadow(0 2px 4px rgba(0,0,0,0.35)); pointer-events:none;" />
+        </g>
+
+        <!-- 4개 꼭짓점 조작 핸들 (P1~P4) -->
         <g id="parallelogram-p1-handle-wrap" style="cursor:grab; pointer-events:all;">
           <circle r="22" fill="#000000" opacity="0.001" style="cursor:grab; pointer-events:all;" />
           <circle r="6.5" fill="#a855f7" stroke="#ffffff" stroke-width="2.5" style="filter:drop-shadow(0 2px 4px rgba(0,0,0,0.35)); pointer-events:none;" />
@@ -1044,6 +1063,7 @@ window.PicEditor.tools = {
       `;
       svg.appendChild(gizmo);
 
+      // 꼭짓점 드래그 바인딩
       [1, 2, 3, 4].forEach(idx => {
         const h = gizmo.querySelector(`#parallelogram-p${idx}-handle-wrap`);
         const startDrag = (e) => {
@@ -1056,6 +1076,41 @@ window.PicEditor.tools = {
         };
         h.addEventListener('mousedown', startDrag);
         h.addEventListener('touchstart', startDrag, { passive: false });
+      });
+
+      // 모서리(변) 드래그 바인딩
+      [1, 2, 3, 4].forEach(idx => {
+        const h = gizmo.querySelector(`#parallelogram-e${idx}-handle-wrap`);
+        const startDragEdge = (e) => {
+          e.stopPropagation();
+          if (e.cancelable && e.type === 'touchstart') e.preventDefault();
+          const state = window.PicEditor.state;
+          const paraEl = state.selectedElement;
+          if (!paraEl) return;
+          const pts = window.PicEditor.tools.getParallelogramPoints(paraEl);
+          if (!pts || pts.length < 4) return;
+          const svgEl = window.PicEditor.utils.getActiveSvg();
+          const pt = window.PicEditor.utils.getSvgPoint(e, svgEl);
+          const t = window.PicEditor.utils.parseTransform(paraEl);
+          const rad = (t.r || 0) * Math.PI / 180;
+          const cos = Math.cos(-rad);
+          const sin = Math.sin(-rad);
+          const lx = (pt.x - t.x) / (t.sx || 1);
+          const ly = (pt.y - t.y) / (t.sy || 1);
+          const localX = lx * cos - ly * sin;
+          const localY = lx * sin + ly * cos;
+
+          state[`isDraggingParallelogramE${idx}`] = true;
+          state.paraDragStart = {
+            pts: pts.map(p => ({ x: p.x, y: p.y })),
+            localX: localX,
+            localY: localY
+          };
+          state.hasDragged = false;
+          h.style.cursor = 'grabbing';
+        };
+        h.addEventListener('mousedown', startDragEdge);
+        h.addEventListener('touchstart', startDragEdge, { passive: false });
       });
     }
     return gizmo;
@@ -1077,6 +1132,10 @@ window.PicEditor.tools = {
     const p2 = gizmo.querySelector('#parallelogram-p2-handle-wrap');
     const p3 = gizmo.querySelector('#parallelogram-p3-handle-wrap');
     const p4 = gizmo.querySelector('#parallelogram-p4-handle-wrap');
+    const e1 = gizmo.querySelector('#parallelogram-e1-handle-wrap');
+    const e2 = gizmo.querySelector('#parallelogram-e2-handle-wrap');
+    const e3 = gizmo.querySelector('#parallelogram-e3-handle-wrap');
+    const e4 = gizmo.querySelector('#parallelogram-e4-handle-wrap');
 
     try {
       const m = svg.getScreenCTM().inverse().multiply(el.getScreenCTM());
@@ -1090,18 +1149,30 @@ window.PicEditor.tools = {
       const tp2 = getPt(pts[1]);
       const tp3 = getPt(pts[2]);
       const tp4 = getPt(pts[3]);
+      const te1 = { x: (tp1.x + tp2.x) / 2, y: (tp1.y + tp2.y) / 2 };
+      const te2 = { x: (tp2.x + tp3.x) / 2, y: (tp2.y + tp3.y) / 2 };
+      const te3 = { x: (tp3.x + tp4.x) / 2, y: (tp3.y + tp4.y) / 2 };
+      const te4 = { x: (tp4.x + tp1.x) / 2, y: (tp4.y + tp1.y) / 2 };
 
       gizmo.setAttribute('transform', 'translate(0,0) scale(1,1) rotate(0)');
       if (p1) p1.setAttribute('transform', `translate(${tp1.x}, ${tp1.y})`);
       if (p2) p2.setAttribute('transform', `translate(${tp2.x}, ${tp2.y})`);
       if (p3) p3.setAttribute('transform', `translate(${tp3.x}, ${tp3.y})`);
       if (p4) p4.setAttribute('transform', `translate(${tp4.x}, ${tp4.y})`);
+      if (e1) e1.setAttribute('transform', `translate(${te1.x}, ${te1.y})`);
+      if (e2) e2.setAttribute('transform', `translate(${te2.x}, ${te2.y})`);
+      if (e3) e3.setAttribute('transform', `translate(${te3.x}, ${te3.y})`);
+      if (e4) e4.setAttribute('transform', `translate(${te4.x}, ${te4.y})`);
     } catch (e) {
       gizmo.setAttribute('transform', el.getAttribute('transform') || 'translate(0,0) scale(1,1) rotate(0)');
       if (p1) p1.setAttribute('transform', `translate(${pts[0].x}, ${pts[0].y})`);
       if (p2) p2.setAttribute('transform', `translate(${pts[1].x}, ${pts[1].y})`);
       if (p3) p3.setAttribute('transform', `translate(${pts[2].x}, ${pts[2].y})`);
       if (p4) p4.setAttribute('transform', `translate(${pts[3].x}, ${pts[3].y})`);
+      if (e1) e1.setAttribute('transform', `translate(${(pts[0].x + pts[1].x) / 2}, ${(pts[0].y + pts[1].y) / 2})`);
+      if (e2) e2.setAttribute('transform', `translate(${(pts[1].x + pts[2].x) / 2}, ${(pts[1].y + pts[2].y) / 2})`);
+      if (e3) e3.setAttribute('transform', `translate(${(pts[2].x + pts[3].x) / 2}, ${(pts[2].y + pts[3].y) / 2})`);
+      if (e4) e4.setAttribute('transform', `translate(${(pts[3].x + pts[0].x) / 2}, ${(pts[3].y + pts[0].y) / 2})`);
     }
 
     gizmo.style.display = 'block';
