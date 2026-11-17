@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>2003.099.1.역학_그림</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      background: #f0f2f5;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+    .canvas-container {
+      background: #ffffff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    svg {
+      display: block;
+      user-select: none;
+    }
+    .movable {
+      cursor: move;
+    }
+    .text-el {
+      font-family: "Times New Roman", "Batang", serif;
+      user-select: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="canvas-container">
+    <svg id="canvas" viewBox="0 0 600 480" width="600" height="480" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#000000"/>
+        </marker>
+        <marker id="arrow-open" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 1 2 L 7 5 L 1 8" fill="none" stroke="#000000" stroke-width="1.5" stroke-linecap="round"/>
+        </marker>
+        <pattern id="hatch" width="10" height="10" patternUnits="userSpaceOnUse">
+          <path d="M-1,1 l2,-2 M0,10 l10,-10 M9,11 l2,-2" stroke="#666666" stroke-width="1"/>
+        </pattern>
+        <pattern id="dense-hatch" width="6" height="6" patternUnits="userSpaceOnUse">
+          <path d="M0,6 l6,-6" stroke="#444444" stroke-width="1"/>
+        </pattern>
+      </defs>
+      <polygon class="movable" points="90,360 530,360 530,140" fill="none" stroke="#000000" stroke-width="2.5" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="90" y1="360" x2="58.7" y2="297.4" stroke="#000000" stroke-width="5" stroke-linecap="round" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <path class="movable" d="M 230 360 A 140 140 0 0 0 216 298" fill="none" stroke="#000000" stroke-width="1.5" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+        <rect class="text-bg-rect" x="244.0" y="313.5" width="22.0" height="30.0" fill="#FFFFFF" fill-opacity="0.85"/>
+        <text class="text-el" x="255" y="335" font-size="22" font-weight="normal" font-style="italic" text-anchor="middle" fill="#000000">θ</text>
+      </g>
+      <path class="movable" d="M 87.8 333.2 L 86.8 315.8 L 113.4 338.3 L 111.3 303.5 L 137.9 326.0 L 135.9 291.2 L 162.5 313.7 L 160.5 278.9 L 187.1 301.4 L 185.1 266.6 L 211.7 289.1 L 209.7 254.3 L 236.3 276.8 L 234.3 242.0 L 260.9 264.5 L 258.9 229.8 L 285.5 252.2 L 284.4 234.8" fill="none" stroke="#000000" stroke-width="2" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <g class="movable" transform="translate(0,0) scale(1,1) rotate(0)">
+        <polygon points="275.5,205.8 293.4,241.5 305.9,235.3 288.0,199.5" fill="#FFFFFF" stroke="#000000" stroke-width="2"/>
+      </g>
+      <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+        <rect class="text-bg-rect" x="257.8" y="172.4" width="22.0" height="28.0" fill="#FFFFFF" fill-opacity="0.85"/>
+        <text class="text-el" x="268.8" y="192.37499999999994" font-size="20" font-weight="normal" font-style="normal" text-anchor="middle" fill="#000000">판</text>
+      </g>
+      <circle class="movable" cx="316.6" cy="203.1" r="24" fill="#FFFFFF" stroke="#000000" stroke-width="2.5" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+        <rect class="text-bg-rect" x="291.3" y="154.5" width="22.0" height="28.0" fill="#FFFFFF" fill-opacity="0.85"/>
+        <text class="text-el" x="302.32500000000005" y="174.49499999999995" font-size="20" font-weight="normal" font-style="normal" text-anchor="middle" fill="#000000">공</text>
+      </g>
+      <line class="movable" x1="56.5" y1="292.9" x2="43.1" y2="266.1" stroke="#000000" stroke-width="2" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="49.8" y1="279.5" x2="166.0" y2="221.4" stroke="#000000" stroke-width="2" marker-end="url(#arrow)" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+        <rect class="text-bg-rect" x="70.1" y="220.0" width="22.0" height="30.0" fill="#FFFFFF" fill-opacity="0.85"/>
+        <text class="text-el" x="81.06" y="241.54499999999996" font-size="22" font-weight="normal" font-style="italic" text-anchor="middle" fill="#000000">x</text>
+      </g>
+      <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+        <rect class="text-bg-rect" x="267.5" y="408.5" width="65.0" height="30.0" fill="#FFFFFF" fill-opacity="0.85"/>
+        <text class="text-el" x="300" y="430" font-size="22" font-weight="normal" font-style="normal" text-anchor="middle" fill="#000000">그림 1</text>
+      </g>
+    </svg>
+  </div>
+</body>
+</html>

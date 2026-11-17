@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>2003.203.1.역학_그림</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      background: #f0f2f5;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+    .canvas-container {
+      background: #ffffff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    svg {
+      display: block;
+      user-select: none;
+    }
+    .movable {
+      cursor: move;
+    }
+    .text-el {
+      font-family: "Times New Roman", "Batang", serif;
+      user-select: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="canvas-container">
+    <svg id="canvas" viewBox="0 0 680 430" width="680" height="430" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#000000"/>
+        </marker>
+        <marker id="arrow-open" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 1 2 L 7 5 L 1 8" fill="none" stroke="#000000" stroke-width="1.5" stroke-linecap="round"/>
+        </marker>
+        <pattern id="hatch" width="10" height="10" patternUnits="userSpaceOnUse">
+          <path d="M-1,1 l2,-2 M0,10 l10,-10 M9,11 l2,-2" stroke="#666666" stroke-width="1"/>
+        </pattern>
+        <pattern id="dense-hatch" width="6" height="6" patternUnits="userSpaceOnUse">
+          <path d="M0,6 l6,-6" stroke="#444444" stroke-width="1"/>
+        </pattern>
+      </defs>
+      <line class="movable" x1="40" y1="280" x2="620" y2="280" stroke="#000000" stroke-width="2.5" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="40" y1="280" x2="25" y2="305" stroke="#000000" stroke-width="1" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="55" y1="280" x2="40" y2="305" stroke="#000000" stroke-width="1" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="70" y1="280" x2="55" y2="305" stroke="#000000" stroke-width="1" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="85" y1="280" x2="70" y2="305" stroke="#000000" stroke-width="1" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="100" y1="280" x2="85" y2="305" stroke="#000000" stroke-width="1" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="115" y1="280" x2="100" y2="305" stroke="#000000" stroke-width="1" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="130" y1="280" x2="115" y2="305" stroke="#000000" stroke-width="1" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="145" y1="280" x2="130" y2="305" stroke="#000000" stroke-width="1" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="160" y1="280" x2="145" y2="305" stroke="#000000" stroke-width="1" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="175" y1="280" x2="160" y2="305" stroke="#000000" stroke-width="1" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="190" y1="280" x2="175" y2="305" stroke="#000000" stroke-width="1" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="205" y1="280" x2="190" y2="305" stroke="#000000" stroke-width="1" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="220" y1="280" x2="205" y2="305" stroke="#000000" stroke-width="1" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="235" y1="280" x2="220" y2="305" stroke="#000000" stroke-width="1" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="250" y1="280" x2="235" y2="305" stroke="#000000" stroke-width="1" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="265" y1="280" x2="250" y2="305" stroke="#000000" stroke-width="1" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="280" y1="280" x2="265" y2="305" stroke="#000000" stroke-width="1" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="295" y1="280" x2="280" y2="305" stroke="#000000" stroke-width="1" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="310" y1="280" x2="295" y2="305" stroke="#000000" stroke-width="1" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="325" y1="280" x2="310" y2="305" stroke="#000000" stroke-width="1" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="340" y1="280" x2="325" y2="305" stroke="#000000" stroke-width="1" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="355" y1="280" x2="340" y2="305" stroke="#000000" stroke-width="1" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="370" y1="280" x2="355" y2="305" stroke="#000000" stroke-width="1" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="385" y1="280" x2="370" y2="305" stroke="#000000" stroke-width="1" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="400" y1="280" x2="385" y2="305" stroke="#000000" stroke-width="1" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="415" y1="280" x2="400" y2="305" stroke="#000000" stroke-width="1" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="430" y1="280" x2="415" y2="305" stroke="#000000" stroke-width="1" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="445" y1="280" x2="430" y2="305" stroke="#000000" stroke-width="1" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="460" y1="280" x2="445" y2="305" stroke="#000000" stroke-width="1" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="475" y1="280" x2="460" y2="305" stroke="#000000" stroke-width="1" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="490" y1="280" x2="475" y2="305" stroke="#000000" stroke-width="1" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="505" y1="280" x2="490" y2="305" stroke="#000000" stroke-width="1" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="520" y1="280" x2="505" y2="305" stroke="#000000" stroke-width="1" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="535" y1="280" x2="520" y2="305" stroke="#000000" stroke-width="1" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="550" y1="280" x2="535" y2="305" stroke="#000000" stroke-width="1" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="565" y1="280" x2="550" y2="305" stroke="#000000" stroke-width="1" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="580" y1="280" x2="565" y2="305" stroke="#000000" stroke-width="1" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="595" y1="280" x2="580" y2="305" stroke="#000000" stroke-width="1" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="610" y1="280" x2="595" y2="305" stroke="#000000" stroke-width="1" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="620" y1="140" x2="620" y2="280" stroke="#000000" stroke-width="2.5" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="620" y1="140" x2="640" y2="125" stroke="#000000" stroke-width="1" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="620" y1="155" x2="640" y2="140" stroke="#000000" stroke-width="1" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="620" y1="170" x2="640" y2="155" stroke="#000000" stroke-width="1" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="620" y1="185" x2="640" y2="170" stroke="#000000" stroke-width="1" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="620" y1="200" x2="640" y2="185" stroke="#000000" stroke-width="1" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="620" y1="215" x2="640" y2="200" stroke="#000000" stroke-width="1" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="620" y1="230" x2="640" y2="215" stroke="#000000" stroke-width="1" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="620" y1="245" x2="640" y2="230" stroke="#000000" stroke-width="1" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="620" y1="260" x2="640" y2="245" stroke="#000000" stroke-width="1" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="620" y1="275" x2="640" y2="260" stroke="#000000" stroke-width="1" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <path class="movable" d="M 40 85 L 60 100 L 190 260 Q 210 280, 230 280 L 620 280" fill="none" stroke="#000000" stroke-width="2.5" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <circle class="movable" cx="60" cy="85" r="14" fill="#FFFFFF" stroke="#000000" stroke-width="2" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+        <rect class="text-bg-rect" x="49.0" y="33.5" width="22.0" height="30.0" fill="#FFFFFF" fill-opacity="0.85"/>
+        <text class="text-el" x="60" y="55" font-size="22" font-weight="normal" font-style="normal" text-anchor="middle" fill="#000000">A</text>
+      </g>
+      <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+        <rect class="text-bg-rect" x="29.0" y="93.5" width="22.0" height="30.0" fill="#FFFFFF" fill-opacity="0.85"/>
+        <text class="text-el" x="40" y="115" font-size="22" font-weight="normal" font-style="normal" text-anchor="middle" fill="#000000">P</text>
+      </g>
+      <line class="movable" x1="60" y1="100" x2="60" y2="350" stroke="#000000" stroke-width="1.5" stroke-dasharray="4,4" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <path class="movable" d="M 140 280 A 60 60 0 0 1 180 248" fill="none" stroke="#000000" stroke-width="1.5" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+        <rect class="text-bg-rect" x="149.0" y="248.5" width="22.0" height="30.0" fill="#FFFFFF" fill-opacity="0.85"/>
+        <text class="text-el" x="160" y="270" font-size="22" font-weight="normal" font-style="italic" text-anchor="middle" fill="#000000">θ</text>
+      </g>
+      <circle class="movable" cx="450" cy="266" r="14" fill="#FFFFFF" stroke="#000000" stroke-width="2" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+        <rect class="text-bg-rect" x="439.0" y="213.5" width="22.0" height="30.0" fill="#FFFFFF" fill-opacity="0.85"/>
+        <text class="text-el" x="450" y="235" font-size="22" font-weight="normal" font-style="normal" text-anchor="middle" fill="#000000">B</text>
+      </g>
+      <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+        <rect class="text-bg-rect" x="439.0" y="283.5" width="22.0" height="30.0" fill="#FFFFFF" fill-opacity="0.85"/>
+        <text class="text-el" x="450" y="305" font-size="22" font-weight="normal" font-style="normal" text-anchor="middle" fill="#000000">Q</text>
+      </g>
+      <path class="movable" d="M 464 266 L 474 266 C 487.6 250, 487.6 282, 491.0 266 C 504.6 250, 504.6 282, 508.0 266 C 521.6 250, 521.6 282, 525.0 266 C 538.6 250, 538.6 282, 542.0 266 C 555.6 250, 555.6 282, 559.0 266 C 572.6 250, 572.6 282, 576.0 266 C 589.6 250, 589.6 282, 593.0 266 C 606.6 250, 606.6 282, 610.0 266 L 620 266" fill="none" stroke="#000000" stroke-width="2" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="40" y1="350" x2="610" y2="350" stroke="#000000" stroke-width="2" marker-end="url(#arrow)" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+        <rect class="text-bg-rect" x="613.5" y="332.0" width="23.0" height="32.0" fill="#FFFFFF" fill-opacity="0.85"/>
+        <text class="text-el" x="625" y="355" font-size="24" font-weight="normal" font-style="italic" text-anchor="middle" fill="#000000">x</text>
+      </g>
+      <line class="movable" x1="60" y1="345" x2="60" y2="355" stroke="#000000" stroke-width="2" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+        <rect class="text-bg-rect" x="49.0" y="358.5" width="22.0" height="30.0" fill="#FFFFFF" fill-opacity="0.85"/>
+        <text class="text-el" x="60" y="380" font-size="22" font-weight="normal" font-style="normal" text-anchor="middle" fill="#000000">0</text>
+      </g>
+      <line class="movable" x1="230" y1="345" x2="230" y2="355" stroke="#000000" stroke-width="2" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+        <rect class="text-bg-rect" x="219.0" y="358.5" width="22.0" height="30.0" fill="#FFFFFF" fill-opacity="0.85"/>
+        <text class="text-el" x="230" y="380" font-size="22" font-weight="normal" font-style="italic" text-anchor="middle" fill="#000000">a</text>
+      </g>
+      <line class="movable" x1="450" y1="345" x2="450" y2="355" stroke="#000000" stroke-width="2" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+        <rect class="text-bg-rect" x="410.5" y="358.5" width="79.0" height="30.0" fill="#FFFFFF" fill-opacity="0.85"/>
+        <text class="text-el" x="450" y="380" font-size="22" font-weight="normal" font-style="italic" text-anchor="middle" fill="#000000">a + b</text>
+      </g>
+    </svg>
+  </div>
+</body>
+</html>
