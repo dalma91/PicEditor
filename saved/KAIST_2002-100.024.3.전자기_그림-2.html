@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>2002-100.024.3.전자기_그림-2</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      background: #f0f2f5;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+    .canvas-container {
+      background: #ffffff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    svg {
+      display: block;
+      user-select: none;
+    }
+    .movable {
+      cursor: move;
+    }
+    .text-el {
+      font-family: "Times New Roman", "Batang", serif;
+      user-select: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="canvas-container">
+    <svg id="canvas" viewBox="0 0 520 520" width="520" height="520" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#000000"/>
+        </marker>
+        <marker id="arrow-open" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 1 2 L 7 5 L 1 8" fill="none" stroke="#000000" stroke-width="1.5" stroke-linecap="round"/>
+        </marker>
+        <pattern id="crosshatch" width="10" height="10" patternUnits="userSpaceOnUse">
+          <path d="M-1,1 l2,-2 M0,10 l10,-10 M9,11 l2,-2" stroke="#B0B0B0" stroke-width="1"/>
+        </pattern>
+      </defs>
+      <line class="movable" x1="90" y1="420" x2="90" y2="90" stroke="#000000" stroke-width="1.5" stroke-dasharray="4,4" marker-end="url(#arrow)" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="150" y1="420" x2="150" y2="90" stroke="#000000" stroke-width="1.5" stroke-dasharray="4,4" marker-end="url(#arrow)" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="195" y1="420" x2="195" y2="90" stroke="#000000" stroke-width="1.5" stroke-dasharray="4,4" marker-end="url(#arrow)" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="250" y1="420" x2="250" y2="90" stroke="#000000" stroke-width="1.5" stroke-dasharray="4,4" marker-end="url(#arrow)" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="305" y1="420" x2="305" y2="90" stroke="#000000" stroke-width="1.5" stroke-dasharray="4,4" marker-end="url(#arrow)" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="360" y1="420" x2="360" y2="90" stroke="#000000" stroke-width="1.5" stroke-dasharray="4,4" marker-end="url(#arrow)" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <line class="movable" x1="420" y1="420" x2="420" y2="90" stroke="#000000" stroke-width="1.5" stroke-dasharray="4,4" marker-end="url(#arrow)" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+        <rect class="text-bg-rect" x="87.0" y="55.0" width="86.0" height="28.0" fill="#FFFFFF" fill-opacity="0.85"/>
+        <text class="text-el" x="130" y="75" font-size="20" font-weight="bold" font-style="normal" text-anchor="middle" fill="#000000">외부 자기장</text>
+      </g>
+      <line class="movable" x1="250" y1="430" x2="250" y2="70" stroke="#000000" stroke-width="2" marker-end="url(#arrow)" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+        <rect class="text-bg-rect" x="218.5" y="57.0" width="23.0" height="32.0" fill="#FFFFFF" fill-opacity="0.85"/>
+        <text class="text-el" x="230" y="80" font-size="24" font-weight="normal" font-style="italic" text-anchor="middle" fill="#000000">z</text>
+      </g>
+      <line class="movable" x1="60" y1="250" x2="460" y2="250" stroke="#000000" stroke-width="2" marker-end="url(#arrow)" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+        <rect class="text-bg-rect" x="463.5" y="237.0" width="23.0" height="32.0" fill="#FFFFFF" fill-opacity="0.85"/>
+        <text class="text-el" x="475" y="260" font-size="24" font-weight="normal" font-style="italic" text-anchor="middle" fill="#000000">x</text>
+      </g>
+      <line class="movable" x1="120" y1="315" x2="380" y2="185" stroke="#000000" stroke-width="2" marker-end="url(#arrow)" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+        <rect class="text-bg-rect" x="383.5" y="162.0" width="23.0" height="32.0" fill="#FFFFFF" fill-opacity="0.85"/>
+        <text class="text-el" x="395" y="185" font-size="24" font-weight="normal" font-style="italic" text-anchor="middle" fill="#000000">y</text>
+      </g>
+      <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+        <rect class="text-bg-rect" x="219.0" y="253.5" width="22.0" height="30.0" fill="#FFFFFF" fill-opacity="0.85"/>
+        <text class="text-el" x="230" y="275" font-size="22" font-weight="normal" font-style="normal" text-anchor="middle" fill="#000000">O</text>
+      </g>
+      <ellipse class="movable" cx="250" cy="250" rx="170" ry="55" fill="none" stroke="#000000" stroke-width="1.8" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <circle class="movable" cx="250" cy="250" r="9" fill="#B0B0B0" stroke="#000000" stroke-width="1.8" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+        <rect class="text-bg-rect" x="167.5" y="216.5" width="45.0" height="26.0" fill="#FFFFFF" fill-opacity="0.85"/>
+        <text class="text-el" x="190" y="235" font-size="19" font-weight="normal" font-style="normal" text-anchor="middle" fill="#000000">원자핵</text>
+      </g>
+      <circle class="movable" cx="370" cy="287" r="6.5" fill="#000000" stroke="#000000" stroke-width="1" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+        <rect class="text-bg-rect" x="399.0" y="296.5" width="32.0" height="26.0" fill="#FFFFFF" fill-opacity="0.85"/>
+        <text class="text-el" x="415" y="315" font-size="19" font-weight="normal" font-style="normal" text-anchor="middle" fill="#000000">전자</text>
+      </g>
+      <line class="movable" x1="370" y1="287" x2="315" y2="302" stroke="#000000" stroke-width="2.2" marker-end="url(#arrow)" transform="translate(0,0) scale(1,1) rotate(0)"/>
+      <g class="movable text-wrap" transform="translate(0,0) scale(1,1) rotate(0)">
+        <rect class="text-bg-rect" x="220.0" y="460.0" width="60.0" height="28.0" fill="#FFFFFF" fill-opacity="0.85"/>
+        <text class="text-el" x="250" y="480" font-size="20" font-weight="normal" font-style="normal" text-anchor="middle" fill="#000000">그림 3</text>
+      </g>
+    </svg>
+  </div>
+</body>
+</html>
